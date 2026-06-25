@@ -1,30 +1,26 @@
 import React from 'react';
 
-export default function Customizer({ 
-  selectedItem, 
-  chosenSize, 
-  setChosenSize, 
-  chosenBase, 
-  setChosenBase, 
-  selectedToppings, 
-  onToppingToggle, 
-  sizeOptions, 
-  baseOptions, 
-  premiumToppings, 
-  currentItemPrice, 
-  onBack, 
-  onAddToCart 
+export default function Customizer ({
+  selectedItem,
+  chosenSize,
+  setChosenSize,
+  chosenBase,
+  setChosenBase,
+  selectedToppings,
+  onToppingToggle,
+  sizeOptions,
+  baseOptions,
+  premiumToppings,
+  currentItemPrice,
+  onBack,
+  onAddToCart
 }) {
   return (
     <div className="pos-customization-wrapper">
-      <div className="pos-custom-panel-header">
-        <button className="pos-back-btn" onClick={onBack}>← Back to Grid</button>
-        <h2>Customize: {selectedItem.itemName || selectedItem.name}</h2>
-      </div>
 
       {/* Portions & Sizes Matrix */}
       <div className="pos-option-section">
-        <h4 className="pos-option-title">1. Choose Size Options</h4>
+        <h4 className="pos-option-title">Choose Size Options</h4>
         <div className="pos-flex-button-group">
           {sizeOptions.map((sz) => (
             <button
@@ -40,7 +36,7 @@ export default function Customizer({
 
       {/* Bases Options Layout */}
       <div className="pos-option-section">
-        <h4 className="pos-option-title">2. Choose Core Sorbet Base</h4>
+        <h4 className="pos-option-title">Choose Core Sorbet Base</h4>
         <div className="pos-flex-button-group">
           {baseOptions.map((bs) => (
             <button
@@ -56,12 +52,12 @@ export default function Customizer({
 
       {/* Premium Add-ons Checklist */}
       <div className="pos-option-section">
-        <h4 className="pos-option-title">3. Extra Toppings Additions</h4>
+        <h4 className="pos-option-title">Extra Toppings Additions</h4>
         <div className="pos-toppings-grid">
           {premiumToppings.map((top) => {
             const isChecked = selectedToppings.some(t => t.name === top.name);
             return (
-              <div 
+              <div
                 key={top.name}
                 onClick={() => onToppingToggle(top)}
                 className={`pos-topping-card ${isChecked ? 'topping-active' : ''}`}
@@ -78,7 +74,7 @@ export default function Customizer({
       {/* Execution Sub-Footer Block */}
       <div className="pos-action-footer">
         <div className="pos-live-price-text">Line Subtotal: <span>${currentItemPrice.toFixed(2)}</span></div>
-        <button className="pos-commit-order-btn" onClick={onAddToCart}>Add to Active Ticket →</button>
+        <button className="pos-commit-order-btn" onClick={onAddToCart}>Add to order</button>
       </div>
     </div>
   );

@@ -5,33 +5,22 @@ export default function Sidebar({ categories, activeCategory, onCategoryChange, 
     <div className="pos-side-tab-column">
       {/* Brand Header Display Block */}
       <div className="pos-brand-header">
-        <h2 className="pos-brand-text">PALLADIUM</h2>
+        <h2 className="pos-brand-text">ACAI WORLD</h2>
         <span className="pos-brand-sub">Live Menu Dashboard</span>
       </div>
-
-      {/* Persistent Global Main Menu Navigation Tab */}
-      <button
-        onClick={() => {
-          onCategoryChange('All Products'); // Sets fallback category identity
-          onResetItem(); // Clears configuration panels
-        }}
-        className={`pos-sidebar-button pos-main-menu-btn ${activeCategory === 'All Products' ? 'active-tab' : ''}`}
-      >
-        🏠 MAIN MENU
-      </button>
 
       {/* Dynamic Sub-Category Stream Toggles */}
       <div className="pos-category-scroll-container">
         {categories.map((cat) => (
           <button
-            key={cat}
+            key={cat.id}
             onClick={() => {
-              onCategoryChange(cat);
+              onCategoryChange(cat.id);
               onResetItem();
             }}
-            className={`pos-sidebar-button ${activeCategory === cat ? 'active-tab' : ''}`}
+            className={`pos-sidebar-button ${activeCategory === cat.id ? 'active-tab' : ''}`}
           >
-            {cat.toUpperCase()}
+            {cat.name.toUpperCase()}
           </button>
         ))}
       </div>

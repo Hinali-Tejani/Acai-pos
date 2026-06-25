@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function CheckoutTicket({ cart, cartTotal, onRemoveItem, onClearCart }) {
+export default function CheckoutTicket ({cart, cartTotal, onRemoveItem, onClearCart}) {
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
 
@@ -26,11 +26,11 @@ export default function CheckoutTicket({ cart, cartTotal, onRemoveItem, onClearC
                   </div>
                 )}
               </div>
-              <button 
-                className="pos-remove-item-btn" 
+              <button
+                className="pos-remove-item-btn"
                 onClick={() => onRemoveItem(cartItem.uid)}
               >
-                Void Line Item
+                Remove
               </button>
             </div>
           ))
@@ -51,8 +51,8 @@ export default function CheckoutTicket({ cart, cartTotal, onRemoveItem, onClearC
           <span>Total Due</span>
           <span>${grandTotal.toFixed(2)}</span>
         </div>
-        
-        <button 
+
+        <button
           className={`pos-pay-button ${cart.length === 0 ? 'disabled' : 'active'}`}
           disabled={cart.length === 0}
           onClick={() => {

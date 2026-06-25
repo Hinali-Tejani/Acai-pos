@@ -1,13 +1,13 @@
 import React from 'react';
 
-export default function ProductGrid({ items, activeCategory, onSelectItem }) {
+export default function ProductGrid ({items, activeCategory, onSelectItem}) {
   return (
     <div>
-      <h2 className="pos-section-heading">{activeCategory} Items</h2>
+      <h2 className="pos-section-heading">{activeCategory}</h2>
       <div className="pos-product-grid">
         {items.map((item, idx) => (
-          <div 
-            key={item.id || idx} 
+          <div
+            key={item.id || idx}
             className="pos-product-card"
             onClick={() => onSelectItem(item)}
           >
