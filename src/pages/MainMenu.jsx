@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { getMainMenu } from '../services/menuApi';
 
 function MainMenu() {
   const [menuItems, setMenuItems] = useState([]);
@@ -8,9 +8,9 @@ function MainMenu() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/getmainmenu')
-      .then(res => setMenuItems(Array.isArray(res.data) ? res.data : res.data.items || []))
-      .catch(err => console.error(err))
+    getMainMenu()
+      .then((itemsArray) => setMenuItems(itemsArray))
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
 
