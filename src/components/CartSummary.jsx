@@ -1,25 +1,51 @@
-import React from 'react';
+import React, {useRef, useState} from 'react';
+import OrderTypeForm from './OrderTypeForm';
 
 export default function CartSummary ({cart, cartTotal, onRemoveItem, onClearCart}) {
+    const [orderType, setOrderType] = useState('walk-in');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phone, setPhone] = useState('');
+    const takeoutFormRef = useRef(null);
+
     const estimatedTax = cartTotal * 0.13;
     const grandTotal = cartTotal + estimatedTax;
+
+    const isTakeout = orderType === 'takeout';
+    const isCartEmpty = cart.length === 0;
+
+    const handleCheckout = () => {
+        if (isCartEmpty) return;
+        if (isTakeout && !takeoutFormRef.current?.validate()) return;
+
+        const orderDetails = isTakeout
+            ? `Takeout order for ${firstName} ${lastName}, phone ${phone}`
+            : 'Walk-in order';
+
+        alert(`Processing ${orderDetails}`);
+        onClearCart();
+        setOrderType('walk-in');
+        setFirstName('');
+        setLastName('');
+        setPhone('');
+    };
 
     return (
         <div className="space-y-6 rounded-[32px] border border-purple-200 bg-purple-50 p-6 shadow-sm">
             <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold text-purple-900">Active Register Ticket</h3>
+                <h3 className="text-lg font-semibold text-purple-900">Current Order</h3>
                 <button
                     className="rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-100"
                     onClick={onClearCart}
                 >
-                    Clear
+                    Undo All
                 </button>
             </div>
 
             <div className="space-y-4">
                 {cart.length === 0 ? (
                     <div className="rounded-3xl border border-dashed border-purple-200 bg-white px-4 py-6 text-sm text-purple-600">
-                        No active line-items on ticket. Select product to begin.
+                        No active Order.
                     </div>
                 ) : (
                     cart.map((cartItem) => (
@@ -48,30 +74,37 @@ export default function CartSummary ({cart, cartTotal, onRemoveItem, onClearCart
                 )}
             </div>
 
-            <div className="space-y-3 rounded-3xl border border-purple-200 bg-white p-5">
-                <div className="flex items-center justify-between text-sm text-purple-600">
-                    <span>Subtotal</span>
-                    <span>${cartTotal.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm text-purple-600">
-                    <span>Estimated Tax (13%)</span>
-                    <span>${estimatedTax.toFixed(2)}</span>
-                </div>
-                <div className="flex items-center justify-between border-t border-purple-200 pt-4 text-base font-semibold text-purple-900">
-                    <span>Total Due</span>
-                    <span>${grandTotal.toFixed(2)}</span>
-                </div>
-                <button
-                    className={`w-full rounded-3xl px-4 py-3 text-sm font-semibold text-white transition ${cart.length === 0 ? 'bg-purple-200 cursor-not-allowed' : 'bg-purple-900 hover:bg-purple-800'}`}
-                    disabled={cart.length === 0}
-                    onClick={() => {
-                        alert('Initializing Payment Terminal Interface Processing...');
-                        onClearCart();
-                    }}
-                >
-                    💳 TENDER TRANSACTION
-                </button>
+            <OrderTypeForm
+                orderType={orderType}
+                setOrderType={setOrderType}
+                firstName={firstName}
+                setFirstName={setFirstName}
+                lastName={lastName}
+                setLastName={setLastName}
+                phone={phone}
+                setPhone={setPhone}
+                takeoutFormRef={takeoutFormRef}
+            />
+
+            <div className="flex items-center justify-between text-sm text-purple-600">
+                <span>Subtotal</span>
+                <span>${cartTotal.toFixed(2)}</span>
             </div>
+            <div className="flex items-center justify-between text-sm text-purple-600">
+                <span>Estimated Tax (13%)</span>
+                <span>${estimatedTax.toFixed(2)}</span>
+            </div>
+            <div className="flex items-center justify-between border-t border-purple-200 pt-4 text-base font-semibold text-purple-900">
+                <span>Total Due</span>
+                <span>${grandTotal.toFixed(2)}</span>
+            </div>
+            <button
+                className={`w-full rounded-3xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'bg-purple-200 cursor-not-allowed' : 'bg-purple-900 hover:bg-purple-800'}`}
+                disabled={isCartEmpty}
+                onClick={handleCheckout}
+            >
+                💳 TENDER TRANSACTION
+            </button>
         </div>
     );
 }
