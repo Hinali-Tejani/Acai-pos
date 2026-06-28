@@ -1,14 +1,14 @@
 // wrangler.jsonc
 {
-    "name": "pizza-store",
-    "main": "./src/main.jsx",
+    "name": "acai-pos",
+    // "main": "./dist/index.js",
     "compatibility_date": "2024-04-03",
     "compatibility_flags": ["nodejs_compat"],
     "assets": {
-        "directory": "./dist",
-        "binding": "ASSETS"
+        "directory": "./dist"
+        // "binding": "ASSETS"
     },
-    "vars": {
+    "env": {
         "VITE_API_BASE_URL": "https://palladiumacaiapi.runasp.net/AcaiAPI"
     }
 }

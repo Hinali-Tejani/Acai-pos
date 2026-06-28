@@ -2,7 +2,8 @@ import axios from 'axios';
 
 // Creates a reusable network instance using your .env configuration
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: 'https://palladiumacaiapi.runasp.net/AcaiAPI',
+    // baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
