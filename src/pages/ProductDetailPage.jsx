@@ -42,25 +42,34 @@ export default function ProductDetailPage ({
 
     if (!item) {
         return (
-            <div className="pos-centered-msg">
-                <h3>Product not found</h3>
-                <button onClick={handleBack}>Back to Menu</button>
+            <div className="flex h-full flex-col items-center justify-center rounded-[32px] border border-purple-200 bg-white p-10 shadow-sm">
+                <h3 className="mb-4 text-2xl font-semibold text-purple-900">Product not found</h3>
+                <button
+                    className="rounded-3xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-800"
+                    onClick={handleBack}
+                >
+                    Back to Menu
+                </button>
             </div>
         );
     }
 
     return (
-        <div className="pos-product-detail-page">
-            <div className="pos-detail-header">
-                <button className="pos-back-btn" onClick={handleBack}>← Back to Menu</button>
-                <h2>{item.submenuName || item.itemName || item.name || 'Product Detail'}</h2>
+        <div className="space-y-8">
+            <div className="flex items-center justify-between gap-4 rounded-[32px] border border-purple-200 bg-white p-6 shadow-sm">
+                <button className="rounded-3xl bg-purple-900 px-5 py-3 text-sm font-semibold text-white hover:bg-purple-800" onClick={handleBack}>
+                    ← Back to Menu
+                </button>
+                <h2 className="text-2xl font-semibold text-purple-900">
+                    {item.submenuName || item.itemName || item.name || 'Product Detail'}
+                </h2>
             </div>
-
+            {/* 
             {item.imageUrl && (
-                <div className="pos-detail-image-wrapper">
-                    <img src={item.imageUrl} alt={item.name} className="pos-detail-image" />
+                <div className="overflow-hidden rounded-[32px] border border-purple-200 bg-white shadow-sm">
+                    <img src={item.imageUrl} alt={item.name} className="h-[320px] w-full object-cover" />
                 </div>
-            )}
+            )} */}
 
             <ProductDetail
                 selectedItem={item}

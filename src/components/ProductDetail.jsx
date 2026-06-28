@@ -16,17 +16,16 @@ export default function Customizer ({
   onAddToCart
 }) {
   return (
-    <div className="pos-customization-wrapper">
+    <div className="space-y-8 rounded-[32px] border border-purple-200 bg-white p-8 shadow-sm">
 
-      {/* Portions & Sizes Matrix */}
-      <div className="pos-option-section">
-        <h4 className="pos-option-title">Choose Size Options</h4>
-        <div className="pos-flex-button-group">
+      <div className="space-y-4">
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Size Options</div>
+        <div className="flex flex-wrap gap-3">
           {sizeOptions.map((sz) => (
             <button
               key={sz.label}
               onClick={() => setChosenSize(sz.label)}
-              className={`pos-selector-btn ${chosenSize === sz.label ? 'selected-item' : ''}`}
+              className={`rounded-3xl border px-5 py-3 text-sm font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
             >
               {sz.label} {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}
             </button>
@@ -34,15 +33,14 @@ export default function Customizer ({
         </div>
       </div>
 
-      {/* Bases Options Layout */}
-      <div className="pos-option-section">
-        <h4 className="pos-option-title">Choose Core Sorbet Base</h4>
-        <div className="pos-flex-button-group">
+      <div className="space-y-4">
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Core Sorbet Base</div>
+        <div className="flex flex-wrap gap-3">
           {baseOptions.map((bs) => (
             <button
               key={bs}
               onClick={() => setChosenBase(bs)}
-              className={`pos-selector-btn ${chosenBase === bs ? 'selected-purple' : ''}`}
+              className={`rounded-3xl border px-5 py-3 text-sm font-semibold transition ${chosenBase === bs ? 'border-rose-500 bg-rose-500 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
             >
               {bs}
             </button>
@@ -50,31 +48,45 @@ export default function Customizer ({
         </div>
       </div>
 
-      {/* Premium Add-ons Checklist */}
-      <div className="pos-option-section">
-        <h4 className="pos-option-title">Extra Toppings Additions</h4>
-        <div className="pos-toppings-grid">
+      <div className="space-y-4">
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Extra Toppings Additions</div>
+        <div className="grid gap-3 md:grid-cols-2">
           {premiumToppings.map((top) => {
             const isChecked = selectedToppings.some(t => t.name === top.name);
             return (
-              <div
+              <button
                 key={top.name}
+                type="button"
                 onClick={() => onToppingToggle(top)}
-                className={`pos-topping-card ${isChecked ? 'topping-active' : ''}`}
+                className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-left text-sm font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
               >
-                <input type="checkbox" checked={isChecked} readOnly className="pos-checkbox-spacer" />
-                <span className="pos-topping-label">{top.name}</span>
-                <b className="pos-topping-price">+${top.price.toFixed(2)}</b>
-              </div>
+                <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" />
+                <span className="flex-1">{top.name}</span>
+                <b className="rounded-full bg-purple-100 px-3 py-1 text-xs text-purple-700">+${top.price.toFixed(2)}</b>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Execution Sub-Footer Block */}
-      <div className="pos-action-footer">
-        <div className="pos-live-price-text">Line Subtotal: <span>${currentItemPrice.toFixed(2)}</span></div>
-        <button className="pos-commit-order-btn" onClick={onAddToCart}>Add to order</button>
+      <div className="flex flex-col gap-4 rounded-3xl bg-purple-50 p-6">
+        <div className="text-base font-semibold text-purple-900">
+          Line Subtotal: <span className="text-purple-600">${currentItemPrice.toFixed(2)}</span>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <button
+            className="rounded-3xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+            onClick={onAddToCart}
+          >
+            Add to order
+          </button>
+          <button
+            className="rounded-3xl border border-purple-300 bg-white px-6 py-3 text-sm font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
+            onClick={onBack}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

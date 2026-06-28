@@ -8,14 +8,22 @@ export default function MainWorkspace({
   onSelectItem
 }) {
   if (itemsLoading) {
-    return <div className="pos-centered-msg"><h3>Querying Category Items...</h3></div>;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="rounded-3xl border border-purple-200 bg-white px-8 py-10 text-center shadow-sm">
+          <h3 className="text-xl font-semibold text-purple-900">Querying Category Items...</h3>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <ProductGrid
-      items={activeItems}
-      activeCategory={activeCategoryName}
-      onSelectItem={onSelectItem}
-    />
+    <div className="h-full">
+      <ProductGrid
+        items={activeItems}
+        activeCategory={activeCategoryName}
+        onSelectItem={onSelectItem}
+      />
+    </div>
   );
 }

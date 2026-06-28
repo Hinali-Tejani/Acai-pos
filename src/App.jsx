@@ -1,15 +1,14 @@
 import React, {useEffect} from 'react';
 import {Routes, Route, useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
-import {useAppState, SIZE_OPTIONS, BASE_OPTIONS, PREMIUM_TOPPINGS} from './state/AppState';
+import useAppState, {SIZE_OPTIONS, BASE_OPTIONS, PREMIUM_TOPPINGS} from './state/AppState';
 import Sidebar from './components/Sidebar';
 import MainWorkspace from './components/MainWorkspace';
 import AppStatus from './components/AppStatus';
 import ProductDetailPage from './pages/ProductDetailPage';
 import CartSummary from './components/CartSummary';
-import './App.css';
 
-function App() {
+function App () {
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
   const {
     activeCategory,
@@ -53,7 +52,7 @@ function App() {
 
   const handleSelectItem = (item) => {
     selectItem(item);
-    navigate(`/product/${item.id}`, { state: { item } });
+    navigate(`/product/${item.id}`, {state: {item}});
   };
 
   const handleAddToCart = (itemParam) => {
@@ -70,7 +69,7 @@ function App() {
   }
 
   return (
-    <div className="pos-container">
+    <div className="flex h-screen w-screen bg-purple-50 text-purple-900">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
@@ -78,49 +77,53 @@ function App() {
         onResetItem={resetSelection}
       />
 
-      <div className="pos-main-workspace">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <MainWorkspace
-                itemsLoading={itemsLoading}
-                activeItems={activeItems}
-                activeCategoryName={activeCategoryName}
-                onSelectItem={handleSelectItem}
-              />
-            }
-          />
-          <Route
-            path="/product/:id"
-            element={
-              <ProductDetailPage
-                selectedItem={selectedItem}
-                activeItems={activeItems}
-                chosenSize={chosenSize}
-                setChosenSize={setChosenSize}
-                chosenBase={chosenBase}
-                setChosenBase={setChosenBase}
-                selectedToppings={selectedToppings}
-                onToppingToggle={handleToppingToggle}
-                sizeOptions={SIZE_OPTIONS}
-                baseOptions={BASE_OPTIONS}
-                premiumToppings={PREMIUM_TOPPINGS}
-                getItemPrice={calculateCurrentItemPrice}
-                onAddToCart={handleAddToCart}
-                onBack={resetSelection}
-              />
-            }
-          />
-        </Routes>
+      <div className="flex-1 overflow-hidden">
+        <div className="flex h-full flex-col px-6 py-5 overflow-y-auto">
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <MainWorkspace
+                  itemsLoading={itemsLoading}
+                  activeItems={activeItems}
+                  activeCategoryName={activeCategoryName}
+                  onSelectItem={handleSelectItem}
+                />
+              }
+            />
+            <Route
+              path="/product/:id"
+              element={
+                <ProductDetailPage
+                  selectedItem={selectedItem}
+                  activeItems={activeItems}
+                  chosenSize={chosenSize}
+                  setChosenSize={setChosenSize}
+                  chosenBase={chosenBase}
+                  setChosenBase={setChosenBase}
+                  selectedToppings={selectedToppings}
+                  onToppingToggle={handleToppingToggle}
+                  sizeOptions={SIZE_OPTIONS}
+                  baseOptions={BASE_OPTIONS}
+                  premiumToppings={PREMIUM_TOPPINGS}
+                  getItemPrice={calculateCurrentItemPrice}
+                  onAddToCart={handleAddToCart}
+                  onBack={resetSelection}
+                />
+              }
+            />
+          </Routes>
+        </div>
       </div>
 
-      <CartSummary
-        cart={cart}
-        cartTotal={cartTotal}
-        onRemoveItem={removeCartItem}
-        onClearCart={clearCart}
-      />
+      <div className="w-[380px] overflow-y-auto border-l border-purple-200 bg-white p-6">
+        <CartSummary
+          cart={cart}
+          cartTotal={cartTotal}
+          onRemoveItem={removeCartItem}
+          onClearCart={clearCart}
+        />
+      </div>
     </div>
   );
 }
