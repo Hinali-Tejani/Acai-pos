@@ -20,7 +20,7 @@ export const PREMIUM_TOPPINGS = [
 ];
 
 const useAppState = () => {
-    const [activeCategory, setActiveCategory] = useState('');
+    const [activeCategory, setActiveCategory] = useState('home');
     const [selectedItem, setSelectedItem] = useState(null);
     const [chosenSize, setChosenSize] = useState('');
     const [chosenBase, setChosenBase] = useState('Traditional Acai Blend');
@@ -60,6 +60,7 @@ const useAppState = () => {
 
     const addToCart = (item, finalPrice) => {
         if (!item) return;
+        const basePrice = parseFloat(item.price || item.submenuPrice || 0) || 10;
         setCart((currentCart) => [
             ...currentCart,
             {
@@ -69,9 +70,15 @@ const useAppState = () => {
                 size: chosenSize || item.size || 'Medium',
                 base: chosenBase,
                 toppings: selectedToppings.map((t) => t.name),
-                finalPrice: finalPrice ?? calculateItemPrice(item)
+                finalPrice: finalPrice ?? calculateItemPrice(item),
+                quantity: 1,
+                basePrice: basePrice,
             }
         ]);
+    };
+
+    const updateCartItem = (uid, changes) => {
+        setCart((currentCart) => currentCart.map((it) => it.uid === uid ? {...it, ...changes} : it));
     };
 
     const removeCartItem = (uid) => {
@@ -99,7 +106,8 @@ const useAppState = () => {
         clearCart,
         resetSelection,
         calculateItemPrice,
-        cart
+        cart,
+        updateCartItem
     };
 }
 

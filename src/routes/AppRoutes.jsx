@@ -1,0 +1,105 @@
+import React from 'react';
+import {Routes, Route} from 'react-router-dom';
+import HomePage from '../pages/HomePage';
+import CategoryProductsPage from '../pages/CategoryProductsPage';
+import ProductDetailPage from '../pages/ProductDetailPage';
+
+export default function AppRoutes({
+  itemsLoading,
+  activeItems,
+  activeCategoryName,
+  onSelectItem,
+  selectedItem,
+  chosenSize,
+  setChosenSize,
+  chosenBase,
+  setChosenBase,
+  selectedToppings,
+  onToppingToggle,
+  sizeOptions,
+  baseOptions,
+  premiumToppings,
+  getItemPrice,
+  onAddToCart,
+  onBack,
+  activeCategory,
+  orderType,
+  setOrderType,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
+  phone,
+  setPhone,
+  takeoutFormRef,
+}) {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={
+          <HomePage
+            orderType={orderType}
+            setOrderType={setOrderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phone={phone}
+            setPhone={setPhone}
+            takeoutFormRef={takeoutFormRef}
+          />
+        }
+      />
+      <Route
+        path="/home"
+        element={
+          <HomePage
+            orderType={orderType}
+            setOrderType={setOrderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phone={phone}
+            setPhone={setPhone}
+            takeoutFormRef={takeoutFormRef}
+          />
+        }
+      />
+      <Route
+        path="/products/:categoryId"
+        element={
+          <CategoryProductsPage
+            itemsLoading={itemsLoading}
+            activeItems={activeItems}
+            activeCategoryName={activeCategoryName}
+            onSelectItem={onSelectItem}
+          />
+        }
+      />
+      <Route
+        path="/product/:id"
+        element={
+          <ProductDetailPage
+            selectedItem={selectedItem}
+            activeItems={activeItems}
+            chosenSize={chosenSize}
+            setChosenSize={setChosenSize}
+            chosenBase={chosenBase}
+            setChosenBase={setChosenBase}
+            selectedToppings={selectedToppings}
+            onToppingToggle={onToppingToggle}
+            sizeOptions={sizeOptions}
+            baseOptions={baseOptions}
+            premiumToppings={premiumToppings}
+            getItemPrice={getItemPrice}
+            onAddToCart={onAddToCart}
+            onBack={onBack}
+            activeCategory={activeCategory}
+          />
+        }
+      />
+    </Routes>
+  );
+}

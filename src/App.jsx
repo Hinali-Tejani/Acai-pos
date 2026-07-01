@@ -1,12 +1,11 @@
-import React, {useEffect} from 'react';
-import {Routes, Route, useNavigate} from 'react-router-dom';
+import React, {useEffect, useRef, useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
 import useAppState, {SIZE_OPTIONS, BASE_OPTIONS, PREMIUM_TOPPINGS} from './state/AppState';
 import Sidebar from './components/Sidebar';
-import MainWorkspace from './components/MainWorkspace';
 import AppStatus from './components/AppStatus';
-import ProductDetailPage from './pages/ProductDetailPage';
 import CartSummary from './components/CartSummary';
+import AppRoutes from './routes/AppRoutes';
 
 function App () {
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
@@ -27,20 +26,15 @@ function App () {
     clearCart,
     resetSelection,
     calculateItemPrice,
-    cart
+    cart,
+    updateCartItem
   } = useAppState();
 
   useEffect(() => {
-    if (categories.length > 0 && !activeCategory) {
-      setActiveCategory(categories[0].id);
-    }
-  }, [categories, activeCategory]);
-
-  useEffect(() => {
-    if (activeCategory) {
+    if (activeCategory && activeCategory !== 'home') {
       loadSubmenu(activeCategory);
     }
-  }, [activeCategory]);
+  }, [activeCategory, loadSubmenu]);
 
   const calculateCurrentItemPrice = (item = selectedItem) => calculateItemPrice(item);
 
@@ -49,6 +43,11 @@ function App () {
   };
 
   const navigate = useNavigate();
+  const [orderType, setOrderType] = useState('walk-in');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const takeoutFormRef = useRef(null);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -62,7 +61,7 @@ function App () {
   };
 
   const activeCategoryName = categories.find(cat => cat.id === activeCategory)?.name || 'Category';
-  const cartTotal = cart.reduce((sum, item) => sum + item.finalPrice, 0);
+  const cartTotal = cart.reduce((sum, item) => sum + item.finalPrice * (item.quantity || 1), 0);
 
   if (loading || error) {
     return <AppStatus loading={loading} error={error} onRetry={() => window.location.reload()} />;
@@ -79,49 +78,54 @@ function App () {
 
       <div className="flex-1 overflow-hidden">
         <div className="flex h-full flex-col px-6 py-5 overflow-y-auto">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <MainWorkspace
-                  itemsLoading={itemsLoading}
-                  activeItems={activeItems}
-                  activeCategoryName={activeCategoryName}
-                  onSelectItem={handleSelectItem}
-                />
-              }
-            />
-            <Route
-              path="/product/:id"
-              element={
-                <ProductDetailPage
-                  selectedItem={selectedItem}
-                  activeItems={activeItems}
-                  chosenSize={chosenSize}
-                  setChosenSize={setChosenSize}
-                  chosenBase={chosenBase}
-                  setChosenBase={setChosenBase}
-                  selectedToppings={selectedToppings}
-                  onToppingToggle={handleToppingToggle}
-                  sizeOptions={SIZE_OPTIONS}
-                  baseOptions={BASE_OPTIONS}
-                  premiumToppings={PREMIUM_TOPPINGS}
-                  getItemPrice={calculateCurrentItemPrice}
-                  onAddToCart={handleAddToCart}
-                  onBack={resetSelection}
-                />
-              }
-            />
-          </Routes>
+          <AppRoutes
+            itemsLoading={itemsLoading}
+            activeItems={activeItems}
+            activeCategoryName={activeCategoryName}
+            onSelectItem={handleSelectItem}
+            selectedItem={selectedItem}
+            chosenSize={chosenSize}
+            setChosenSize={setChosenSize}
+            chosenBase={chosenBase}
+            setChosenBase={setChosenBase}
+            selectedToppings={selectedToppings}
+            onToppingToggle={handleToppingToggle}
+            sizeOptions={SIZE_OPTIONS}
+            baseOptions={BASE_OPTIONS}
+            premiumToppings={PREMIUM_TOPPINGS}
+            getItemPrice={calculateCurrentItemPrice}
+            onAddToCart={handleAddToCart}
+            onBack={resetSelection}
+            activeCategory={activeCategory}
+            orderType={orderType}
+            setOrderType={setOrderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phone={phone}
+            setPhone={setPhone}
+            takeoutFormRef={takeoutFormRef}
+          />
         </div>
       </div>
 
-      <div className="w-[380px] overflow-y-auto border-l border-purple-200 bg-white p-6">
+      <div className="w-95 overflow-y-auto border-l border-purple-200 bg-white p-2">
         <CartSummary
           cart={cart}
           cartTotal={cartTotal}
           onRemoveItem={removeCartItem}
           onClearCart={clearCart}
+          onUpdateItem={updateCartItem}
+          orderType={orderType}
+          setOrderType={setOrderType}
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          phone={phone}
+          setPhone={setPhone}
+          takeoutFormRef={takeoutFormRef}
         />
       </div>
     </div>

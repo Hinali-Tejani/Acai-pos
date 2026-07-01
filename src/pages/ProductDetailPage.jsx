@@ -16,7 +16,8 @@ export default function ProductDetailPage ({
     premiumToppings,
     getItemPrice,
     onAddToCart,
-    onBack
+    onBack,
+    activeCategory = 'home'
 }) {
     const {id} = useParams();
     const location = useLocation();
@@ -35,20 +36,27 @@ export default function ProductDetailPage ({
         }
     }, [item, chosenSize, chosenBase, setChosenSize, setChosenBase]);
 
+    const returnPath = activeCategory && activeCategory !== 'home' ? `/products/${activeCategory}` : '/home';
+
     const handleBack = () => {
         if (onBack) onBack();
-        navigate('/');
+        navigate(returnPath);
+    };
+
+    const handleAddToOrder = () => {
+        onAddToCart(item);
+        navigate(returnPath);
     };
 
     if (!item) {
         return (
-            <div className="flex h-full flex-col items-center justify-center rounded-[32px] border border-purple-200 bg-white p-10 shadow-sm">
+            <div className="flex h-full flex-col items-center justify-center rounded-xl border border-purple-200 bg-white p-10 shadow-sm">
                 <h3 className="mb-4 text-2xl font-semibold text-purple-900">Product not found</h3>
                 <button
-                    className="rounded-3xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-800"
-                    onClick={handleBack}
+                    className="rounded-xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-800"
+                    onClick={() => navigate(returnPath)}
                 >
-                    Back to Menu
+                    Back to Home
                 </button>
             </div>
         );
@@ -57,9 +65,6 @@ export default function ProductDetailPage ({
     return (
         <div className="space-y-8">
             <div className="flex items-center justify-between gap-4 rounded-[32px] border border-purple-200 bg-white p-6 shadow-sm">
-                <button className="rounded-3xl bg-purple-900 px-5 py-3 text-sm font-semibold text-white hover:bg-purple-800" onClick={handleBack}>
-                    ← Back to Menu
-                </button>
                 <h2 className="text-2xl font-semibold text-purple-900">
                     {item.submenuName || item.itemName || item.name || 'Product Detail'}
                 </h2>
@@ -84,7 +89,7 @@ export default function ProductDetailPage ({
                 premiumToppings={premiumToppings}
                 currentItemPrice={getItemPrice(item)}
                 onBack={handleBack}
-                onAddToCart={() => onAddToCart(item)}
+                onAddToCart={handleAddToOrder}
             />
         </div>
     );
