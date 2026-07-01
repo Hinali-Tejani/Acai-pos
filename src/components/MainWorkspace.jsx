@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductGrid from './ProductGrid';
+import HomeActions from './HomeActions';
 import OrderTypeForm from './OrderTypeForm';
 
 export default function MainWorkspace ({
@@ -32,7 +33,7 @@ export default function MainWorkspace ({
   return (
     <div className=" space-y-4">
       <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm h-full">
-        <OrderTypeForm
+        <HomeActions
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}
@@ -43,6 +44,18 @@ export default function MainWorkspace ({
           setPhone={setPhone}
           takeoutFormRef={takeoutFormRef}
         />
+        {/* <div className="mt-4">
+          <OrderTypeForm
+            orderType={orderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phone={phone}
+            setPhone={setPhone}
+            takeoutFormRef={takeoutFormRef}
+          />
+        </div> */}
       </div>
 
       {isHomeView ? (

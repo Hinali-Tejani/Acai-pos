@@ -40,66 +40,68 @@ export default function CartSummary ({
   };
 
   return (
-    <div className="space-y-6 rounded-sm border border-purple-200 bg-purple-50 p-4 shadow-sm">
+    <div className="space-y-3 rounded-sm border border-purple-200 bg-purple-50 p-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold text-purple-900">Active Order</h3>
+        <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
         <button
-          className="rounded-2xl bg-white px-3 py-2 text-sm font-semibold text-purple-600 shadow-sm transition hover:bg-purple-100"
+          className="rounded-md bg-white px-3 py-1 text-xs! font-semibold text-purple-600 shadow-sm transition hover:bg-purple-100"
           onClick={onClearCart}
         >
           Clear
         </button>
       </div>
 
-      <div className="space-y-4">
+      <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-purple-900">Order type</span>
+          <span className="text-xs uppercase text-purple-700">
+            {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
+          </span>
+        </div>
+      </div>
+
+      <div className="space-y-2">
         {cart.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-purple-200 bg-white px-4 py-6 text-sm text-purple-600">
-            No active line-items on ticket. Select product to begin.
+          <div className="rounded-md border border-dashed border-purple-200 bg-white p-4 text-xs text-purple-600">
+            No active order. Select product to begin.
           </div>
         ) : (
           cart.map((cartItem) => (
-            <div key={cartItem.uid} className="rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <div className="font-semibold text-purple-900">{cartItem.name}</div>
+            <div key={cartItem.uid} className="rounded-xl border border-purple-200 bg-white p-2 shadow-sm text-[10px] space-y-2 relative">
+              <div className="flex items-center justify-between gap-4 text-xs">
+                <div className="font-semibold text-purple-900">{cartItem.name} - ${cartItem.finalPrice.toFixed(2)}</div>
 
-                <div className="text-right">
-                  <div className="text-sm font-semibold text-purple-900">${cartItem.finalPrice.toFixed(2)}</div>
+                <div className='space-x-1 text-[9px]! font-semibold text-purple-700 whitespace-nowrap' >
+                  <button
+                    className=" rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200 cursor-pointer"
+                    onClick={() => onRemoveItem(cartItem.uid)}
+                  >
+                    Repeat
+                  </button>
+                  <button
+                    className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200 cursor-pointer"
+                    onClick={() => onRemoveItem(cartItem.uid)}
+                  >
+                    X
+                  </button>
                 </div>
+
+
               </div>
-              <div className='mt-1'>
-                <div className="text-xs text-purple-600"> <span className='rounded-sm bg-purple-100 p-1 mr-1'> Size: {cartItem.size} </span>
+              <div>
+                <div className=" text-purple-600"> <span className='rounded-sm bg-purple-100 p-1 mr-1'> Size: {cartItem.size} </span>
                   <span className='rounded-sm bg-purple-100 p-1'> Base: {cartItem.base}</span>
                 </div>
               </div>
 
               {cartItem.toppings && cartItem.toppings.length > 0 && (
-                <div className="mt-3 rounded-2xl bg-purple-50 px-3 py-2 text-sm text-purple-700">
+                <div className="rounded-sm bg-purple-50 p-1 text-purple-700">
                   <strong>Add:</strong> {cartItem.toppings.join(', ')}
                 </div>
               )}
-
-              <div className="mt-4">
-                <button
-                  className="rounded-2xl bg-purple-100 px-3 py-2 text-xs font-semibold text-purple-700 transition hover:bg-purple-200"
-                  onClick={() => onRemoveItem(cartItem.uid)}
-                >
-                  Remove
-                </button>
-              </div>
-
-
             </div>
           ))
         )}
-      </div>
-
-      <div className="rounded-xl border border-purple-200 bg-white p-4 text-sm text-purple-700">
-        <div className="flex items-center justify-between">
-          <span className="font-semibold text-purple-900">Order type</span>
-          <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold uppercase text-purple-700">
-            {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
-          </span>
-        </div>
       </div>
 
       <div className="flex items-center justify-between text-sm text-purple-600">
