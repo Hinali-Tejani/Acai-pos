@@ -70,19 +70,19 @@ export default function Customizer ({
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-xl bg-purple-50 p-3 px-4">
+      <div className="flex items-center justify-between gap-3 rounded-xl bg-purple-50 p-3 px-4">
         <div className="text-base font-semibold text-purple-900">
           Line Subtotal: <span className="text-purple-600">${currentItemPrice.toFixed(2)}</span>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <button
-            className="rounded-xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+            className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
             onClick={onAddToCart}
           >
             Add to order
           </button>
           <button
-            className="rounded-xl border border-purple-300 bg-white px-6 py-3 text-sm font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
+            className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
             onClick={onBack}
           >
             Cancel
