@@ -9,6 +9,8 @@ function TakeoutForm (
     phone,
     setPhone,
     required = true,
+    onSubmit,
+    onCancel,
   },
   ref,
 ) {
@@ -62,32 +64,48 @@ function TakeoutForm (
     });
   };
 
+  const validateForm = () => {
+    const nextErrors = {};
+
+    if (!required) {
+      setErrors({});
+      return true;
+    }
+
+    ['firstName', 'lastName', 'phone'].forEach((field) => {
+      const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phone;
+      const error = getFieldError(field, value);
+      if (error) nextErrors[field] = error;
+    });
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    onSubmit?.({firstName, lastName, phone});
+  };
+
+  const handleCancel = () => {
+    onCancel?.();
+  };
+
   useImperativeHandle(
     ref,
     () => ({
-      validate: () => {
-        const nextErrors = {};
-
-        if (!required) {
-          setErrors({});
-          return true;
-        }
-
-        ['firstName', 'lastName', 'phone'].forEach((field) => {
-          const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phone;
-          const error = getFieldError(field, value);
-          if (error) nextErrors[field] = error;
-        });
-
-        setErrors(nextErrors);
-        return Object.keys(nextErrors).length === 0;
-      },
+      validate: () => validateForm(),
     }),
     [firstName, lastName, phone, required],
   );
 
   return (
-    <div className="space-y-4 rounded-xl border border-purple-200 bg-purple-50 p-4">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-purple-200 bg-purple-50 p-4 pb-0">
       <div>
         <label className="block text-sm font-semibold text-purple-900">First Name</label>
         <input
@@ -123,7 +141,18 @@ function TakeoutForm (
         />
         {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
       </div>
-    </div>
+
+      <button type="submit" className="mr-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700">
+        Submit
+      </button>
+      <button
+        type="button"
+        onClick={handleCancel}
+        className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+    </form>
   );
 }
 

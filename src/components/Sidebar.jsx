@@ -26,12 +26,12 @@ export default function Sidebar ({
         <button
           type="button"
           onClick={handleHomeClick}
-          className={`w-full rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${activeCategory === 'home'
+          className={`w-full rounded-2xl border p-3 text-left text-sm font-semibold transition ${activeCategory === 'home'
             ? 'border-purple-900 bg-purple-900 text-white'
-            : 'border-purple-200 bg-white text-purple-800 hover:border-purple-300 hover:bg-purple-50'
-          }`}
+            : 'border-purple-200 bg-white text-purple-800 hover:border-purple-900 hover:bg-purple-50'
+            }`}
         >
-          🏠 Home
+          Home
         </button>
 
         {categories.map((cat) => (
@@ -42,9 +42,9 @@ export default function Sidebar ({
               onResetItem();
               navigate(`/products/${cat.id}`);
             }}
-            className={`w-full rounded-2xl border py-4 px-4 text-left font-semibold transition ${activeCategory === cat.id
-                ? 'border-purple-900 border-2'
-                : 'border-transparent bg-white text-purple-800 hover:border-purple-300 hover:bg-purple-50'
+            className={`w-full rounded-2xl border p-3 text-left font-semibold transition ${activeCategory === cat.id
+              ? 'border-purple-900 border-2'
+              : 'border-transparent bg-white text-purple-800 hover:border-purple-300 hover:bg-purple-50'
               }`}
           >
             {cat.name.toUpperCase()}
@@ -55,9 +55,9 @@ export default function Sidebar ({
       <div className="border-t border-purple-200 bg-white p-4">
         <button
           className="w-full rounded-2xl bg-purple-100 px-4 py-3 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
-          onClick={() => alert('Terminal Connected')}
+          onClick={() => alert('Customer list')}
         >
-          🌐 API Online
+          Select Customer
         </button>
       </div>
     </aside>
