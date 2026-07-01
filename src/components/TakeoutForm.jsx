@@ -1,6 +1,6 @@
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, {forwardRef, useImperativeHandle, useState} from 'react';
 
-function TakeoutForm(
+function TakeoutForm (
   {
     firstName,
     setFirstName,
@@ -8,30 +8,27 @@ function TakeoutForm(
     setLastName,
     phone,
     setPhone,
+    required = true,
   },
   ref,
 ) {
   const [errors, setErrors] = useState({});
 
   const getFieldError = (field, value) => {
+    if (!required) return '';
+
     const trimmed = value.trim();
 
     if (field === 'firstName' || field === 'lastName') {
       if (!trimmed) {
-        return `${field === 'firstName' ? 'First' : 'Last'} name is required for takeout orders.`;
-      }
-      if (!/^[A-Za-z]+$/.test(trimmed)) {
-        return `${field === 'firstName' ? 'First' : 'Last'} name must contain only letters.`;
-      }
-      if (trimmed.length <= 3) {
-        return `${field === 'firstName' ? 'First' : 'Last'} name must be more than 3 letters.`;
+        return `${field === 'firstName' ? 'First' : 'Last'} name is required`;
       }
       return '';
     }
 
     if (field === 'phone') {
       if (!trimmed) {
-        return 'Phone number is required for takeout orders.';
+        return 'Phone number is required';
       }
       if (!/^[0-9]+$/.test(trimmed)) {
         return 'Phone number must contain only digits.';
@@ -57,9 +54,9 @@ function TakeoutForm(
     const error = getFieldError(field, value);
     setErrors((current) => {
       if (error) {
-        return { ...current, [field]: error };
+        return {...current, [field]: error};
       }
-      const next = { ...current };
+      const next = {...current};
       delete next[field];
       return next;
     });
@@ -71,6 +68,11 @@ function TakeoutForm(
       validate: () => {
         const nextErrors = {};
 
+        if (!required) {
+          setErrors({});
+          return true;
+        }
+
         ['firstName', 'lastName', 'phone'].forEach((field) => {
           const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phone;
           const error = getFieldError(field, value);
@@ -81,11 +83,11 @@ function TakeoutForm(
         return Object.keys(nextErrors).length === 0;
       },
     }),
-    [firstName, lastName, phone],
+    [firstName, lastName, phone, required],
   );
 
   return (
-    <div className="space-y-4 rounded-3xl border border-purple-200 bg-purple-50 p-4">
+    <div className="space-y-4 rounded-xl border border-purple-200 bg-purple-50 p-4">
       <div>
         <label className="block text-sm font-semibold text-purple-900">First Name</label>
         <input
