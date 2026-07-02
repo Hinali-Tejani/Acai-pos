@@ -47,7 +47,18 @@ export default function CartSummary ({
   const handleClosePayment = () => {
     setShowPayment(false);
     // onClearCart();
+  }
 
+  const onRepeatItem = (uid) => {
+    const itemToRepeat = cart.find(item => item.uid === uid);
+    if (itemToRepeat) {
+      const newItem = {
+        ...itemToRepeat,
+        uid: `${itemToRepeat.uid}}`, // Generate a new unique ID
+      };
+      cart.push(newItem);
+      onUpdateItem(newItem);
+    }
   }
 
   return (
@@ -86,7 +97,7 @@ export default function CartSummary ({
                   <div className='space-x-1 text-[9px]! font-semibold text-purple-700 whitespace-nowrap' >
                     <button
                       className=" rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200 cursor-pointer"
-                      onClick={() => onRemoveItem(cartItem.uid)}
+                      onClick={() => onRepeatItem(cartItem.uid)}
                     >
                       Repeat
                     </button>
