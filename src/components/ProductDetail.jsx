@@ -62,7 +62,7 @@ export default function Customizer ({
                 className={`flex items-center gap-2 flex-wrap rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
               >
                 <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" />
-                <span className="flex-1">{top.name}</span>
+                <span className="flex-1 wrap-anywhere">{top.name}</span>
                 <b className="rounded-full bg-purple-100 px-2 py-1 text-[10px] text-purple-700">+${top.price.toFixed(2)}</b>
               </button>
             );

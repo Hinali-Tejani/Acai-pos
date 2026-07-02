@@ -109,7 +109,7 @@ function TakeoutForm (
       <div>
         <label className="block text-sm font-semibold text-purple-900">First Name</label>
         <input
-          className={`mt-2 w-full rounded-2xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.firstName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.firstName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="text"
           value={firstName}
           onChange={(e) => updateField('firstName', setFirstName, e.target.value)}
@@ -121,7 +121,7 @@ function TakeoutForm (
       <div>
         <label className="block text-sm font-semibold text-purple-900">Last Name</label>
         <input
-          className={`mt-2 w-full rounded-2xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.lastName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.lastName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="text"
           value={lastName}
           onChange={(e) => updateField('lastName', setLastName, e.target.value)}
@@ -133,7 +133,7 @@ function TakeoutForm (
       <div>
         <label className="block text-sm font-semibold text-purple-900">Phone Number</label>
         <input
-          className={`mt-2 w-full rounded-2xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="tel"
           value={phone}
           onChange={(e) => updateField('phone', setPhone, e.target.value)}
