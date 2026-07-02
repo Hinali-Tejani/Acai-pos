@@ -67,7 +67,7 @@ export default function HomeActions({
           return (
             <button
               key={action.id}
-              className={`flex w-full flex-col items-center justify-center rounded-2xl px-2 py-6 text-center text-xs font-semibold transition ${isSelected ? 'bg-purple-900 text-white' : 'bg-purple-100 text-purple-700 hover:bg-purple-200'}`}
+              className={`flex w-full flex-col items-center justify-center rounded-xl px-2 py-6 text-center text-xs font-semibold transition ${isSelected ? 'bg-purple-900 text-white' : 'bg-purple-100 text-purple-700 hover:bg-purple-200'}`}
               type="button"
               onClick={() => handleSelectAction(action.id)}
             >
