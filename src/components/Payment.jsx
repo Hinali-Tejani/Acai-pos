@@ -129,10 +129,6 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
                                 <button type="button" onClick={() => handleQuickCash(20)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$20</button>
                                 <button type="button" onClick={() => handleQuickCash(50)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$50</button>
                                 <button type="button" onClick={() => handleQuickCash(100)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$100</button>
-
-
-
-                                {/* <button type="button" onClick={() => handleQuickCash(100)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$100</button> */}
                             </div>
 
                             <div className="mt-4 grid grid-cols-3 gap-3">

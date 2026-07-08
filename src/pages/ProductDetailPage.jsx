@@ -11,6 +11,8 @@ export default function ProductDetailPage ({
     setChosenBase,
     selectedToppings,
     onToppingToggle,
+    selectedAllergies,
+    onAllergyToggle,
     sizeOptions,
     baseOptions,
     addOns,
@@ -92,6 +94,8 @@ export default function ProductDetailPage ({
                 setChosenBase={setChosenBase}
                 selectedToppings={selectedToppings}
                 onToppingToggle={onToppingToggle}
+                selectedAllergies={selectedAllergies}
+                onAllergyToggle={onAllergyToggle}
                 sizeOptions={sizeOptions}
                 baseOptions={baseOptions}
                 addOns={addOns}

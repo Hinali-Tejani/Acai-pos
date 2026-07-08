@@ -8,6 +8,8 @@ export default function Customizer ({
   setChosenBase,
   selectedToppings,
   onToppingToggle,
+  selectedAllergies,
+  onAllergyToggle,
   sizeOptions,
   baseOptions,
   addOns,
@@ -78,19 +80,25 @@ export default function Customizer ({
       </div>
 
       <div className="space-y-4">
-        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Allergens Information</div>
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Mark Allergens That Apply</div>
         {allergies.length === 0 ? (
           <div className="text-[11px] text-purple-600">No allergen information available.</div>
         ) : (
-          <div className="flex flex-wrap gap-2">
-            {allergies.map((allergy) => (
-              <div
-                key={allergy.id || allergy.name}
-                className="rounded-full border border-orange-300 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
-              >
-                {allergy.name}
-              </div>
-            ))}
+          <div className="grid gap-2 grid-cols-2 md:grid-cols-3 text-xs">
+            {allergies.map((allergy) => {
+              const isChecked = selectedAllergies.some(a => a.id === allergy.id);
+              return (
+                <button
+                  key={allergy.id || allergy.name}
+                  type="button"
+                  onClick={() => onAllergyToggle(allergy)}
+                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-amber-500 bg-amber-300 text-amber-900' : 'border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100'}`}
+                >
+                  {/* <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-amber-300 bg-white text-amber-900" /> */}
+                  <span className="flex-1"> {allergy.name}</span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

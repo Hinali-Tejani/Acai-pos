@@ -13,6 +13,7 @@ const useAppState = () => {
     const [chosenSize, setChosenSize] = useState('');
     const [chosenBase, setChosenBase] = useState('Traditional Acai Blend');
     const [selectedToppings, setSelectedToppings] = useState([]);
+    const [selectedAllergies, setSelectedAllergies] = useState([]);
     const [cart, setCart] = useState([]);
     const [sizeOptions, setSizeOptions] = useState([]);
     const [sizesLoading, setSizesLoading] = useState(false);
@@ -164,6 +165,7 @@ const useAppState = () => {
     const resetSelection = () => {
         setSelectedItem(null);
         setSelectedToppings([]);
+        setSelectedAllergies([]);
         setChosenSize('');
         setChosenBase('Traditional Acai Blend');
         setItemPrice(0);
@@ -187,11 +189,21 @@ const useAppState = () => {
         });
     };
 
+    const toggleAllergy = (allergy) => {
+        setSelectedAllergies((current) => {
+            if (current.some((item) => item.id === allergy.id)) {
+                return current.filter((item) => item.id !== allergy.id);
+            }
+            return [...current, allergy];
+        });
+    };
+
     const selectItem = (item) => {
         setSelectedItem(item);
         setChosenSize(item.size || sizeOptions[0]?.label || 'Medium');
         setChosenBase('Traditional Acai Blend');
         setSelectedToppings([]);
+        setSelectedAllergies([]);
     };
 
     const addToCart = (item, finalPrice) => {
@@ -205,6 +217,7 @@ const useAppState = () => {
                 size: chosenSize || sizeOptions[0]?.label || 'Medium',
                 base: chosenBase,
                 toppings: selectedToppings.map((t) => t.name),
+                allergies: selectedAllergies.map((a) => a.name),
                 finalPrice: finalPrice ?? calculateItemPrice(item),
                 quantity: 1,
                 basePrice: itemPrice,
@@ -235,6 +248,8 @@ const useAppState = () => {
         setChosenBase,
         selectedToppings,
         toggleTopping,
+        selectedAllergies,
+        toggleAllergy,
         selectItem,
         addToCart,
         removeCartItem,

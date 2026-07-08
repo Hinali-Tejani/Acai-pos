@@ -7,7 +7,6 @@ export default function CheckoutTicket ({
   onRepeatItem,
   onCheckout,
   isCartEmpty,
-  allergies,
 }) {
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
@@ -21,20 +20,7 @@ export default function CheckoutTicket ({
         </span>
       </div>
 
-      {allergies && allergies.length > 0 && (
-        <div className="mb-3 rounded-md bg-orange-50 border border-orange-200 p-2">
-          <div className="text-[10px] font-semibold text-orange-700 mb-1">⚠️ Allergens Info:</div>
-          <div className="flex flex-wrap gap-1">
-            {allergies.map((allergy) => (
-              <span key={allergy.id || allergy.name} className="text-[9px] rounded bg-orange-100 text-orange-700 px-1.5 py-0.5">
-                {allergy.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
+      <div className="max-h-80 space-y-2 overflow-y-auto pr-1">
         {cart.length === 0 ? (
           <div className="rounded-md border border-dashed border-purple-200 bg-white p-4 text-center text-xs text-purple-600">
             No active line-items on ticket. Select a product to begin.
@@ -62,7 +48,6 @@ export default function CheckoutTicket ({
                 </div>
               </div>
 
-
               <div className="text-purple-600">
                 <span className="mr-1 rounded-sm bg-purple-100 px-1.5 py-0.5">Size: {cartItem.size}</span>
                 <span className="rounded-sm bg-purple-100 px-1.5 py-0.5">Base: {cartItem.base}</span>
@@ -70,6 +55,11 @@ export default function CheckoutTicket ({
               {cartItem.toppings && cartItem.toppings.length > 0 && (
                 <div className="rounded-sm bg-purple-50 p-1 text-purple-700">
                   <strong>Add:</strong> {cartItem.toppings.join(', ')}
+                </div>
+              )}
+              {cartItem.allergies && cartItem.allergies.length > 0 && (
+                <div className="rounded-sm bg-orange-50 p-1 text-orange-700">
+                  <strong>Allergens:</strong> {cartItem.allergies.join(', ')}
                 </div>
               )}
             </div>

@@ -20,6 +20,8 @@ function App () {
     setChosenBase,
     selectedToppings,
     toggleTopping,
+    selectedAllergies,
+    toggleAllergy,
     selectItem,
     addToCart,
     removeCartItem,
@@ -48,6 +50,10 @@ function App () {
 
   const handleToppingToggle = (topping) => {
     toggleTopping(topping);
+  };
+
+  const handleAllergyToggle = (allergy) => {
+    toggleAllergy(allergy);
   };
 
   const navigate = useNavigate();
@@ -98,6 +104,8 @@ function App () {
             setChosenBase={setChosenBase}
             selectedToppings={selectedToppings}
             onToppingToggle={handleToppingToggle}
+            selectedAllergies={selectedAllergies}
+            onAllergyToggle={handleAllergyToggle}
             sizeOptions={sizeOptions}
             baseOptions={BASE_OPTIONS}
             addOns={addOns}
