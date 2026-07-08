@@ -7,6 +7,7 @@ export default function CheckoutTicket ({
   onRepeatItem,
   onCheckout,
   isCartEmpty,
+  allergies,
 }) {
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
@@ -19,6 +20,19 @@ export default function CheckoutTicket ({
           {cart.length} {cart.length === 1 ? 'item' : 'items'}
         </span>
       </div>
+
+      {allergies && allergies.length > 0 && (
+        <div className="mb-3 rounded-md bg-orange-50 border border-orange-200 p-2">
+          <div className="text-[10px] font-semibold text-orange-700 mb-1">⚠️ Allergens Info:</div>
+          <div className="flex flex-wrap gap-1">
+            {allergies.map((allergy) => (
+              <span key={allergy.id || allergy.name} className="text-[9px] rounded bg-orange-100 text-orange-700 px-1.5 py-0.5">
+                {allergy.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
         {cart.length === 0 ? (

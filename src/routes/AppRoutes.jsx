@@ -18,7 +18,8 @@ export default function AppRoutes({
   onToppingToggle,
   sizeOptions,
   baseOptions,
-  premiumToppings,
+  addOns,
+  allergies,
   getItemPrice,
   onAddToCart,
   onBack,
@@ -92,7 +93,8 @@ export default function AppRoutes({
             onToppingToggle={onToppingToggle}
             sizeOptions={sizeOptions}
             baseOptions={baseOptions}
-            premiumToppings={premiumToppings}
+            addOns={addOns}
+            allergies={allergies}
             getItemPrice={getItemPrice}
             onAddToCart={onAddToCart}
             onBack={onBack}

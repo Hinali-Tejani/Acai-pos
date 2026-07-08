@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
-import useAppState, {SIZE_OPTIONS, BASE_OPTIONS, PREMIUM_TOPPINGS} from './state/AppState';
+import useAppState, {BASE_OPTIONS} from './state/AppState';
 import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
@@ -27,7 +27,15 @@ function App () {
     resetSelection,
     calculateItemPrice,
     cart,
-    updateCartItem
+    updateCartItem,
+    sizeOptions,
+    sizesLoading,
+    itemPrice,
+    priceLoading,
+    addOns,
+    addOnsLoading,
+    allergies,
+    allergiesLoading
   } = useAppState();
 
   useEffect(() => {
@@ -90,9 +98,10 @@ function App () {
             setChosenBase={setChosenBase}
             selectedToppings={selectedToppings}
             onToppingToggle={handleToppingToggle}
-            sizeOptions={SIZE_OPTIONS}
+            sizeOptions={sizeOptions}
             baseOptions={BASE_OPTIONS}
-            premiumToppings={PREMIUM_TOPPINGS}
+            addOns={addOns}
+            allergies={allergies}
             getItemPrice={calculateCurrentItemPrice}
             onAddToCart={handleAddToCart}
             onBack={resetSelection}
@@ -117,6 +126,7 @@ function App () {
           onRemoveItem={removeCartItem}
           onClearCart={clearCart}
           onUpdateItem={updateCartItem}
+          allergies={allergies}
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}

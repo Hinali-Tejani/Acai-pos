@@ -10,7 +10,8 @@ export default function Customizer ({
   onToppingToggle,
   sizeOptions,
   baseOptions,
-  premiumToppings,
+  addOns,
+  allergies,
   currentItemPrice,
   onBack,
   onAddToCart
@@ -51,23 +52,47 @@ export default function Customizer ({
 
       <div className="space-y-4">
         <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Extra Toppings Additions</div>
-        <div className="grid gap-3 grid-cols-2 md:grid-cols-3 text-xs">
-          {premiumToppings.map((top) => {
-            const isChecked = selectedToppings.some(t => t.name === top.name);
-            return (
-              <button
-                key={top.name}
-                type="button"
-                onClick={() => onToppingToggle(top)}
-                className={`flex items-center gap-2 flex-wrap rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+
+        {addOns.length === 0 ? (
+          <div className="text-[11px] text-purple-600">No additional toppings are available.</div>
+        ) : (
+          <div className="grid gap-3 grid-cols-2 md:grid-cols-3 text-xs">
+            {addOns.map((top) => {
+              const isChecked = selectedToppings.some(t => t.name === top.name);
+              return (
+                <button
+                  key={top.name}
+                  type="button"
+                  onClick={() => onToppingToggle(top)}
+                  className={`flex items-center gap-2 flex-wrap rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                >
+                  <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" />
+                  <span className="flex-1 wrap-anywhere">{top.name}</span>
+                  <b className="rounded-full bg-purple-100 px-2 py-1 text-[10px] text-purple-700">+${top.price.toFixed(2)}</b>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+      </div>
+
+      <div className="space-y-4">
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Allergens Information</div>
+        {allergies.length === 0 ? (
+          <div className="text-[11px] text-purple-600">No allergen information available.</div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {allergies.map((allergy) => (
+              <div
+                key={allergy.id || allergy.name}
+                className="rounded-full border border-orange-300 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
               >
-                <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" />
-                <span className="flex-1 wrap-anywhere">{top.name}</span>
-                <b className="rounded-full bg-purple-100 px-2 py-1 text-[10px] text-purple-700">+${top.price.toFixed(2)}</b>
-              </button>
-            );
-          })}
-        </div>
+                {allergy.name}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex items-center justify-between gap-3 rounded-xl bg-purple-50 p-3 px-4">

@@ -9,6 +9,7 @@ export default function CartSummary ({
   onRemoveItem,
   onClearCart,
   onUpdateItem,
+  allergies,
   orderType,
   setOrderType,
   firstName,
@@ -32,23 +33,20 @@ export default function CartSummary ({
     if (isCartEmpty) return;
     if (isTakeout && !takeoutFormRef.current?.validate()) return;
     setShowPayment(true);
+  };
 
-    const orderDetails = isTakeout
-      ? `Takeout order for ${firstName} ${lastName}, phone ${phone}`
-      : 'Walk-in order';
-
-    // alert(`Processing ${orderDetails}`);
+  const handlePaymentComplete = () => {
     onClearCart();
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
     setPhone('');
+    setShowPayment(false);
   };
 
   const handleClosePayment = () => {
     setShowPayment(false);
-    // onClearCart();
-  }
+  };
 
   const onRepeatItem = (uid) => {
     const itemToRepeat = cart.find(item => item.uid === uid);
@@ -92,10 +90,17 @@ export default function CartSummary ({
           onRepeatItem={onRepeatItem}
           onCheckout={handleCheckout}
           isCartEmpty={isCartEmpty}
+          allergies={allergies}
         />
       </div>
 
-      {showPayment && <Payment totalDue={grandTotal.toFixed(2)} onClose={handleClosePayment} />}
+      {showPayment && (
+        <Payment
+          totalDue={grandTotal.toFixed(2)}
+          onPaymentComplete={handlePaymentComplete}
+          onClose={handleClosePayment}
+        />
+      )}
       <EmployeePunchIn />
     </div>
   );

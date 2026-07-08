@@ -13,7 +13,8 @@ export default function ProductDetailPage ({
     onToppingToggle,
     sizeOptions,
     baseOptions,
-    premiumToppings,
+    addOns,
+    allergies,
     getItemPrice,
     onAddToCart,
     onBack,
@@ -93,7 +94,8 @@ export default function ProductDetailPage ({
                 onToppingToggle={onToppingToggle}
                 sizeOptions={sizeOptions}
                 baseOptions={baseOptions}
-                premiumToppings={premiumToppings}
+                addOns={addOns}
+                allergies={allergies}
                 currentItemPrice={getItemPrice(item)}
                 onBack={handleBack}
                 onAddToCart={handleAddToOrder}
