@@ -99,16 +99,6 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
             <div className="relative flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-3xl border border-purple-200 bg-white shadow-2xl">
 
-                {/* CLOSE BUTTON */}
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-purple-50 text-purple-500 transition hover:bg-purple-100 active:scale-95"
-                    aria-label="Close panel"
-                >
-                    ✕
-                </button>
-
                 {/* LEFT COLUMN */}
                 <div className="hidden w-[60%] flex-col justify-between bg-purple-50 p-6 md:flex">
                     {paymentMethod === 'cash' ? (
@@ -281,12 +271,22 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
                             onClick={handleSubmitPayment}
                             // Disable only if it's pure cash mode and they haven't handed over enough money yet
                             disabled={paymentMethod === 'cash' && receivedCash < currentTotalDue}
-                            className="w-full rounded-2xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-purple-700 disabled:opacity-50"
+                            className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-purple-700 disabled:opacity-50"
                         >
                             {paymentMethod === 'card'
                                 ? (splitCashPaid > 0 ? `Complete Split Order (Charge $${currentTotalDue.toFixed(2)} to Card)` : 'Process Card Payment')
                                 : 'Complete Cash Payment'
                             }
+                        </button>
+
+                        {/* CLOSE BUTTON */}
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-red-400 active:scale-[0.98]"
+                            aria-label="Close panel"
+                        >
+                            Cancel Payment
                         </button>
 
                         {/* 3. Safety escape route if they make an entry mistake */}
