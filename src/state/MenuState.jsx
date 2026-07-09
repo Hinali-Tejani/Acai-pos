@@ -1,35 +1,17 @@
 import React, {createContext, useContext, useState, useEffect} from 'react';
-import { getMainMenu, getSubmenu } from '../services/menuApi';
+import { getSubmenu } from '../services/menuApi';
+import { useMenuStore } from '../context/MenuContext';
 
 const MenuStateContext = createContext(null);
 
 export function MenuStateProvider ({children}) {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const { allItems: categories, loading, error: menuError } = useMenuStore();
   const [activeCategory, setActiveCategory] = useState(1);
 
   // Sub-menu states to prevent repeating API requests for the same category
   const [submenuCache, setSubmenuCache] = useState({});
   const [activeItems, setActiveItems] = useState([]);
   const [itemsLoading, setItemsLoading] = useState(false);
-
-  // 1. Initial boot connection to gather primary navigation tabs
-  useEffect(() => {
-    loadMenu();
-  }, []);
-
-  const loadMenu = async () => {
-    try {
-      const itemsArray = await getMainMenu();
-      setCategories(itemsArray);
-    } catch (error) {
-      console.error('Main Menu State Error:', error);
-      setError('Could not connect to the primary menu data stream.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 2. Fetch specific submenus dynamically when a category changes
   const loadSubmenu = async (catId) => {
@@ -61,7 +43,7 @@ export function MenuStateProvider ({children}) {
       activeItems,
       loading,
       itemsLoading,
-      error,
+      error: menuError,
       loadSubmenu
     }}>
       {children}

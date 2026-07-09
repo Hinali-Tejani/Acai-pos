@@ -1,20 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMainMenu } from '../services/menuApi';
+import { useMenuStore } from '../context/MenuContext';
 
 function MainMenu() {
-  const [menuItems, setMenuItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { allItems: menuItems, loading, error } = useMenuStore();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    getMainMenu()
-      .then((itemsArray) => setMenuItems(itemsArray))
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
-
   if (loading) return <h2>Loading Menu...</h2>;
+  if (error) return <h2>Error: {error}</h2>;
 
   return (
     <div>

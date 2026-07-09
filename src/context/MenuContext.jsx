@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { getMainMenu } from '../services/menuApi';
 
 const MenuContext = createContext(null);
@@ -8,8 +8,12 @@ export function MenuProvider({ children }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const hasLoaded = useRef(false);
 
   useEffect(() => {
+    if (hasLoaded.current) return;
+    hasLoaded.current = true;
+
     getMainMenu()
       .then((itemsArray) => {
         setAllItems(itemsArray);

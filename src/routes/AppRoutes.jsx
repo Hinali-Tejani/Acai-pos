@@ -3,6 +3,7 @@ import {Routes, Route} from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import CategoryProductsPage from '../pages/CategoryProductsPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 export default function AppRoutes({
   itemsLoading,
@@ -106,6 +107,7 @@ export default function AppRoutes({
           />
         }
       />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

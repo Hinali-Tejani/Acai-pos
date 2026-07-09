@@ -1,11 +1,19 @@
-import React from 'react';
-
+import React, {useEffect, useState} from 'react';
+import {getEmployees} from '../services/employeeApi';
+import {useEmployeeData} from '../context/EmployeeContext'
 const formatTime = (value) => {
     if (!value) return '—';
     return new Date(value).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
 };
 
+
 export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
+    const [employeeList, setEmployeeList] = useState([]);
+    const {employees, isLoading, error, refetchEmployees, punchEmployee} = useEmployeeData();
+
+    useEffect(() => {
+        refetchEmployees();
+    }, []);
     return (
         <div className="overflow-hidden rounded-xl border border-purple-200 bg-white">
             <table className="min-w-full text-left text-sm">
@@ -17,11 +25,11 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {records.map((record) => {
+                    {employees.map((record) => {
                         const isCurrentlyPunchedIn = Boolean(record.punchInTime && !record.punchOutTime);
 
                         return (
-                            <tr key={record.id} className="border-t border-purple-100">
+                            <tr key={record.empID} className="border-t border-purple-100">
                                 <td
                                     className={`px-3 py-2 font-medium ${isCurrentlyPunchedIn ? 'cursor-not-allowed text-purple-400' : 'cursor-pointer text-purple-900 hover:text-purple-700'}`}
                                     onClick={() => {
@@ -30,7 +38,7 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
                                         }
                                     }}
                                 >
-                                    {record.name}
+                                    {record.firstName} {record.lastName}
                                 </td>
                                 <td className="px-3 py-2 text-purple-700">
                                     {record.punchInTime ? formatTime(record.punchInTime) : '—'}
