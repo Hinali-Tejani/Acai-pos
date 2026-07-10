@@ -9,8 +9,8 @@ export default function HomePage({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   takeoutFormRef,
 }) {
   return (
@@ -23,8 +23,8 @@ export default function HomePage({
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           takeoutFormRef={takeoutFormRef}
         />
         {/* <div className="mt-4">
@@ -34,7 +34,7 @@ export default function HomePage({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
+            phone={phoneNumber}
             setPhone={setPhone}
             takeoutFormRef={takeoutFormRef}
           />

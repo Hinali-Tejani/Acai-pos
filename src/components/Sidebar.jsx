@@ -1,19 +1,35 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+import CustomerSelectModal from './CustomerSelectModal';
 
 export default function Sidebar ({
   categories,
   activeCategory,
   onCategoryChange,
   onResetItem,
+  firstName,
+  lastName,
+  phone,
+  setFirstName,
+  setLastName,
+  setPhone,
 }) {
   const navigate = useNavigate();
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
 
   const handleHomeClick = () => {
     onCategoryChange('home');
     onResetItem();
     navigate('/home');
   };
+
+  const handleCustomerSelect = (customer) => {
+    setFirstName?.(customer.firstName || '');
+    setLastName?.(customer.lastName || '');
+    setPhone?.(customer.phone || '');
+  };
+
+  const selectedCustomerLabel = [firstName, lastName].filter(Boolean).join(' ') || (phone ? `Phone: ${phone}` : '');
 
   return (
     <aside className="flex w-70 flex-col border-r border-purple-200 bg-white">
@@ -55,11 +71,21 @@ export default function Sidebar ({
       <div className="border-t border-purple-200 bg-white p-4">
         <button
           className="w-full rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
-          onClick={() => alert('Customer list')}
+          onClick={() => setIsCustomerModalOpen(true)}
         >
-          Select Customer
+          Customer Portal
         </button>
+        {selectedCustomerLabel && (
+          <p className="mt-2 truncate text-xs text-purple-600">Selected: {selectedCustomerLabel}</p>
+        )}
       </div>
+
+      <CustomerSelectModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        onSelectCustomer={handleCustomerSelect}
+        selectedCustomerLabel={selectedCustomerLabel}
+      />
     </aside>
   );
 }

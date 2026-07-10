@@ -33,7 +33,7 @@ export default function EmployeePunchIn () {
 
         setSelectedEmployee(employee);
         setIsModalOpen(false);
-        punchEmployee(employee.empID, 0);
+        punchEmployee(employee.empID, 1);
         setStatusMessage(`Punched in ${employee.firstName} ${employee.lastName} successfully`);
     };
 
@@ -50,7 +50,7 @@ export default function EmployeePunchIn () {
             return;
         }
 
-        punchEmployee(employee.empID, 1);
+        punchEmployee(employee.empID, 2);
         setStatusMessage(`Punched out ${employee.firstName} ${employee.lastName} successfully`);
     };
 

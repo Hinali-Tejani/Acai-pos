@@ -60,7 +60,7 @@ function App () {
   const [orderType, setOrderType] = useState('walk-in');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const takeoutFormRef = useRef(null);
 
   const handleSelectItem = (item) => {
@@ -88,6 +88,12 @@ function App () {
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
         onResetItem={resetSelection}
+        firstName={firstName}
+        lastName={lastName}
+        phoneNumber={phoneNumber}
+        setFirstName={setFirstName}
+        setLastName={setLastName}
+        setPhoneNumber={setPhoneNumber}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -120,8 +126,8 @@ function App () {
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
             takeoutFormRef={takeoutFormRef}
           />
         </div>
@@ -141,8 +147,8 @@ function App () {
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           takeoutFormRef={takeoutFormRef}
         />
       </div>

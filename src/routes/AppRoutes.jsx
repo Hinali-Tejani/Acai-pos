@@ -33,8 +33,8 @@ export default function AppRoutes({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   takeoutFormRef,
 }) {
   return (
@@ -49,8 +49,8 @@ export default function AppRoutes({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
             takeoutFormRef={takeoutFormRef}
           />
         }
@@ -65,8 +65,8 @@ export default function AppRoutes({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
             takeoutFormRef={takeoutFormRef}
           />
         }

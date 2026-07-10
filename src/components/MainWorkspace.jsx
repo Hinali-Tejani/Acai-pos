@@ -14,8 +14,8 @@ export default function MainWorkspace ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   takeoutFormRef,
 }) {
   const isHomeView = !activeCategoryName || activeCategoryName === 'home' || activeCategoryName === 'Home';
@@ -40,8 +40,8 @@ export default function MainWorkspace ({
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           takeoutFormRef={takeoutFormRef}
         />
         {/* <div className="mt-4">
@@ -51,7 +51,7 @@ export default function MainWorkspace ({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
+            phone={phoneNumber}
             setPhone={setPhone}
             takeoutFormRef={takeoutFormRef}
           />

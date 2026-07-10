@@ -50,7 +50,7 @@ export function EmployeeProvider({ children }) {
   const punchEmployee = async (empID, punchType) => {
     const now = new Date();
     const workdate = now.toISOString();
-    const punchTime = now.toTimeString();
+    const punchTime = new Date().toTimeString().split(' ')[0];
 
     try {
       const response = await updateEmployeeShift({
