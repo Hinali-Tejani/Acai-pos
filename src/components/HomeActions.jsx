@@ -32,8 +32,8 @@ export default function HomeActions({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   takeoutFormRef,
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -95,8 +95,8 @@ export default function HomeActions({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
             takeoutFormRef={takeoutFormRef}
             onSubmit={() => {
               setIsModalOpen(false);

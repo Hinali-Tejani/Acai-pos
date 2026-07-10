@@ -15,8 +15,8 @@ export default function CartSummary ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   takeoutFormRef,
 }) {
 
@@ -39,7 +39,7 @@ export default function CartSummary ({
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
-    setPhone('');
+    setPhoneNumber('');
     setShowPayment(false);
   };
 

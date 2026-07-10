@@ -6,11 +6,13 @@ function TakeoutForm (
     setFirstName,
     lastName,
     setLastName,
-    phone,
-    setPhone,
+    phoneNumber,
+    setPhoneNumber,
     required = true,
     onSubmit,
     onCancel,
+    submitLabel = 'Submit',
+    cancelLabel = 'Cancel',
   },
   ref,
 ) {
@@ -28,7 +30,7 @@ function TakeoutForm (
       return '';
     }
 
-    if (field === 'phone') {
+    if (field === 'phoneNumber') {
       if (!trimmed) {
         return 'Phone number is required';
       }
@@ -45,7 +47,7 @@ function TakeoutForm (
   };
 
   const updateField = (field, setter, value) => {
-    if (field === 'phone') {
+    if (field === 'phoneNumber') {
       value = value.replace(/\D/g, '');
     }
 
@@ -72,8 +74,8 @@ function TakeoutForm (
       return true;
     }
 
-    ['firstName', 'lastName', 'phone'].forEach((field) => {
-      const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phone;
+    ['firstName', 'lastName', 'phoneNumber'].forEach((field) => {
+      const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phoneNumber;
       const error = getFieldError(field, value);
       if (error) nextErrors[field] = error;
     });
@@ -89,7 +91,7 @@ function TakeoutForm (
       return;
     }
 
-    onSubmit?.({firstName, lastName, phone});
+    onSubmit?.({firstName, lastName, phoneNumber});
   };
 
   const handleCancel = () => {
@@ -101,7 +103,7 @@ function TakeoutForm (
     () => ({
       validate: () => validateForm(),
     }),
-    [firstName, lastName, phone, required],
+    [firstName, lastName, phoneNumber, required],
   );
 
   return (
@@ -133,24 +135,24 @@ function TakeoutForm (
       <div>
         <label className="block text-sm font-semibold text-purple-900">Phone Number</label>
         <input
-          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phoneNumber ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="tel"
-          value={phone}
-          onChange={(e) => updateField('phone', setPhone, e.target.value)}
+          value={phoneNumber}
+          onChange={(e) => updateField('phoneNumber', setPhoneNumber, e.target.value)}
           placeholder="1234567890"
         />
-        {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
+        {errors.phoneNumber && <p className="mt-1 text-xs text-red-600">{errors.phoneNumber}</p>}
       </div>
 
       <button type="submit" className="mr-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700">
-        Submit
+        {submitLabel}
       </button>
       <button
         type="button"
         onClick={handleCancel}
         className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
       >
-        Cancel
+        {cancelLabel}
       </button>
     </form>
   );
