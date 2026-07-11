@@ -2,6 +2,8 @@ import React from 'react';
 import EmployeePunchIn from './EmployeePunchIn';
 import Payment from './Payment';
 import CheckoutTicket from './CheckoutTicket';
+import PopUp from './PopUp';
+import OrderTypeForm from './OrderTypeForm';
 
 export default function CartSummary ({
   cart,
@@ -17,7 +19,8 @@ export default function CartSummary ({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
 }) {
 
   const estimatedTax = cartTotal * 0.13;
@@ -27,20 +30,41 @@ export default function CartSummary ({
   const isCartEmpty = cart.length === 0;
 
   const [showPayment, setShowPayment] = React.useState(false);
+  const [isPaid, setIsPaid] = React.useState(false);
 
   const handleCheckout = () => {
     if (isCartEmpty) return;
-    if (isTakeout && !takeoutFormRef.current?.validate()) return;
+    if (isTakeout) {
+      // Validate customer details directly
+      const trimmedFirstName = firstName.trim();
+      const trimmedLastName = lastName.trim();
+      const trimmedPhone = phoneNumber.trim();
+
+      if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+      if (!/^[0-9]+$/.test(trimmedPhone)) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+      if (trimmedPhone.length !== 10) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+    }
     setShowPayment(true);
   };
 
   const handlePaymentComplete = () => {
+    setIsPaid(true);
     onClearCart();
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
     setPhoneNumber('');
     setShowPayment(false);
+    setTimeout(() => setIsPaid(false), 100);
   };
 
   const handleClosePayment = () => {
@@ -72,15 +96,38 @@ export default function CartSummary ({
           </button>
         </div>
 
-        <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-purple-900">Order type</span>
-            <span className="text-xs uppercase text-purple-700">
+        <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700 text-center">
+          <>
+            <span className="font-semibold text-purple-900">Order type: </span>
+            <span className="ml-1 text-xs uppercase text-purple-700">
               {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
             </span>
-          </div>
+          </>
+          {(firstName || lastName || phoneNumber) && (
+            <div>
+              {(firstName || lastName) && (
+                <div>
+                  <span className="font-semibold text-purple-900">Name: </span>
+                  <span className="ml-1 text-xs text-purple-700">
+                    {firstName} {lastName}
+                  </span>
+                </div>
+              )}
+              {phoneNumber && (
+                <div>
+                  <span className="font-semibold text-purple-900">Phone: </span>
+                  <span className="ml-1 text-xs text-purple-700">{phoneNumber}</span>
+                </div>
+              )}
+              <div>
+                <span className="font-semibold text-purple-900">Status: </span>
+                <span className="text-xs font-bold uppercase">
+                  {isPaid ? 'Paid' : 'Not paid'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
-
 
         <CheckoutTicket
           cart={cart}
@@ -99,6 +146,33 @@ export default function CartSummary ({
           onClose={handleClosePayment}
         />
       )}
+      <PopUp
+        isOpen={isTakeoutModalOpen}
+        title="Takeout order details"
+        onClose={() => setIsTakeoutModalOpen(false)}
+        size="md"
+      >
+        <div className="space-y-3">
+          <p className="text-sm text-purple-700">
+            Please provide customer details for takeout order.
+          </p>
+          <OrderTypeForm
+            orderType={orderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            onSubmit={() => {
+              setIsTakeoutModalOpen(false);
+            }}
+            onCancel={() => {
+              setIsTakeoutModalOpen(false);
+            }}
+          />
+        </div>
+      </PopUp>
       <EmployeePunchIn />
     </div>
   );

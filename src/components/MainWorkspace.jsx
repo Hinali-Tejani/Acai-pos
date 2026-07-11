@@ -2,6 +2,7 @@ import React from 'react';
 import ProductGrid from './ProductGrid';
 import HomeActions from './HomeActions';
 import OrderTypeForm from './OrderTypeForm';
+import Spinner from './Spinner';
 
 export default function MainWorkspace ({
   itemsLoading,
@@ -16,16 +17,13 @@ export default function MainWorkspace ({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
 }) {
   const isHomeView = !activeCategoryName || activeCategoryName === 'home' || activeCategoryName === 'Home';
 
   if (itemsLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="rounded-xl border border-purple-200 bg-white px-8 py-10 text-center shadow-sm">
-          <h3 className="text-xl font-semibold text-purple-900">Querying Category Items...</h3>
-        </div>
+        <Spinner size="lg" />
       </div>
     );
   }
@@ -42,7 +40,6 @@ export default function MainWorkspace ({
           setLastName={setLastName}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
-          takeoutFormRef={takeoutFormRef}
         />
         {/* <div className="mt-4">
           <OrderTypeForm
@@ -51,9 +48,8 @@ export default function MainWorkspace ({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phoneNumber}
-            setPhone={setPhone}
-            takeoutFormRef={takeoutFormRef}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
           />
         </div> */}
       </div>

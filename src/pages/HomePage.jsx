@@ -11,7 +11,8 @@ export default function HomePage({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
 }) {
   return (
     <div className="h-full space-y-4">
@@ -25,7 +26,8 @@ export default function HomePage({
           setLastName={setLastName}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
-          takeoutFormRef={takeoutFormRef}
+          isTakeoutModalOpen={isTakeoutModalOpen}
+          setIsTakeoutModalOpen={setIsTakeoutModalOpen}
         />
         {/* <div className="mt-4">
           <OrderTypeForm
@@ -34,9 +36,8 @@ export default function HomePage({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phoneNumber}
-            setPhone={setPhone}
-            takeoutFormRef={takeoutFormRef}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
           />
         </div> */}
       </div>

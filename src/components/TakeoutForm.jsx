@@ -1,21 +1,18 @@
-import React, {forwardRef, useImperativeHandle, useState} from 'react';
+import React, {useState} from 'react';
 
-function TakeoutForm (
-  {
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    phoneNumber,
-    setPhoneNumber,
-    required = true,
-    onSubmit,
-    onCancel,
-    submitLabel = 'Submit',
-    cancelLabel = 'Cancel',
-  },
-  ref,
-) {
+function TakeoutForm ({
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
+  phoneNumber,
+  setPhoneNumber,
+  required = true,
+  onSubmit,
+  onCancel,
+  submitLabel = 'Submit',
+  cancelLabel = 'Cancel',
+}) {
   const [errors, setErrors] = useState({});
 
   const getFieldError = (field, value) => {
@@ -98,14 +95,6 @@ function TakeoutForm (
     onCancel?.();
   };
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      validate: () => validateForm(),
-    }),
-    [firstName, lastName, phoneNumber, required],
-  );
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-purple-200 bg-purple-50 p-4 pb-0">
       <div>
@@ -158,4 +147,4 @@ function TakeoutForm (
   );
 }
 
-export default forwardRef(TakeoutForm);
+export default TakeoutForm;

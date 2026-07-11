@@ -35,7 +35,8 @@ export default function AppRoutes({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
 }) {
   return (
     <Routes>
@@ -51,7 +52,8 @@ export default function AppRoutes({
             setLastName={setLastName}
             phoneNumber={phoneNumber}
             setPhoneNumber={setPhoneNumber}
-            takeoutFormRef={takeoutFormRef}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         }
       />
@@ -67,7 +69,8 @@ export default function AppRoutes({
             setLastName={setLastName}
             phoneNumber={phoneNumber}
             setPhoneNumber={setPhoneNumber}
-            takeoutFormRef={takeoutFormRef}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         }
       />

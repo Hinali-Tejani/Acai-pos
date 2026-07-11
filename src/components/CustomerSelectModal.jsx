@@ -86,9 +86,8 @@ export default function CustomerSelectModal ({
     }
 
     return customers.filter((customer) => {
-      const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
       const phone = String(customer.phoneNumber ?? '').toLowerCase();
-      return fullName.includes(term) || phone.includes(term);
+      return phone.includes(term);
     });
   }, [customers, searchTerm]);
 
@@ -195,7 +194,7 @@ export default function CustomerSelectModal ({
             type="search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search by first name, last name, or phone"
+            placeholder="Search by phone"
             className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
           />
         </div>

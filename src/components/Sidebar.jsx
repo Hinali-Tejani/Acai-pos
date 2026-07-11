@@ -9,10 +9,10 @@ export default function Sidebar ({
   onResetItem,
   firstName,
   lastName,
-  phone,
+  phoneNumber,
   setFirstName,
   setLastName,
-  setPhone,
+  setPhoneNumber,
 }) {
   const navigate = useNavigate();
   const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
@@ -26,10 +26,10 @@ export default function Sidebar ({
   const handleCustomerSelect = (customer) => {
     setFirstName?.(customer.firstName || '');
     setLastName?.(customer.lastName || '');
-    setPhone?.(customer.phone || '');
+    setPhoneNumber?.(customer.phoneNumber || '');
   };
 
-  const selectedCustomerLabel = [firstName, lastName].filter(Boolean).join(' ') || (phone ? `Phone: ${phone}` : '');
+  const selectedCustomerLabel = [firstName, lastName, phoneNumber].filter(Boolean).join(' | ');
 
   return (
     <aside className="flex w-70 flex-col border-r border-purple-200 bg-white">
@@ -75,9 +75,6 @@ export default function Sidebar ({
         >
           Customer Portal
         </button>
-        {selectedCustomerLabel && (
-          <p className="mt-2 truncate text-xs text-purple-600">Selected: {selectedCustomerLabel}</p>
-        )}
       </div>
 
       <CustomerSelectModal

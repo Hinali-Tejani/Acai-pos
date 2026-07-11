@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
 import useAppState, {BASE_OPTIONS} from './state/AppState';
@@ -61,7 +61,7 @@ function App () {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const takeoutFormRef = useRef(null);
+  const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -128,7 +128,8 @@ function App () {
             setLastName={setLastName}
             phoneNumber={phoneNumber}
             setPhoneNumber={setPhoneNumber}
-            takeoutFormRef={takeoutFormRef}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         </div>
       </div>
@@ -149,7 +150,8 @@ function App () {
           setLastName={setLastName}
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
-          takeoutFormRef={takeoutFormRef}
+          isTakeoutModalOpen={isTakeoutModalOpen}
+          setIsTakeoutModalOpen={setIsTakeoutModalOpen}
         />
       </div>
     </div>

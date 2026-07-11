@@ -34,21 +34,21 @@ export default function HomeActions({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeAction, setActiveAction] = useState('');
 
   const handleSelectAction = (nextType) => {
     if (nextType === 'walk-in' || nextType === 'takeout') {
       setOrderType(nextType);
       setActiveAction(nextType);
-      setIsModalOpen(true);
+      setIsTakeoutModalOpen(true);
       return;
     }
 
     setActiveAction(nextType);
-    setIsModalOpen(false);
+    setIsTakeoutModalOpen(false);
   };
 
   const popupTitle = activeAction === 'takeout'
@@ -78,9 +78,9 @@ export default function HomeActions({
       </div>
 
       <PopUp
-        isOpen={isModalOpen && (activeAction === 'walk-in' || activeAction === 'takeout')}
+        isOpen={isTakeoutModalOpen && (activeAction === 'walk-in' || activeAction === 'takeout')}
         title={popupTitle}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setIsTakeoutModalOpen(false)}
         size="md"
       >
         <div className="space-y-3">
@@ -97,13 +97,12 @@ export default function HomeActions({
             setLastName={setLastName}
             phoneNumber={phoneNumber}
             setPhoneNumber={setPhoneNumber}
-            takeoutFormRef={takeoutFormRef}
             onSubmit={() => {
-              setIsModalOpen(false);
+              setIsTakeoutModalOpen(false);
               setActiveAction('');
             }}
             onCancel={() => {
-              setIsModalOpen(false);
+              setIsTakeoutModalOpen(false);
               setActiveAction('');
             }}
           />
