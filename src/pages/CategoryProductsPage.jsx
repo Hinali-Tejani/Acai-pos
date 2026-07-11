@@ -1,5 +1,6 @@
 import React from 'react';
 import ProductGrid from '../components/ProductGrid';
+import Spinner from '../components/Spinner';
 
 export default function CategoryProductsPage({
   itemsLoading,
@@ -10,9 +11,7 @@ export default function CategoryProductsPage({
   if (itemsLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="rounded-xl border border-purple-200 bg-white px-8 py-10 text-center shadow-sm">
-          <h3 className="text-xl font-semibold text-purple-900">Loading category products...</h3>
-        </div>
+        <Spinner size="lg" />
       </div>
     );
   }

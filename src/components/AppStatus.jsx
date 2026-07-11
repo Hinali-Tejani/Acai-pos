@@ -1,12 +1,11 @@
 import React from 'react';
+import Spinner from './Spinner';
 
 export default function AppStatus({ loading, error, onRetry }) {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-purple-50 px-6">
-        <div className="rounded-xl border border-purple-200 bg-white px-10 py-8 shadow-sm">
-          <h3 className="text-xl font-semibold text-purple-900">Loading System Profiles...</h3>
-        </div>
+        <Spinner size="lg" />
       </div>
     );
   }

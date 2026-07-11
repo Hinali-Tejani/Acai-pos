@@ -9,7 +9,6 @@ export default function OrderTypeForm ({
   setLastName,
   phoneNumber,
   setPhoneNumber,
-  takeoutFormRef,
   onSubmit,
   onCancel,
 }) {
@@ -27,7 +26,6 @@ export default function OrderTypeForm ({
         {orderType === 'takeout' ? 'Takeout details' : 'Walk-in details'}
       </div>
       <TakeoutForm
-        ref={takeoutFormRef}
         firstName={firstName}
         setFirstName={setFirstName}
         lastName={lastName}

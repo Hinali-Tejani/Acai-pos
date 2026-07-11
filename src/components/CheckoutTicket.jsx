@@ -82,7 +82,7 @@ export default function CheckoutTicket ({
         </div>
 
         <button
-          className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
+          className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition cursor-pointer ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
           disabled={isCartEmpty}
           onClick={onCheckout}
         >

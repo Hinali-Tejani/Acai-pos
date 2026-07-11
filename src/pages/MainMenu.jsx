@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMenuStore } from '../context/MenuContext';
+import Spinner from '../components/Spinner';
 
 function MainMenu() {
   const { allItems: menuItems, loading, error } = useMenuStore();
   const navigate = useNavigate();
 
-  if (loading) return <h2>Loading Menu...</h2>;
+  if (loading) return <Spinner size="lg" />;
   if (error) return <h2>Error: {error}</h2>;
 
   return (
