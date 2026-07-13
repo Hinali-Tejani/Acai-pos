@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
+import TakeoutDetailsModal from './components/TakeoutDetailsModal';
 
 function App () {
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
@@ -62,6 +63,7 @@ function App () {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const takeoutFormRef = useRef(null);
+  const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -88,6 +90,12 @@ function App () {
         activeCategory={activeCategory}
         onCategoryChange={setActiveCategory}
         onResetItem={resetSelection}
+        firstName={firstName}
+        lastName={lastName}
+        phone={phone}
+        setFirstName={setFirstName}
+        setLastName={setLastName}
+        setPhone={setPhone}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -144,8 +152,23 @@ function App () {
           phone={phone}
           setPhone={setPhone}
           takeoutFormRef={takeoutFormRef}
+          onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
+          onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
         />
       </div>
+
+      <TakeoutDetailsModal
+        isOpen={isTakeoutDetailsOpen}
+        onClose={() => setIsTakeoutDetailsOpen(false)}
+        orderType={orderType}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        phone={phone}
+        setPhone={setPhone}
+        takeoutFormRef={takeoutFormRef}
+      />
     </div>
   );
 }

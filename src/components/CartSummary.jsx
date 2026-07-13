@@ -18,6 +18,7 @@ export default function CartSummary ({
   phone,
   setPhone,
   takeoutFormRef,
+  onRequestTakeoutFormOpen,
 }) {
 
   const estimatedTax = cartTotal * 0.13;
@@ -27,24 +28,139 @@ export default function CartSummary ({
   const isCartEmpty = cart.length === 0;
 
   const [showPayment, setShowPayment] = React.useState(false);
+  const [paymentTotalDue, setPaymentTotalDue] = React.useState(grandTotal.toFixed(2));
+  const [activePendingOrder, setActivePendingOrder] = React.useState(null);
+  const [statusMessage, setStatusMessage] = React.useState('');
 
-  const handleCheckout = () => {
-    if (isCartEmpty) return;
-    if (isTakeout && !takeoutFormRef.current?.validate()) return;
+  React.useEffect(() => {
+    setPaymentTotalDue(grandTotal.toFixed(2));
+  }, [grandTotal]);
+
+  const buildPendingOrder = () => ({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    createdAt: new Date().toISOString(),
+    orderType,
+    customerName: [firstName, lastName].filter(Boolean).join(' ').trim(),
+    phone,
+    subtotal: cartTotal,
+    tax: estimatedTax,
+    totalDue: grandTotal,
+    items: cart.map((item) => ({
+      uid: item.uid,
+      name: item.name,
+      finalPrice: item.finalPrice,
+      quantity: item.quantity || 1,
+    })),
+  });
+
+  const openPaymentForOrder = (order = null) => {
+    const nextOrder = order || {
+      id: 'current-order',
+      createdAt: new Date().toISOString(),
+      orderType,
+      customerName: [firstName, lastName].filter(Boolean).join(' ').trim(),
+      phone,
+      subtotal: cartTotal,
+      tax: estimatedTax,
+      totalDue: grandTotal,
+      items: cart,
+      source: 'current',
+    };
+
+    setActivePendingOrder(nextOrder);
+    setPaymentTotalDue(Number(nextOrder.totalDue).toFixed(2));
     setShowPayment(true);
   };
 
+  const validateTakeoutForm = () => {
+    if (isTakeout) {
+      // Validate customer details directly
+      const trimmedFirstName = firstName.trim();
+      const trimmedLastName = lastName.trim();
+      const trimmedPhone = phone.trim();
+
+      if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+      if (!/^[0-9]+$/.test(trimmedPhone)) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+      if (trimmedPhone.length !== 10) {
+        setIsTakeoutModalOpen(true);
+        return;
+      }
+    }
+  }
+
+  const handlePayNow = () => {
+    if (isCartEmpty) return;
+    if (isTakeout) {
+      validateTakeoutForm();
+      onRequestTakeoutFormOpen?.();
+      return;
+    }
+    openPaymentForOrder();
+  };
+
+  const handlePayLater = () => {
+    if (isCartEmpty) return;
+    if (isTakeout) {
+      validateTakeoutForm();
+      onRequestTakeoutFormOpen?.();
+      return;
+    }
+
+    const nextOrder = buildPendingOrder();
+    const raw = window.localStorage.getItem('acai-pos-pending-payments');
+    const currentOrders = raw ? JSON.parse(raw) : [];
+    const nextOrders = [nextOrder, ...currentOrders];
+    window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
+    onClearCart();
+    setOrderType('walk-in');
+    setFirstName('');
+    setLastName('');
+    setPhone('');
+    setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
+  };
+
   const handlePaymentComplete = () => {
+    if (activePendingOrder?.source !== 'pending') {
+      onClearCart();
+      setOrderType('walk-in');
+      setFirstName('');
+      setLastName('');
+      setPhone('');
+      setShowPayment(false);
+      setActivePendingOrder(null);
+      setStatusMessage('Payment completed');
+      return;
+    }
     onClearCart();
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
     setPhone('');
     setShowPayment(false);
+    setActivePendingOrder(null);
+    setStatusMessage('Pending payment completed');
   };
 
   const handleClosePayment = () => {
     setShowPayment(false);
+    setActivePendingOrder(null);
+  };
+
+  const handlePayPendingOrder = (order) => {
+    openPaymentForOrder({
+      ...order,
+      source: 'pending',
+    });
+  };
+
+  const handleRemovePendingOrder = (orderId) => {
+    setStatusMessage(`Pending payment ${orderId} should be removed from the popup list.`);
   };
 
   const onRepeatItem = (uid) => {
@@ -87,14 +203,15 @@ export default function CartSummary ({
           cartTotal={cartTotal}
           onRemoveItem={onRemoveItem}
           onRepeatItem={onRepeatItem}
-          onCheckout={handleCheckout}
+          onPayNow={handlePayNow}
+          onPayLater={handlePayLater}
           isCartEmpty={isCartEmpty}
         />
       </div>
 
       {showPayment && (
         <Payment
-          totalDue={grandTotal.toFixed(2)}
+          totalDue={paymentTotalDue}
           onPaymentComplete={handlePaymentComplete}
           onClose={handleClosePayment}
         />

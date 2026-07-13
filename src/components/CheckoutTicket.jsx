@@ -5,7 +5,8 @@ export default function CheckoutTicket ({
   cartTotal,
   onRemoveItem,
   onRepeatItem,
-  onCheckout,
+  onPayNow,
+  onPayLater,
   isCartEmpty,
 }) {
   const estimatedTax = cartTotal * 0.13;
@@ -81,13 +82,22 @@ export default function CheckoutTicket ({
           <span>${grandTotal.toFixed(2)}</span>
         </div>
 
-        <button
-          className={`w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
-          disabled={isCartEmpty}
-          onClick={onCheckout}
-        >
-          💳 TENDER TRANSACTION
-        </button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-amber-600 hover:bg-amber-500'}`}
+            disabled={isCartEmpty}
+            onClick={onPayLater}
+          >
+            Pay Later
+          </button>
+          <button
+            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
+            disabled={isCartEmpty}
+            onClick={onPayNow}
+          >
+            Pay Now
+          </button>
+        </div>
       </div>
     </div>
   );
