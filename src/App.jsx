@@ -5,7 +5,10 @@ import useAppState, {BASE_OPTIONS} from './state/AppState';
 import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
+import Payment from './components/Payment';
 import AppRoutes from './routes/AppRoutes';
+import TakeoutDetailsModal from './components/TakeoutDetailsModal';
+import {PENDING_PAYMENTS_STORAGE_KEY} from './components/PendingPaymentOrdersPopup';
 
 function App () {
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
@@ -62,6 +65,8 @@ function App () {
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
+  const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
+  const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -72,6 +77,32 @@ function App () {
     const item = itemParam || selectedItem;
     if (!item) return;
     addToCart(item, calculateItemPrice(item));
+  };
+
+  const removePendingPaymentOrder = (orderId) => {
+    const raw = window.localStorage.getItem(PENDING_PAYMENTS_STORAGE_KEY);
+    const currentOrders = raw ? JSON.parse(raw) : [];
+    const nextOrders = Array.isArray(currentOrders)
+      ? currentOrders.filter((order) => order.id !== orderId)
+      : [];
+
+    window.localStorage.setItem(PENDING_PAYMENTS_STORAGE_KEY, JSON.stringify(nextOrders));
+  };
+
+  const handlePayPendingOrder = (order) => {
+    if (!order) return;
+    setPendingPaymentOrder(order);
+  };
+
+  const handlePendingPaymentComplete = () => {
+    if (pendingPaymentOrder?.id) {
+      removePendingPaymentOrder(pendingPaymentOrder.id);
+    }
+    setPendingPaymentOrder(null);
+  };
+
+  const handleClosePendingPayment = () => {
+    setPendingPaymentOrder(null);
   };
 
   const activeCategoryName = categories.find(cat => cat.id === activeCategory)?.name || 'Category';
@@ -94,6 +125,7 @@ function App () {
         setFirstName={setFirstName}
         setLastName={setLastName}
         setPhoneNumber={setPhoneNumber}
+        onPayPendingOrder={handlePayPendingOrder}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -141,19 +173,37 @@ function App () {
           onRemoveItem={removeCartItem}
           onClearCart={clearCart}
           onUpdateItem={updateCartItem}
-          allergies={allergies}
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          isTakeoutModalOpen={isTakeoutModalOpen}
-          setIsTakeoutModalOpen={setIsTakeoutModalOpen}
+          phone={phoneNumber}
+          setPhone={setPhoneNumber}
+          onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
         />
       </div>
+
+      <TakeoutDetailsModal
+        isOpen={isTakeoutDetailsOpen}
+        onClose={() => setIsTakeoutDetailsOpen(false)}
+        orderType={orderType}
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        phone={phoneNumber}
+        setPhone={setPhoneNumber}
+      />
+
+      {pendingPaymentOrder && (
+        <Payment
+          totalDue={Number(pendingPaymentOrder.totalDue || 0).toFixed(2)}
+          onPaymentComplete={handlePendingPaymentComplete}
+          onClose={handleClosePendingPayment}
+        />
+      )}
     </div>
   );
 }
