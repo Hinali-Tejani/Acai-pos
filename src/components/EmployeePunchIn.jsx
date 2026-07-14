@@ -2,13 +2,15 @@ import React, {useMemo, useState} from 'react';
 import EmployeeList from './EmployeeList';
 import PopUp from './PopUp';
 import { useEmployeeState } from '../state/EmployeeState';
+import { useEmployeeData } from '../context/EmployeeContext';
 
 const MANAGER_PASSWORD = '1234';
 
 export default function EmployeePunchIn () {
     const [statusMessage, setStatusMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const { employeeRows, selectedEmployee, setSelectedEmployee, punchInEmployee, punchOutEmployee } = useEmployeeState();
+    const { employeeRows, selectedEmployee, setSelectedEmployee } = useEmployeeState();
+    const { punchEmployee } = useEmployeeData();
 
     const activeEmployeeName = useMemo(() => selectedEmployee?.name ?? 'No employee selected', [selectedEmployee]);
 
@@ -26,17 +28,17 @@ export default function EmployeePunchIn () {
     };
 
     const handleEmployeePunchIn = (employee) => {
-        const confirmed = window.confirm(`Punch in ${employee.name}?`);
+        const confirmed = window.confirm(`Punch in ${employee.firstName} ${employee.lastName}?`);
         if (!confirmed) return;
 
         setSelectedEmployee(employee);
         setIsModalOpen(false);
-        punchInEmployee(employee);
-        setStatusMessage(`Punched in ${employee.name} successfully`);
+        punchEmployee(employee.empID, 1);
+        setStatusMessage(`Punched in ${employee.firstName} ${employee.lastName} successfully`);
     };
 
     const handleEmployeePunchOut = (employee) => {
-        const confirmed = window.confirm(`Punch out ${employee.name}?`);
+        const confirmed = window.confirm(`Punch out ${employee.firstName} ${employee.lastName}?`);
         if (!confirmed) return;
 
         setSelectedEmployee(employee);
@@ -48,8 +50,8 @@ export default function EmployeePunchIn () {
             return;
         }
 
-        punchOutEmployee(employee);
-        setStatusMessage(`Punched out ${employee.name} successfully`);
+        punchEmployee(employee.empID, 2);
+        setStatusMessage(`Punched out ${employee.firstName} ${employee.lastName} successfully`);
     };
 
     return (

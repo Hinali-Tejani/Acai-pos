@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import {getSizes, getPrice, getAddOns, getAllergies} from '../services/menuApi';
 
 export const BASE_OPTIONS = [
@@ -25,13 +25,20 @@ const useAppState = () => {
     const [allergies, setAllergies] = useState([]);
     const [allergiesLoading, setAllergiesLoading] = useState(false);
 
+    // Cache refs to prevent duplicate API calls
+    const addonsCache = useRef({});
+    const sizesCache = useRef({});
+    const allergiesLoaded = useRef(false);
+
     // Fetch allergies on component mount
     useEffect(() => {
+        if (allergiesLoaded.current) return;
+
         const loadAllergies = async () => {
             try {
                 setAllergiesLoading(true);
                 const fetchedAllergies = await getAllergies();
-                
+
                 // Transform API response to match expected format
                 const formattedAllergies = Array.isArray(fetchedAllergies)
                     ? fetchedAllergies.map(allergy => ({
@@ -39,8 +46,9 @@ const useAppState = () => {
                         name: allergy.name || allergy.title || allergy.allergyName || 'Unknown'
                     }))
                     : [];
-                
+
                 setAllergies(formattedAllergies);
+                allergiesLoaded.current = true;
             } catch (error) {
                 console.error('Error loading allergies:', error);
                 setAllergies([]);
@@ -48,7 +56,7 @@ const useAppState = () => {
                 setAllergiesLoading(false);
             }
         };
-        
+
         loadAllergies();
     }, []);
 
@@ -59,11 +67,17 @@ const useAppState = () => {
                 setAddOns([]);
                 return;
             }
-            
+
+            // Check cache first
+            if (addonsCache.current[activeCategory]) {
+                setAddOns(addonsCache.current[activeCategory]);
+                return;
+            }
+
             try {
                 setAddOnsLoading(true);
                 const fetchedAddOns = await getAddOns(activeCategory);
-                
+
                 // Transform API response to match expected format
                 const formattedAddOns = Array.isArray(fetchedAddOns)
                     ? fetchedAddOns.map(addon => ({
@@ -71,8 +85,10 @@ const useAppState = () => {
                         price: addon.price ?? addon.cost ?? 0
                     }))
                     : [];
-                
+
                 setAddOns(formattedAddOns);
+                // Cache the result
+                addonsCache.current[activeCategory] = formattedAddOns;
             } catch (error) {
                 console.error('Error loading add-ons:', error);
                 setAddOns([]);
@@ -80,7 +96,7 @@ const useAppState = () => {
                 setAddOnsLoading(false);
             }
         };
-        
+
         loadAddOns();
     }, [activeCategory]);
 
@@ -91,11 +107,17 @@ const useAppState = () => {
                 setSizeOptions([]);
                 return;
             }
-            
+
+            // Check cache first
+            if (sizesCache.current[activeCategory]) {
+                setSizeOptions(sizesCache.current[activeCategory]);
+                return;
+            }
+
             try {
                 setSizesLoading(true);
                 const fetchedSizes = await getSizes(activeCategory);
-                
+
                 // Transform API response to match expected format if needed
                 const formattedSizes = Array.isArray(fetchedSizes)
                     ? fetchedSizes.map(size => ({
@@ -104,8 +126,10 @@ const useAppState = () => {
                         priceModifier: size.priceModifier ?? size.price ?? 0
                     }))
                     : [];
-                
+
                 setSizeOptions(formattedSizes);
+                // Cache the result
+                sizesCache.current[activeCategory] = formattedSizes;
                 // Reset chosen size when sizes change
                 setChosenSize('');
             } catch (error) {
@@ -116,7 +140,7 @@ const useAppState = () => {
                 setSizesLoading(false);
             }
         };
-        
+
         loadSizes();
     }, [activeCategory]);
 

@@ -3,20 +3,13 @@ import PopUp from './PopUp';
 import TakeoutForm from './TakeoutForm';
 import {createCustomer, getCustomers, updateCustomer} from '../services/customerApi';
 
-const STORAGE_KEY = 'pizza-pos-customers';
-
-const normalizeCustomer = (customer = {}, index = 0) => ({
-  customerId: customer.customerId ?? customer.customerID ?? customer.id ?? customer.ID ?? index,
-  firstName: customer.firstName ?? customer.FirstName ?? '',
-  lastName: customer.lastName ?? customer.LastName ?? '',
-  phone: customer.phone ?? customer.Phone ?? '',
-});
+const STORAGE_KEY = 'acai-pos-customers';
 
 const readStoredCustomers = () => {
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed.map(normalizeCustomer) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
@@ -43,7 +36,7 @@ export default function CustomerSelectModal ({
   const [editingCustomer, setEditingCustomer] = useState(null);
   const [formFirstName, setFormFirstName] = useState('');
   const [formLastName, setFormLastName] = useState('');
-  const [formPhone, setFormPhone] = useState('');
+  const [formPhoneNumber, setFormPhoneNumber] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
@@ -55,7 +48,7 @@ export default function CustomerSelectModal ({
     setEditingCustomer(null);
     setFormFirstName('');
     setFormLastName('');
-    setFormPhone('');
+    setFormPhoneNumber('');
 
     const storedCustomers = readStoredCustomers();
     if (storedCustomers.length > 0) {
@@ -93,9 +86,8 @@ export default function CustomerSelectModal ({
     }
 
     return customers.filter((customer) => {
-      const fullName = `${customer.firstName} ${customer.lastName}`.toLowerCase();
-      const phone = String(customer.phone ?? '').toLowerCase();
-      return fullName.includes(term) || phone.includes(term);
+      const phone = String(customer.phoneNumber ?? '').toLowerCase();
+      return phone.includes(term);
     });
   }, [customers, searchTerm]);
 
@@ -103,7 +95,7 @@ export default function CustomerSelectModal ({
     setEditingCustomer(null);
     setFormFirstName('');
     setFormLastName('');
-    setFormPhone('');
+    setFormPhoneNumber('');
     setMessage('');
   };
 
@@ -115,7 +107,7 @@ export default function CustomerSelectModal ({
     setEditingCustomer(customer);
     setFormFirstName(customer.firstName || '');
     setFormLastName(customer.lastName || '');
-    setFormPhone(customer.phone || '');
+    setFormPhoneNumber(customer.phoneNumber || '');
     setMessage(`Editing ${customer.firstName} ${customer.lastName}`);
   };
 
@@ -127,8 +119,8 @@ export default function CustomerSelectModal ({
 
   const upsertLocalCustomer = (nextCustomer) => {
     setCustomers((current) => {
-      const nextList = current.some((customer) => customer.customerId === nextCustomer.customerId)
-        ? current.map((customer) => (customer.customerId === nextCustomer.customerId ? nextCustomer : customer))
+      const nextList = current.some((customer) => customer.customerID === nextCustomer.customerID)
+        ? current.map((customer) => (customer.customerID === nextCustomer.customerID ? nextCustomer : customer))
         : [nextCustomer, ...current];
 
       writeStoredCustomers(nextList);
@@ -138,13 +130,13 @@ export default function CustomerSelectModal ({
 
   const handleCustomerSubmit = async () => {
     const payload = {
-      customerId: editingCustomer?.customerId,
+      customerID: editingCustomer?.customerID,
       firstName: formFirstName.trim(),
       lastName: formLastName.trim(),
-      phone: formPhone.trim(),
+      phoneNumber: formPhoneNumber.trim(),
     };
 
-    if (!payload.firstName || !payload.lastName || !payload.phone) {
+    if (!payload.firstName || !payload.lastName || !payload.phoneNumber) {
       setMessage('First name, last name, and phone are required');
       return;
     }
@@ -152,12 +144,12 @@ export default function CustomerSelectModal ({
     if (editingCustomer) {
       try {
         const response = await updateCustomer(payload);
-        const nextCustomer = normalizeCustomer(response?.customer ?? response?.data ?? response ?? payload, editingCustomer.customerId);
+        const nextCustomer = response?.customer ?? response?.data ?? response ?? payload;
         upsertLocalCustomer(nextCustomer);
         setMessage('Customer updated successfully');
         resetForm();
       } catch {
-        const nextCustomer = normalizeCustomer(payload, editingCustomer.customerId);
+        const nextCustomer = payload;
         upsertLocalCustomer(nextCustomer);
         setMessage('Customer updated locally. Remote update endpoint was not available.');
         resetForm();
@@ -167,12 +159,12 @@ export default function CustomerSelectModal ({
 
     try {
       const response = await createCustomer(payload);
-      const nextCustomer = normalizeCustomer(response?.customer ?? response?.data ?? response ?? payload, customers.length + 1);
+      const nextCustomer = response?.customer ?? response?.data ?? response ?? payload;
       upsertLocalCustomer(nextCustomer);
       setMessage('Customer added successfully');
       resetForm();
     } catch {
-      const nextCustomer = normalizeCustomer(payload, customers.length + 1);
+      const nextCustomer = payload;
       upsertLocalCustomer(nextCustomer);
       setMessage('Customer saved locally. Check the create API response for backend wiring.');
       resetForm();
@@ -202,7 +194,7 @@ export default function CustomerSelectModal ({
             type="search"
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
-            placeholder="Search by first name, last name, or phone"
+            placeholder="Search by phone"
             className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
           />
         </div>
@@ -229,10 +221,10 @@ export default function CustomerSelectModal ({
                   </thead>
                   <tbody>
                     {filteredCustomers.map((customer) => (
-                      <tr key={customer.customerId} className="border-t border-purple-100">
+                      <tr key={customer.customerID} className="border-t border-purple-100">
                         <td className="px-4 py-3 text-purple-900">{customer.firstName}</td>
                         <td className="px-4 py-3 text-purple-900">{customer.lastName}</td>
-                        <td className="px-4 py-3 text-purple-700">{customer.phone}</td>
+                        <td className="px-4 py-3 text-purple-700">{customer.phoneNumber}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             <button
@@ -285,8 +277,8 @@ export default function CustomerSelectModal ({
               setFirstName={setFormFirstName}
               lastName={formLastName}
               setLastName={setFormLastName}
-              phone={formPhone}
-              setPhone={setFormPhone}
+              phoneNumber={formPhoneNumber}
+              setPhoneNumber={setFormPhoneNumber}
               required={true}
               onSubmit={handleCustomerSubmit}
               onCancel={resetForm}

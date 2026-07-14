@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
 import useAppState, {BASE_OPTIONS} from './state/AppState';
@@ -61,9 +61,8 @@ function App () {
   const [orderType, setOrderType] = useState('walk-in');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
-  const takeoutFormRef = useRef(null);
-  const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -92,10 +91,10 @@ function App () {
         onResetItem={resetSelection}
         firstName={firstName}
         lastName={lastName}
-        phone={phone}
+        phoneNumber={phoneNumber}
         setFirstName={setFirstName}
         setLastName={setLastName}
-        setPhone={setPhone}
+        setPhoneNumber={setPhoneNumber}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -128,9 +127,10 @@ function App () {
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
-            takeoutFormRef={takeoutFormRef}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         </div>
       </div>
@@ -149,8 +149,8 @@ function App () {
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           takeoutFormRef={takeoutFormRef}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}

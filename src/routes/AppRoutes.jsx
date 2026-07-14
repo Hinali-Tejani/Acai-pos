@@ -3,6 +3,7 @@ import {Routes, Route} from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import CategoryProductsPage from '../pages/CategoryProductsPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
+import NotFoundPage from '../pages/NotFoundPage';
 
 export default function AppRoutes({
   itemsLoading,
@@ -32,9 +33,10 @@ export default function AppRoutes({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
-  takeoutFormRef,
+  phoneNumber,
+  setPhoneNumber,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
 }) {
   return (
     <Routes>
@@ -48,9 +50,10 @@ export default function AppRoutes({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
-            takeoutFormRef={takeoutFormRef}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         }
       />
@@ -64,9 +67,10 @@ export default function AppRoutes({
             setFirstName={setFirstName}
             lastName={lastName}
             setLastName={setLastName}
-            phone={phone}
-            setPhone={setPhone}
-            takeoutFormRef={takeoutFormRef}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            isTakeoutModalOpen={isTakeoutModalOpen}
+            setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         }
       />
@@ -106,6 +110,7 @@ export default function AppRoutes({
           />
         }
       />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

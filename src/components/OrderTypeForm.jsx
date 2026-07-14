@@ -7,9 +7,8 @@ export default function OrderTypeForm ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
-  takeoutFormRef,
+  phoneNumber,
+  setPhoneNumber,
   onSubmit,
   onCancel,
 }) {
@@ -27,13 +26,12 @@ export default function OrderTypeForm ({
         {orderType === 'takeout' ? 'Takeout details' : 'Walk-in details'}
       </div>
       <TakeoutForm
-        ref={takeoutFormRef}
         firstName={firstName}
         setFirstName={setFirstName}
         lastName={lastName}
         setLastName={setLastName}
-        phone={phone}
-        setPhone={setPhone}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
         required={orderType === 'takeout'}
         onSubmit={onSubmit}
         onCancel={onCancel}

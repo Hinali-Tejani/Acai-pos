@@ -1,5 +1,6 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
+
 import PendingPaymentOrdersPopup from './PendingPaymentOrdersPopup';
 import CustomerSelectModal from './CustomerSelectModal';
 
@@ -10,12 +11,19 @@ export default function Sidebar ({
   onResetItem,
   firstName,
   lastName,
+  phoneNumber,
+  setFirstName,
+  setLastName,
+  setPhoneNumber,
+  firstName,
+  lastName,
   phone,
   setFirstName,
   setLastName,
   setPhone,
 }) {
   const navigate = useNavigate();
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
   const [isPendingOrdersOpen, setIsPendingOrdersOpen] = React.useState(false);
 
@@ -24,6 +32,14 @@ export default function Sidebar ({
     onResetItem();
     navigate('/home');
   };
+
+  const handleCustomerSelect = (customer) => {
+    setFirstName?.(customer.firstName || '');
+    setLastName?.(customer.lastName || '');
+    setPhoneNumber?.(customer.phoneNumber || '');
+  };
+
+  const selectedCustomerLabel = [firstName, lastName, phoneNumber].filter(Boolean).join(' | ');
 
   const handleCustomerSelect = (customer) => {
     setFirstName?.(customer.firstName || '');
@@ -80,13 +96,21 @@ export default function Sidebar ({
         <button
           className="w-full rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
           onClick={() => setIsCustomerModalOpen(true)}
+          onClick={() => setIsCustomerModalOpen(true)}
         >
-          Select Customer
+          Customer Portal
         </button>
         {selectedCustomerLabel && (
           <p className="mt-2 truncate text-xs text-purple-600">Selected: {selectedCustomerLabel}</p>
         )}
       </div>
+
+      <CustomerSelectModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        onSelectCustomer={handleCustomerSelect}
+        selectedCustomerLabel={selectedCustomerLabel}
+      />
 
       <PendingPaymentOrdersPopup
         isOpen={isPendingOrdersOpen}

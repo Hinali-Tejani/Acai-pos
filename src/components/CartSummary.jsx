@@ -2,6 +2,8 @@ import React from 'react';
 import EmployeePunchIn from './EmployeePunchIn';
 import Payment from './Payment';
 import CheckoutTicket from './CheckoutTicket';
+import PopUp from './PopUp';
+import OrderTypeForm from './OrderTypeForm';
 
 export default function CartSummary ({
   cart,
@@ -15,9 +17,10 @@ export default function CartSummary ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
-  takeoutFormRef,
+  phoneNumber,
+  setPhoneNumber,
+  isTakeoutModalOpen,
+  setIsTakeoutModalOpen,
   onRequestTakeoutFormOpen,
 }) {
 
@@ -69,154 +72,230 @@ export default function CartSummary ({
 
     setActivePendingOrder(nextOrder);
     setPaymentTotalDue(Number(nextOrder.totalDue).toFixed(2));
-    setShowPayment(true);
-  };
+    const [isPaid, setIsPaid] = React.useState(false);
 
-  const validateTakeoutForm = () => {
-    if (isTakeout) {
-      // Validate customer details directly
-      const trimmedFirstName = firstName.trim();
-      const trimmedLastName = lastName.trim();
-      const trimmedPhone = phone.trim();
+    const handleCheckout = () => {
+      if (isCartEmpty) return;
+      if (isTakeout) {
+        // Validate customer details directly
+        const trimmedFirstName = firstName.trim();
+        const trimmedLastName = lastName.trim();
+        const trimmedPhone = phoneNumber.trim();
 
-      if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
-        setIsTakeoutModalOpen(true);
-        return;
+        if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
+        if (!/^[0-9]+$/.test(trimmedPhone)) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
+        if (trimmedPhone.length !== 10) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
       }
-      if (!/^[0-9]+$/.test(trimmedPhone)) {
-        setIsTakeoutModalOpen(true);
-        return;
-      }
-      if (trimmedPhone.length !== 10) {
-        setIsTakeoutModalOpen(true);
-        return;
+      setShowPayment(true);
+    };
+
+    const validateTakeoutForm = () => {
+      if (isTakeout) {
+        // Validate customer details directly
+        const trimmedFirstName = firstName.trim();
+        const trimmedLastName = lastName.trim();
+        const trimmedPhone = phone.trim();
+
+        if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
+        if (!/^[0-9]+$/.test(trimmedPhone)) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
+        if (trimmedPhone.length !== 10) {
+          setIsTakeoutModalOpen(true);
+          return;
+        }
       }
     }
-  }
 
-  const handlePayNow = () => {
-    if (isCartEmpty) return;
-    if (isTakeout) {
-      validateTakeoutForm();
-      onRequestTakeoutFormOpen?.();
-      return;
-    }
-    openPaymentForOrder();
-  };
+    const handlePayNow = () => {
+      if (isCartEmpty) return;
+      if (isTakeout) {
+        validateTakeoutForm();
+        onRequestTakeoutFormOpen?.();
+        return;
+      }
+      openPaymentForOrder();
+    };
 
-  const handlePayLater = () => {
-    if (isCartEmpty) return;
-    if (isTakeout) {
-      validateTakeoutForm();
-      onRequestTakeoutFormOpen?.();
-      return;
-    }
+    const handlePayLater = () => {
+      if (isCartEmpty) return;
+      if (isTakeout) {
+        validateTakeoutForm();
+        onRequestTakeoutFormOpen?.();
+        return;
+      }
 
-    const nextOrder = buildPendingOrder();
-    const raw = window.localStorage.getItem('acai-pos-pending-payments');
-    const currentOrders = raw ? JSON.parse(raw) : [];
-    const nextOrders = [nextOrder, ...currentOrders];
-    window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
-    onClearCart();
-    setOrderType('walk-in');
-    setFirstName('');
-    setLastName('');
-    setPhone('');
-    setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
-  };
-
-  const handlePaymentComplete = () => {
-    if (activePendingOrder?.source !== 'pending') {
+      const nextOrder = buildPendingOrder();
+      const raw = window.localStorage.getItem('acai-pos-pending-payments');
+      const currentOrders = raw ? JSON.parse(raw) : [];
+      const nextOrders = [nextOrder, ...currentOrders];
+      window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
       onClearCart();
       setOrderType('walk-in');
       setFirstName('');
       setLastName('');
       setPhone('');
+      setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
+    };
+
+    const handlePaymentComplete = () => {
+      if (activePendingOrder?.source !== 'pending') {
+        onClearCart();
+        setOrderType('walk-in');
+        setFirstName('');
+        setLastName('');
+        setPhone('');
+        setShowPayment(false);
+        setActivePendingOrder(null);
+        setStatusMessage('Payment completed');
+        return;
+      }
+      setIsPaid(true);
+      onClearCart();
+      setOrderType('walk-in');
+      setFirstName('');
+      setLastName('');
+      setPhoneNumber('');
       setShowPayment(false);
       setActivePendingOrder(null);
-      setStatusMessage('Payment completed');
-      return;
+      setStatusMessage('Pending payment completed');
+      setTimeout(() => setIsPaid(false), 100);
+    };
+
+    const handleClosePayment = () => {
+      setShowPayment(false);
+      setActivePendingOrder(null);
+    };
+
+    const handlePayPendingOrder = (order) => {
+      openPaymentForOrder({
+        ...order,
+        source: 'pending',
+      });
+    };
+
+    const handleRemovePendingOrder = (orderId) => {
+      setStatusMessage(`Pending payment ${orderId} should be removed from the popup list.`);
+    };
+
+    const onRepeatItem = (uid) => {
+      const itemToRepeat = cart.find(item => item.uid === uid);
+      if (itemToRepeat) {
+        const newItem = {
+          ...itemToRepeat,
+          uid: `${itemToRepeat.uid}}`, // Generate a new unique ID
+        };
+        cart.push(newItem);
+        onUpdateItem(newItem);
+      }
     }
-    onClearCart();
-    setOrderType('walk-in');
-    setFirstName('');
-    setLastName('');
-    setPhone('');
-    setShowPayment(false);
-    setActivePendingOrder(null);
-    setStatusMessage('Pending payment completed');
-  };
 
-  const handleClosePayment = () => {
-    setShowPayment(false);
-    setActivePendingOrder(null);
-  };
-
-  const handlePayPendingOrder = (order) => {
-    openPaymentForOrder({
-      ...order,
-      source: 'pending',
-    });
-  };
-
-  const handleRemovePendingOrder = (orderId) => {
-    setStatusMessage(`Pending payment ${orderId} should be removed from the popup list.`);
-  };
-
-  const onRepeatItem = (uid) => {
-    const itemToRepeat = cart.find(item => item.uid === uid);
-    if (itemToRepeat) {
-      const newItem = {
-        ...itemToRepeat,
-        uid: `${itemToRepeat.uid}}`, // Generate a new unique ID
-      };
-      cart.push(newItem);
-      onUpdateItem(newItem);
-    }
-  }
-
-  return (
-    <div className="flex h-full flex-col justify-between gap-3">
-      <div className="space-y-3 rounded-sm border border-purple-200 bg-purple-50 p-4 shadow-sm flex-1">
-        <div className="flex items-center justify-between">
-          <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
-          <button
-            className="rounded-md bg-white px-3 py-1 text-xs font-semibold text-purple-600 shadow-sm transition hover:bg-purple-100"
-            onClick={onClearCart}
-          >
-            Clear
-          </button>
-        </div>
-
-        <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700">
+    return (
+      <div className="flex h-full flex-col justify-between gap-3">
+        <div className="space-y-3 rounded-sm border border-purple-200 bg-purple-50 p-4 shadow-sm flex-1">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-purple-900">Order type</span>
-            <span className="text-xs uppercase text-purple-700">
-              {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
-            </span>
+            <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
+            <button
+              className="rounded-md bg-white px-3 py-1 text-xs font-semibold text-purple-600 shadow-sm transition hover:bg-purple-100"
+              onClick={onClearCart}
+            >
+              Clear
+            </button>
           </div>
+
+          <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700 text-center">
+            <>
+              <span className="font-semibold text-purple-900">Order type: </span>
+              <span className="ml-1 text-xs uppercase text-purple-700">
+                {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
+              </span>
+            </>
+            {(firstName || lastName || phoneNumber) && (
+              <div>
+                {(firstName || lastName) && (
+                  <div>
+                    <span className="font-semibold text-purple-900">Name: </span>
+                    <span className="ml-1 text-xs text-purple-700">
+                      {firstName} {lastName}
+                    </span>
+                  </div>
+                )}
+                {phoneNumber && (
+                  <div>
+                    <span className="font-semibold text-purple-900">Phone: </span>
+                    <span className="ml-1 text-xs text-purple-700">{phoneNumber}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="font-semibold text-purple-900">Status: </span>
+                  <span className="text-xs font-bold uppercase">
+                    {isPaid ? 'Paid' : 'Not paid'}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <CheckoutTicket
+            cart={cart}
+            cartTotal={cartTotal}
+            onRemoveItem={onRemoveItem}
+            onRepeatItem={onRepeatItem}
+            onPayNow={handlePayNow}
+            onPayLater={handlePayLater}
+            isCartEmpty={isCartEmpty}
+          />
         </div>
 
-
-        <CheckoutTicket
-          cart={cart}
-          cartTotal={cartTotal}
-          onRemoveItem={onRemoveItem}
-          onRepeatItem={onRepeatItem}
-          onPayNow={handlePayNow}
-          onPayLater={handlePayLater}
-          isCartEmpty={isCartEmpty}
-        />
+        {showPayment && (
+          <Payment
+            totalDue={paymentTotalDue}
+            onPaymentComplete={handlePaymentComplete}
+            onClose={handleClosePayment}
+          />
+        )}
+        <PopUp
+          isOpen={isTakeoutModalOpen}
+          title="Takeout order details"
+          onClose={() => setIsTakeoutModalOpen(false)}
+          size="md"
+        >
+          <div className="space-y-3">
+            <p className="text-sm text-purple-700">
+              Please provide customer details for takeout order.
+            </p>
+            <OrderTypeForm
+              orderType={orderType}
+              firstName={firstName}
+              setFirstName={setFirstName}
+              lastName={lastName}
+              setLastName={setLastName}
+              phoneNumber={phoneNumber}
+              setPhoneNumber={setPhoneNumber}
+              onSubmit={() => {
+                setIsTakeoutModalOpen(false);
+              }}
+              onCancel={() => {
+                setIsTakeoutModalOpen(false);
+              }}
+            />
+          </div>
+        </PopUp>
+        <EmployeePunchIn />
       </div>
-
-      {showPayment && (
-        <Payment
-          totalDue={paymentTotalDue}
-          onPaymentComplete={handlePaymentComplete}
-          onClose={handleClosePayment}
-        />
-      )}
-      <EmployeePunchIn />
-    </div>
-  );
+    );
+  }
 }
