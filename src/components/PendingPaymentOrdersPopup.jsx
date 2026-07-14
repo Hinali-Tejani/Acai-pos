@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import PopUp from './PopUp';
 
-const PENDING_PAYMENTS_STORAGE_KEY = 'acai-pos-pending-payments';
+export const PENDING_PAYMENTS_STORAGE_KEY = 'acai-pos-pending-payments';
 
 const readPendingPayments = () => {
   try {
@@ -23,7 +23,7 @@ const formatPendingDate = (value) => {
   });
 };
 
-export default function PendingPaymentOrdersPopup ({isOpen, onClose}) {
+export default function PendingPaymentOrdersPopup ({isOpen, onClose, onPayNow}) {
   const [pendingOrders, setPendingOrders] = useState([]);
 
   useEffect(() => {
@@ -60,6 +60,18 @@ export default function PendingPaymentOrdersPopup ({isOpen, onClose}) {
                 </div>
                 <div className="mt-2 text-xs text-purple-700">
                   {order.phone ? `Phone: ${order.phone}` : 'No phone saved'}
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose?.();
+                      onPayNow?.(order);
+                    }}
+                    className="rounded-lg bg-emerald-500 px-3 py-2 text-xs font-semibold text-white transition hover:bg-emerald-400"
+                  >
+                    Pay Now
+                  </button>
                 </div>
               </div>
             ))}

@@ -15,15 +15,9 @@ export default function Sidebar ({
   setFirstName,
   setLastName,
   setPhoneNumber,
-  firstName,
-  lastName,
-  phone,
-  setFirstName,
-  setLastName,
-  setPhone,
+  onPayPendingOrder,
 }) {
   const navigate = useNavigate();
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
   const [isPendingOrdersOpen, setIsPendingOrdersOpen] = React.useState(false);
 
@@ -33,21 +27,13 @@ export default function Sidebar ({
     navigate('/home');
   };
 
-  const handleCustomerSelect = (customer) => {
-    setFirstName?.(customer.firstName || '');
-    setLastName?.(customer.lastName || '');
-    setPhoneNumber?.(customer.phoneNumber || '');
-  };
-
   const selectedCustomerLabel = [firstName, lastName, phoneNumber].filter(Boolean).join(' | ');
 
   const handleCustomerSelect = (customer) => {
     setFirstName?.(customer.firstName || '');
     setLastName?.(customer.lastName || '');
-    setPhone?.(customer.phone || '');
+    setPhoneNumber?.(customer.phoneNumber || '');
   };
-
-  const selectedCustomerLabel = [firstName, lastName].filter(Boolean).join(' ') || (phone ? `Phone: ${phone}` : '');
 
   return (
     <aside className="flex w-70 flex-col border-r border-purple-200 bg-white">
@@ -100,9 +86,7 @@ export default function Sidebar ({
         >
           Customer Portal
         </button>
-        {selectedCustomerLabel && (
-          <p className="mt-2 truncate text-xs text-purple-600">Selected: {selectedCustomerLabel}</p>
-        )}
+
       </div>
 
       <CustomerSelectModal
@@ -115,6 +99,7 @@ export default function Sidebar ({
       <PendingPaymentOrdersPopup
         isOpen={isPendingOrdersOpen}
         onClose={() => setIsPendingOrdersOpen(false)}
+        onPayNow={onPayPendingOrder}
       />
 
       <CustomerSelectModal

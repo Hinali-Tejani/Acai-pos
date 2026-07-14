@@ -6,7 +6,6 @@ const formatTime = (value) => {
     return new Date(value).toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
 };
 
-
 export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
     const [employeeList, setEmployeeList] = useState([]);
     const {employees, isLoading, error, refetchEmployees, punchEmployee} = useEmployeeData();
