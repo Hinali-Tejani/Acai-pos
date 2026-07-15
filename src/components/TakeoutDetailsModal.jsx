@@ -10,8 +10,8 @@ export default function TakeoutDetailsModal ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
 }) {
   return (
     <PopUp isOpen={isOpen} title="Takeout order details" onClose={onClose} size="md">
@@ -25,8 +25,8 @@ export default function TakeoutDetailsModal ({
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phone}
-          setPhone={setPhone}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           onSubmit={onClose}
           onCancel={onClose}
         />

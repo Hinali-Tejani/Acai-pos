@@ -16,7 +16,7 @@ export async function createCustomer (customer) {
     const response = await api.post('/Customers/CreateCustomer', {
         firstName: customer.firstName,
         lastName: customer.lastName,
-        phoneNumber: customer.phone,
+        phoneNumber: customer.phoneNumber,
     });
     return response.data;
 }

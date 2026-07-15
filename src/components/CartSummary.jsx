@@ -15,8 +15,8 @@ export default function CartSummary ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   onRequestTakeoutFormOpen,
 }) {
 
@@ -27,6 +27,7 @@ export default function CartSummary ({
   const isCartEmpty = cart.length === 0;
 
   const [showPayment, setShowPayment] = React.useState(false);
+  const [isPaid, setIsPaid] = React.useState(false);
   const [paymentTotalDue, setPaymentTotalDue] = React.useState(grandTotal.toFixed(2));
   const [activePendingOrder, setActivePendingOrder] = React.useState(null);
   const [statusMessage, setStatusMessage] = React.useState('');
@@ -40,7 +41,7 @@ export default function CartSummary ({
     createdAt: new Date().toISOString(),
     orderType,
     customerName: [firstName, lastName].filter(Boolean).join(' ').trim(),
-    phone,
+    phoneNumber,
     subtotal: cartTotal,
     tax: estimatedTax,
     totalDue: grandTotal,
@@ -58,7 +59,7 @@ export default function CartSummary ({
       createdAt: new Date().toISOString(),
       orderType,
       customerName: [firstName, lastName].filter(Boolean).join(' ').trim(),
-      phone,
+      phoneNumber,
       subtotal: cartTotal,
       tax: estimatedTax,
       totalDue: grandTotal,
@@ -76,17 +77,17 @@ export default function CartSummary ({
     if (isTakeout) {
       const trimmedFirstName = firstName.trim();
       const trimmedLastName = lastName.trim();
-      const trimmedPhone = phone.trim();
+      const trimmedPhoneNumber = phoneNumber.trim();
 
-      if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+      if (!trimmedFirstName || !trimmedLastName || !trimmedPhoneNumber) {
         onRequestTakeoutFormOpen?.();
         return;
       }
-      if (!/^[0-9]+$/.test(trimmedPhone)) {
+      if (!/^[0-9]+$/.test(trimmedPhoneNumber)) {
         onRequestTakeoutFormOpen?.();
         return;
       }
-      if (trimmedPhone.length !== 10) {
+      if (trimmedPhoneNumber.length !== 10) {
         onRequestTakeoutFormOpen?.();
         return;
       }
@@ -99,17 +100,17 @@ export default function CartSummary ({
     if (isTakeout) {
       const trimmedFirstName = firstName.trim();
       const trimmedLastName = lastName.trim();
-      const trimmedPhone = phone.trim();
+      const trimmedPhoneNumber = phoneNumber.trim();
 
-      if (!trimmedFirstName || !trimmedLastName || !trimmedPhone) {
+      if (!trimmedFirstName || !trimmedLastName || !trimmedPhoneNumber) {
         onRequestTakeoutFormOpen?.();
         return;
       }
-      if (!/^[0-9]+$/.test(trimmedPhone)) {
+      if (!/^[0-9]+$/.test(trimmedPhoneNumber)) {
         onRequestTakeoutFormOpen?.();
         return;
       }
-      if (trimmedPhone.length !== 10) {
+      if (trimmedPhoneNumber.length !== 10) {
         onRequestTakeoutFormOpen?.();
         return;
       }
@@ -124,7 +125,7 @@ export default function CartSummary ({
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
-    setPhone('');
+    setPhoneNumber('');
     setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
   };
 
@@ -134,7 +135,7 @@ export default function CartSummary ({
       setOrderType('walk-in');
       setFirstName('');
       setLastName('');
-      setPhone('');
+      setPhoneNumber('');
       setShowPayment(false);
       setActivePendingOrder(null);
       setStatusMessage('Payment completed');
@@ -144,7 +145,7 @@ export default function CartSummary ({
     setOrderType('walk-in');
     setFirstName('');
     setLastName('');
-    setPhone('');
+    setPhoneNumber('');
     setShowPayment(false);
     setActivePendingOrder(null);
     setStatusMessage('Pending payment completed');
@@ -191,13 +192,37 @@ export default function CartSummary ({
           </button>
         </div>
 
-        <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-purple-900">Order type</span>
-            <span className="text-xs uppercase text-purple-700">
+        <div className="rounded-md border border-purple-200 bg-white p-1 px-3 text-sm text-purple-700 text-center">
+          <>
+            <span className="font-semibold text-purple-900">Order type: </span>
+            <span className="ml-1 text-xs uppercase text-purple-700">
               {orderType === 'takeout' ? 'Takeout' : 'Walk-in'}
             </span>
-          </div>
+          </>
+          {(firstName || lastName || phoneNumber) && (
+            <div>
+              {(firstName || lastName) && (
+                <div>
+                  <span className="font-semibold text-purple-900">Name: </span>
+                  <span className="ml-1 text-xs text-purple-700">
+                    {firstName} {lastName}
+                  </span>
+                </div>
+              )}
+              {phoneNumber && (
+                <div>
+                  <span className="font-semibold text-purple-900">phoneNumber: </span>
+                  <span className="ml-1 text-xs text-purple-700">{phoneNumber}</span>
+                </div>
+              )}
+              <div>
+                <span className="font-semibold text-purple-900">Status: </span>
+                <span className="text-xs font-bold uppercase">
+                  {isPaid ? 'Paid' : 'Not paid'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
 

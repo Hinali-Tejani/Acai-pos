@@ -179,8 +179,8 @@ function App () {
           setFirstName={setFirstName}
           lastName={lastName}
           setLastName={setLastName}
-          phone={phoneNumber}
-          setPhone={setPhoneNumber}
+          phoneNumber={phoneNumber}
+          setPhoneNumber={setPhoneNumber}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
         />
       </div>
@@ -193,8 +193,8 @@ function App () {
         setFirstName={setFirstName}
         lastName={lastName}
         setLastName={setLastName}
-        phone={phoneNumber}
-        setPhone={setPhoneNumber}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
       />
 
       {pendingPaymentOrder && (

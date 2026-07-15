@@ -7,8 +7,8 @@ export default function OrderTypeForm ({
   setFirstName,
   lastName,
   setLastName,
-  phone,
-  setPhone,
+  phoneNumber,
+  setPhoneNumber,
   onSubmit,
   onCancel,
 }) {
@@ -30,8 +30,8 @@ export default function OrderTypeForm ({
         setFirstName={setFirstName}
         lastName={lastName}
         setLastName={setLastName}
-        phone={phone}
-        setPhone={setPhone}
+        phoneNumber={phoneNumber}
+        setPhoneNumber={setPhoneNumber}
         required={orderType === 'takeout'}
         onSubmit={onSubmit}
         onCancel={onCancel}

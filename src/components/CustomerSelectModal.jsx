@@ -277,8 +277,8 @@ export default function CustomerSelectModal ({
               setFirstName={setFormFirstName}
               lastName={formLastName}
               setLastName={setFormLastName}
-              phone={formPhoneNumber}
-              setPhone={setFormPhoneNumber}
+              phoneNumber={formPhoneNumber}
+              setPhoneNumber={setFormPhoneNumber}
               required={true}
               onSubmit={handleCustomerSubmit}
               onCancel={resetForm}
