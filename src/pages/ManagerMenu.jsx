@@ -14,17 +14,7 @@ export default function ManagerMenu () {
       id: 'reports',
       label: 'Sales Reports',
       action: () => {},
-    },
-    {
-      id: 'inventory',
-      label: 'Inventory',
-      action: () => {},
-    },
-    {
-      id: 'employees',
-      label: 'Employee Management',
-      action: () => {},
-    },
+    }
   ];
 
   return (
