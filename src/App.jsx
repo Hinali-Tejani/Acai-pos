@@ -27,6 +27,12 @@ function App () {
     toggleAllergy,
     selectItem,
     addToCart,
+    refundCart,
+    addToRefundCart,
+    removeRefundItem,
+    updateRefundQuantity,
+    clearRefundCart,
+    refundTotal,
     removeCartItem,
     clearCart,
     resetSelection,
@@ -135,6 +141,12 @@ function App () {
             activeItems={activeItems}
             activeCategoryName={activeCategoryName}
             onSelectItem={handleSelectItem}
+            refundCart={refundCart}
+            addToRefundCart={addToRefundCart}
+            removeRefundItem={removeRefundItem}
+            updateRefundQuantity={updateRefundQuantity}
+            clearRefundCart={clearRefundCart}
+            refundTotal={refundTotal}
             selectedItem={selectedItem}
             chosenSize={chosenSize}
             setChosenSize={setChosenSize}
@@ -182,6 +194,12 @@ function App () {
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
+          refundCart={refundCart}
+          addToRefundCart={addToRefundCart}
+          removeRefundItem={removeRefundItem}
+          updateRefundQuantity={updateRefundQuantity}
+          clearRefundCart={clearRefundCart}
+          refundTotal={refundTotal}
         />
       </div>
 

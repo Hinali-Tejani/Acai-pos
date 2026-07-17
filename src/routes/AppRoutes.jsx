@@ -3,6 +3,8 @@ import {Routes, Route} from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import CategoryProductsPage from '../pages/CategoryProductsPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
+import ManagerMenu from '../pages/ManagerMenu';
+import RefundScreen from '../pages/RefundScreen';
 import NotFoundPage from '../pages/NotFoundPage';
 
 export default function AppRoutes({
@@ -10,6 +12,12 @@ export default function AppRoutes({
   activeItems,
   activeCategoryName,
   onSelectItem,
+  refundCart,
+  addToRefundCart,
+  removeRefundItem,
+  updateRefundQuantity,
+  clearRefundCart,
+  refundTotal,
   selectedItem,
   chosenSize,
   setChosenSize,
@@ -107,6 +115,23 @@ export default function AppRoutes({
             onAddToCart={onAddToCart}
             onBack={onBack}
             activeCategory={activeCategory}
+          />
+        }
+      />
+      <Route
+        path="/manager-menu"
+        element={<ManagerMenu />}
+      />
+      <Route
+        path="/manager/refund"
+        element={
+          <RefundScreen
+            refundCart={refundCart}
+            addToRefundCart={addToRefundCart}
+            removeRefundItem={removeRefundItem}
+            updateRefundQuantity={updateRefundQuantity}
+            clearRefundCart={clearRefundCart}
+            refundTotal={refundTotal}
           />
         }
       />

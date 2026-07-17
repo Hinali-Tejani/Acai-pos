@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import OrderTypeForm from './OrderTypeForm';
 import PopUp from './PopUp';
+import ManagerPasswordModal from './ManagerPasswordModal';
+import { API_CONFIG } from '../config/apiConfig';
 
 const quickActions = [
   {
@@ -37,7 +40,9 @@ export default function HomeActions({
   isTakeoutModalOpen,
   setIsTakeoutModalOpen,
 }) {
+  const navigate = useNavigate();
   const [activeAction, setActiveAction] = useState('');
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const handleSelectAction = (nextType) => {
     if (nextType === 'walk-in' || nextType === 'takeout') {
@@ -47,8 +52,18 @@ export default function HomeActions({
       return;
     }
 
+    if (nextType === 'manager-menu') {
+      setShowPasswordModal(true);
+      return;
+    }
+
     setActiveAction(nextType);
     setIsTakeoutModalOpen(false);
+  };
+
+  const handlePasswordVerified = () => {
+    setShowPasswordModal(false);
+    navigate('/manager-menu');
   };
 
   const popupTitle = activeAction === 'takeout'
@@ -108,6 +123,12 @@ export default function HomeActions({
           />
         </div>
       </PopUp>
+
+      <ManagerPasswordModal
+        isOpen={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        onSuccess={handlePasswordVerified}
+      />
     </div>
   );
 }

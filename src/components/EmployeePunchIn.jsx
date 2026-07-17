@@ -3,8 +3,7 @@ import EmployeeList from './EmployeeList';
 import PopUp from './PopUp';
 import { useEmployeeState } from '../state/EmployeeState';
 import { useEmployeeData } from '../context/EmployeeContext';
-
-const MANAGER_PASSWORD = '1234';
+import { API_CONFIG } from '../config/apiConfig';
 
 export default function EmployeePunchIn () {
     const [statusMessage, setStatusMessage] = useState('');
@@ -18,7 +17,7 @@ export default function EmployeePunchIn () {
         const enteredPassword = window.prompt(action === 'in' ? 'Enter manager password to punch in' : 'Enter manager password to punch out');
 
 
-        if (enteredPassword !== MANAGER_PASSWORD) {
+        if (enteredPassword !== API_CONFIG.MANAGER_PASSWORD) {
             setStatusMessage('Incorrect manager password');
             return;
         }
