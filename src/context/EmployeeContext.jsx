@@ -51,6 +51,7 @@ export function EmployeeProvider({ children }) {
     const now = new Date();
     const workdate = now.toISOString();
     const punchTime = new Date().toTimeString().split(' ')[0];
+    //workdate.split('T')[1]
 
     try {
       const response = await updateEmployeeShift({
