@@ -1,5 +1,5 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 
 import PendingPaymentOrdersPopup from './PendingPaymentOrdersPopup';
 import CustomerSelectModal from './CustomerSelectModal';
@@ -18,6 +18,7 @@ export default function Sidebar ({
   onPayPendingOrder,
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
   const [isPendingOrdersOpen, setIsPendingOrdersOpen] = React.useState(false);
 
@@ -60,7 +61,10 @@ export default function Sidebar ({
             onClick={() => {
               onCategoryChange(cat.id);
               onResetItem();
-              navigate(`/products/${cat.id}`);
+              // If we're on a manager screen (refund), don't navigate away — let the page stay
+              if (!location.pathname.startsWith('/manager')) {
+                navigate(`/products/${cat.id}`);
+              }
             }}
             className={`w-full rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === cat.id
               ? 'border-purple-900 border-2'

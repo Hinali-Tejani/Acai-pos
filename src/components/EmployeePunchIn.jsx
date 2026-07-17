@@ -1,30 +1,30 @@
 import React, {useMemo, useState} from 'react';
 import EmployeeList from './EmployeeList';
 import PopUp from './PopUp';
+import ManagerPasswordModal from './ManagerPasswordModal';
 import { useEmployeeState } from '../state/EmployeeState';
 import { useEmployeeData } from '../context/EmployeeContext';
-
-const MANAGER_PASSWORD = '1234';
 
 export default function EmployeePunchIn () {
     const [statusMessage, setStatusMessage] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState(null);
     const { employeeRows, selectedEmployee, setSelectedEmployee } = useEmployeeState();
     const { punchEmployee } = useEmployeeData();
 
     const activeEmployeeName = useMemo(() => selectedEmployee?.name ?? 'No employee selected', [selectedEmployee]);
 
     const handlePunchAction = (action) => {
-        const enteredPassword = window.prompt(action === 'in' ? 'Enter manager password to punch in' : 'Enter manager password to punch out');
+        setPendingAction(action);
+        setShowPasswordModal(true);
+    };
 
-
-        if (enteredPassword !== MANAGER_PASSWORD) {
-            setStatusMessage('Incorrect manager password');
-            return;
-        }
-
+    const handlePasswordVerified = () => {
+        setShowPasswordModal(false);
         setIsModalOpen(true);
-        setStatusMessage(action === 'in' ? 'Select an employee to punch in' : 'Select an employee to punch out');
+        setStatusMessage(pendingAction === 'in' ? 'Select an employee to punch in' : 'Select an employee to punch out');
+        setPendingAction(null);
     };
 
     const handleEmployeePunchIn = (employee) => {
@@ -84,6 +84,12 @@ export default function EmployeePunchIn () {
                     onPunchOut={handleEmployeePunchOut}
                 />
             </PopUp>
+
+            <ManagerPasswordModal
+                isOpen={showPasswordModal}
+                onClose={() => {setShowPasswordModal(false); setPendingAction(null);}}
+                onSuccess={handlePasswordVerified}
+            />
         </div>
     );
 }

@@ -41,6 +41,7 @@ export function MenuStateProvider ({children}) {
     <MenuStateContext.Provider value={{
       categories,
       activeItems,
+      activeCategory,
       loading,
       itemsLoading,
       error: menuError,

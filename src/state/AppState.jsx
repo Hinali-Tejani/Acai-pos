@@ -15,6 +15,7 @@ const useAppState = () => {
     const [selectedToppings, setSelectedToppings] = useState([]);
     const [selectedAllergies, setSelectedAllergies] = useState([]);
     const [cart, setCart] = useState([]);
+    const [refundCart, setRefundCart] = useState([]);
     const [sizeOptions, setSizeOptions] = useState([]);
     const [sizesLoading, setSizesLoading] = useState(false);
     const [priceCache, setPriceCache] = useState({}); // Cache for item+size prices
@@ -198,7 +199,7 @@ const useAppState = () => {
     const calculateItemPrice = (item, size = chosenSize, toppings = selectedToppings) => {
         // Use API-fetched price as base if available
         const basePrice = itemPrice || parseFloat(item.price || item.submenuPrice || 0) || 10;
-        
+
         // Add toppings cost
         const toppingsMod = toppings.reduce((sum, topping) => sum + (topping.price || 0), 0);
         return Math.max(0, basePrice + toppingsMod);
@@ -249,6 +250,38 @@ const useAppState = () => {
         ]);
     };
 
+    const addToRefundCart = (item) => {
+        if (!item) return;
+        const uid = item.uid || Date.now().toString();
+        const existing = refundCart.find(i => i.uid === uid);
+        if (existing) {
+            setRefundCart((current) => current.map(i => i.uid === uid ? {...i, quantity: i.quantity + 1} : i));
+            return;
+        }
+        setRefundCart((current) => ([
+            ...current,
+            {
+                uid,
+                id: item.id,
+                name: item.submenuName || item.itemName || item.name || 'Item',
+                finalPrice: -(parseFloat(item.submenuPrice || item.price || 0) || 0),
+                quantity: 1,
+            }
+        ]));
+    };
+
+    const removeRefundItem = (uid) => {
+        setRefundCart((current) => current.filter(item => item.uid !== uid));
+    };
+
+    const updateRefundQuantity = (uid, delta) => {
+        setRefundCart((current) => current.map(item => item.uid === uid ? {...item, quantity: Math.max(1, item.quantity + delta)} : item));
+    };
+
+    const clearRefundCart = () => setRefundCart([]);
+
+    const refundTotal = refundCart.reduce((sum, item) => sum + (item.finalPrice * (item.quantity || 1)), 0);
+
     const updateCartItem = (uid, changes) => {
         setCart((currentCart) => currentCart.map((it) => it.uid === uid ? {...it, ...changes} : it));
     };
@@ -289,7 +322,12 @@ const useAppState = () => {
         addOns,
         addOnsLoading,
         allergies,
-        allergiesLoading
+        allergiesLoading, refundCart,
+        addToRefundCart,
+        removeRefundItem,
+        updateRefundQuantity,
+        clearRefundCart,
+        refundTotal
     };
 }
 

@@ -1,7 +1,11 @@
 import React from 'react';
+import {useLocation} from 'react-router-dom';
 import EmployeePunchIn from './EmployeePunchIn';
 import Payment from './Payment';
 import CheckoutTicket from './CheckoutTicket';
+import RefundTicket from './RefundTicket';
+import ManagerPasswordModal from './ManagerPasswordModal';
+import {processRefund} from '../services/refundApi';
 
 export default function CartSummary ({
   cart,
@@ -18,10 +22,18 @@ export default function CartSummary ({
   phoneNumber,
   setPhoneNumber,
   onRequestTakeoutFormOpen,
+  refundCart = [],
+  refundTotal = 0,
+  removeRefundItem,
+  updateRefundQuantity,
+  clearRefundCart,
 }) {
+  const location = useLocation();
+  const isRefundRoute = location.pathname.startsWith('/manager/refund');
 
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
+  const refundGrandTotal = Math.abs(Number(refundTotal) || 0);
 
   const isTakeout = orderType === 'takeout';
   const isCartEmpty = cart.length === 0;
@@ -31,10 +43,22 @@ export default function CartSummary ({
   const [paymentTotalDue, setPaymentTotalDue] = React.useState(grandTotal.toFixed(2));
   const [activePendingOrder, setActivePendingOrder] = React.useState(null);
   const [statusMessage, setStatusMessage] = React.useState('');
+  const [showRefundPayment, setShowRefundPayment] = React.useState(false);
+  const [showRefundPasswordModal, setShowRefundPasswordModal] = React.useState(false);
+  const [refundPaymentDetails, setRefundPaymentDetails] = React.useState(null);
 
   React.useEffect(() => {
     setPaymentTotalDue(grandTotal.toFixed(2));
   }, [grandTotal]);
+
+  React.useEffect(() => {
+    if (!isRefundRoute) {
+      setShowRefundPayment(false);
+      setShowRefundPasswordModal(false);
+      setRefundPaymentDetails(null);
+      return;
+    }
+  }, [isRefundRoute]);
 
   const buildPendingOrder = () => ({
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -163,6 +187,43 @@ export default function CartSummary ({
     });
   };
 
+  const handleProceedToRefundPayment = () => {
+    if (!refundCart.length) return;
+    setShowRefundPasswordModal(true);
+  };
+
+  const handleRefundPasswordVerified = () => {
+    setShowRefundPasswordModal(false);
+    setShowRefundPayment(true);
+  };
+
+  const handleRefundPaymentComplete = async (details) => {
+    try {
+      const refundData = {
+        items: refundCart,
+        refundAmount: refundGrandTotal,
+        paymentMethod: details.method,
+        cashReceived: details.cashPaid,
+        changeGiven: details.change,
+        processedBy: 'Manager',
+        processedAt: new Date().toISOString(),
+      };
+
+      await processRefund(refundData);
+      setRefundPaymentDetails(details);
+      clearRefundCart?.();
+      setShowRefundPayment(false);
+      setStatusMessage('Refund completed');
+    } catch (error) {
+      console.error('Failed to process refund:', error);
+      alert('Failed to process refund. Please try again.');
+    }
+  };
+
+  const handleCloseRefundPayment = () => {
+    setShowRefundPayment(false);
+  };
+
   const handleRemovePendingOrder = (orderId) => {
     setStatusMessage(`Pending payment ${orderId} should be removed from the popup list.`);
   };
@@ -226,15 +287,27 @@ export default function CartSummary ({
         </div>
 
 
-        <CheckoutTicket
-          cart={cart}
-          cartTotal={cartTotal}
-          onRemoveItem={onRemoveItem}
-          onRepeatItem={onRepeatItem}
-          onPayNow={handlePayNow}
-          onPayLater={handlePayLater}
-          isCartEmpty={isCartEmpty}
-        />
+        {isRefundRoute ? (
+          <RefundTicket
+            refundCart={refundCart}
+            refundTotal={refundTotal}
+            onRemoveItem={removeRefundItem}
+            onUpdateItem={updateRefundQuantity}
+            onClearCart={clearRefundCart}
+            onProceedToRefund={handleProceedToRefundPayment}
+            isCartEmpty={refundCart.length === 0}
+          />
+        ) : (
+          <CheckoutTicket
+            cart={cart}
+            cartTotal={cartTotal}
+            onRemoveItem={onRemoveItem}
+            onRepeatItem={onRepeatItem}
+            onPayNow={handlePayNow}
+            onPayLater={handlePayLater}
+            isCartEmpty={isCartEmpty}
+          />
+        )}
       </div>
 
       {showPayment && (
@@ -243,6 +316,28 @@ export default function CartSummary ({
           onPaymentComplete={handlePaymentComplete}
           onClose={handleClosePayment}
         />
+      )}
+
+      {showRefundPasswordModal && (
+        <ManagerPasswordModal
+          isOpen={showRefundPasswordModal}
+          onClose={() => setShowRefundPasswordModal(false)}
+          onSuccess={handleRefundPasswordVerified}
+        />
+      )}
+
+      {showRefundPayment && (
+        <Payment
+          totalDue={refundGrandTotal.toFixed(2)}
+          onPaymentComplete={handleRefundPaymentComplete}
+          onClose={handleCloseRefundPayment}
+        />
+      )}
+
+      {refundPaymentDetails && isRefundRoute && (
+        <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
+          Refund completed
+        </div>
       )}
       <EmployeePunchIn />
     </div>
