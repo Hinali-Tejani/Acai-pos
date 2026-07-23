@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useMenuState} from './state/MenuState';
 import useAppState, {BASE_OPTIONS} from './state/AppState';
+import {useThermalPrinter} from './hooks/useThermalPrinter';
 import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
@@ -11,6 +12,7 @@ import TakeoutDetailsModal from './components/TakeoutDetailsModal';
 import {PENDING_PAYMENTS_STORAGE_KEY} from './components/PendingPaymentOrdersPopup';
 
 function App () {
+  const {device, connectPrinter, printRaw} = useThermalPrinter();
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
   const {
     activeCategory,
@@ -141,6 +143,8 @@ function App () {
             activeItems={activeItems}
             activeCategoryName={activeCategoryName}
             onSelectItem={handleSelectItem}
+            printerDevice={device}
+            connectPrinter={connectPrinter}
             refundCart={refundCart}
             addToRefundCart={addToRefundCart}
             removeRefundItem={removeRefundItem}
@@ -194,6 +198,7 @@ function App () {
           phoneNumber={phoneNumber}
           setPhoneNumber={setPhoneNumber}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
+          printRaw={printRaw}
           refundCart={refundCart}
           addToRefundCart={addToRefundCart}
           removeRefundItem={removeRefundItem}

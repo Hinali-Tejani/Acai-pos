@@ -10,7 +10,7 @@ export async function getRefundableOrders () {
     try {
         // const response = await api.get('/Refunds/GetRefundableOrders');
         // return response.data;
-        
+
         // Placeholder - returns empty array until API is connected
         return [];
     } catch (error) {
@@ -33,10 +33,14 @@ export async function processRefund (refundData) {
         //     processedAt: new Date().toISOString(),
         // });
         // return response.data;
-        
+
         // Placeholder - returns success until API is connected
         console.log('Refund processed (placeholder):', refundData);
-        return { success: true, refundId: Date.now() };
+        // navigate to a home page and show a success message with the refund ID
+        // navigate('/');
+        // Replace with actual navigation logic
+
+        return {success: true, refundId: Date.now()};
     } catch (error) {
         console.error('Failed to process refund:', error);
         throw error;
@@ -48,7 +52,7 @@ export async function getRefundHistory (params = {}) {
     try {
         // const response = await api.get('/Refunds/GetRefundHistory', { params });
         // return response.data;
-        
+
         // Placeholder - returns empty array until API is connected
         return [];
     } catch (error) {
@@ -62,10 +66,10 @@ export async function cancelRefund (refundId) {
     try {
         // const response = await api.post(`/Refunds/CancelRefund/${refundId}`);
         // return response.data;
-        
+
         // Placeholder - returns success until API is connected
         console.log('Refund cancelled (placeholder):', refundId);
-        return { success: true };
+        return {success: true};
     } catch (error) {
         console.error('Failed to cancel refund:', error);
         throw error;
