@@ -6,6 +6,7 @@ import CheckoutTicket from './CheckoutTicket';
 import RefundTicket from './RefundTicket';
 import ManagerPasswordModal from './ManagerPasswordModal';
 import {processRefund} from '../services/refundApi';
+import {createReceiptBytes} from '../utils/receiptGenerator';
 
 export default function CartSummary ({
   cart,
@@ -27,6 +28,7 @@ export default function CartSummary ({
   removeRefundItem,
   updateRefundQuantity,
   clearRefundCart,
+  printRaw,
 }) {
   const location = useLocation();
   const isRefundRoute = location.pathname.startsWith('/manager/refund');
@@ -59,6 +61,15 @@ export default function CartSummary ({
       return;
     }
   }, [isRefundRoute]);
+
+  const printReceipt = async (receiptData) => {
+    try {
+      const bytes = createReceiptBytes(receiptData);
+      await printRaw(bytes);
+    } catch (error) {
+      console.error('Receipt printing failed:', error);
+    }
+  };
 
   const buildPendingOrder = () => ({
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -153,7 +164,17 @@ export default function CartSummary ({
     setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
   };
 
-  const handlePaymentComplete = () => {
+  const handlePaymentComplete = async (details) => {
+    const receiptOrder = {
+      id: activePendingOrder?.id || 'current-order',
+      items: activePendingOrder?.items || cart,
+      total: Number(activePendingOrder?.totalDue ?? grandTotal) || 0,
+      paymentMethod: details?.method,
+      kind: 'sale',
+    };
+
+    await printReceipt(receiptOrder);
+
     if (activePendingOrder?.source !== 'pending') {
       onClearCart();
       setOrderType('walk-in');
@@ -210,6 +231,14 @@ export default function CartSummary ({
       };
 
       await processRefund(refundData);
+      await printReceipt({
+        id: `refund-${Date.now()}`,
+        items: refundCart,
+        total: refundGrandTotal,
+        paymentMethod: details?.method,
+        kind: 'refund',
+        isRefund: true,
+      });
       setRefundPaymentDetails(details);
       clearRefundCart?.();
       setShowRefundPayment(false);

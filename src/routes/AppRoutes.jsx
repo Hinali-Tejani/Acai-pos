@@ -12,6 +12,8 @@ export default function AppRoutes({
   activeItems,
   activeCategoryName,
   onSelectItem,
+  printerDevice,
+  connectPrinter,
   refundCart,
   addToRefundCart,
   removeRefundItem,
@@ -120,7 +122,7 @@ export default function AppRoutes({
       />
       <Route
         path="/manager-menu"
-        element={<ManagerMenu />}
+        element={<ManagerMenu connectPrinter={connectPrinter} printerDevice={printerDevice} />}
       />
       <Route
         path="/manager/refund"

@@ -1,8 +1,14 @@
 import React from 'react';
 import {useNavigate} from 'react-router-dom';
 
-export default function ManagerMenu () {
+export default function ManagerMenu ({connectPrinter, printerDevice}) {
   const navigate = useNavigate();
+
+  const handleConnectPrinter = async () => {
+    if (connectPrinter) {
+      await connectPrinter();
+    }
+  };
 
   const menuItems = [
     {
@@ -23,6 +29,22 @@ export default function ManagerMenu () {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-purple-900">Manager Menu</h1>
           <p className="mt-2 text-sm text-purple-600">Select an action to perform</p>
+        </div>
+
+        <div className="mb-6 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <div className="text-sm font-semibold text-purple-900">Thermal Printer</div>
+                <div className="text-xs text-purple-600">{printerDevice ? 'Connected' : 'Not connected'}</div>
+            </div>
+            <button
+              type="button"
+              onClick={handleConnectPrinter}
+              className="rounded-xl bg-purple-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
+            >
+              Connect Printer
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">

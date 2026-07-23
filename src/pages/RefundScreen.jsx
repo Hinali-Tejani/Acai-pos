@@ -1,13 +1,20 @@
-import React, {useState, useMemo} from 'react';
+import React, {useState, useMemo, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {useMenuState} from '../state/MenuState';
 import ProductGrid from '../components/ProductGrid';
 
 export default function RefundScreen ({addToRefundCart}) {
   const navigate = useNavigate();
-  const {categories, activeItems, activeCategory, loading, itemsLoading} = useMenuState();
+  const {categories, activeItems, activeCategory, loading, itemsLoading, loadSubmenu} = useMenuState();
 
   const activeCategoryName = useMemo(() => categories.find(cat => cat.id === activeCategory)?.name || 'Category', [categories, activeCategory]);
+
+  // Load menu on mount
+  useEffect(() => {
+    if (activeCategory) {
+        loadSubmenu(activeCategory);
+    }
+  }, []);
 
   const handleSelectItem = (item) => {
     addToRefundCart?.(item);
