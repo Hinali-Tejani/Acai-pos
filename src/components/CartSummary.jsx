@@ -6,6 +6,7 @@ import CheckoutTicket from './CheckoutTicket';
 import RefundTicket from './RefundTicket';
 import ManagerPasswordModal from './ManagerPasswordModal';
 import {processRefund} from '../services/refundApi';
+import {processOrder} from '../services/checkoutApi';
 import {createReceiptBytes} from '../utils/receiptGenerator';
 
 export default function CartSummary ({
@@ -71,6 +72,40 @@ export default function CartSummary ({
     }
   };
 
+  const buildProcessOrderPayload = (orderItems, details, totalAmount, opts = {}) => {
+    const subtotal = Number(cartTotal) || 0;
+    const taxAmount = Number(estimatedTax) || 0;
+    const parsedTotal = Number(totalAmount);
+
+    return {
+      totalAmt: Number.isFinite(parsedTotal) ? parsedTotal : subtotal + taxAmount,
+      subTotal: subtotal,
+      tax: taxAmount,
+      customerInfo: {
+        customerID: 0,
+        firstName: firstName || '',
+        lastName: lastName || '',
+        email: '',
+        phoneNumber: phoneNumber || '',
+        address: '',
+        zipCode: '',
+        password: '',
+        isGuest: true,
+      },
+      paymentMethod: details?.method || '',
+      ispaymentPending: !!opts.isPaymentPending,
+      items: orderItems.map((item) => ({
+        itemID: Number(item.itemID ?? item.id ?? 0) || 0,
+        qty: Number(item.quantity) || 1,
+        price: Number(item.basePrice ?? item.price ?? 0) || 0,
+        totalPrice: (Number(item.finalPrice ?? item.totalPrice ?? 0) || 0) * (Number(item.quantity) || 1),
+        sizeID: Number(item.sizeID ?? 0) || 0,
+        name: item.name || '',
+        toppings: Array.isArray(item.toppingDetails) ? item.toppingDetails : [],
+      })),
+    };
+  };
+
   const buildPendingOrder = () => ({
     id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
     createdAt: new Date().toISOString(),
@@ -130,7 +165,7 @@ export default function CartSummary ({
     openPaymentForOrder();
   };
 
-  const handlePayLater = () => {
+  const handlePayLater = async () => {
     if (isCartEmpty) return;
     if (isTakeout) {
       const trimmedFirstName = firstName.trim();
@@ -151,17 +186,33 @@ export default function CartSummary ({
       }
     }
 
-    const nextOrder = buildPendingOrder();
-    const raw = window.localStorage.getItem('acai-pos-pending-payments');
-    const currentOrders = raw ? JSON.parse(raw) : [];
-    const nextOrders = [nextOrder, ...currentOrders];
-    window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
-    onClearCart();
-    setOrderType('walk-in');
-    setFirstName('');
-    setLastName('');
-    setPhoneNumber('');
-    setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
+    // Build payload and create a pending order on the API (ispaymentPending = true)
+    const processOrderPayload = buildProcessOrderPayload(cart, null, grandTotal, { isPaymentPending: true });
+
+    try {
+      const resp = await processOrder(processOrderPayload);
+
+      const nextOrder = buildPendingOrder();
+      // If the API returned an id, use it for the pending order tracking
+      if (resp && (resp.id || resp.orderId)) {
+        nextOrder.id = resp.id || resp.orderId;
+      }
+
+      const raw = window.localStorage.getItem('acai-pos-pending-payments');
+      const currentOrders = raw ? JSON.parse(raw) : [];
+      const nextOrders = [nextOrder, ...currentOrders];
+      window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
+
+      onClearCart();
+      setOrderType('walk-in');
+      setFirstName('');
+      setLastName('');
+      setPhoneNumber('');
+      setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
+    } catch (error) {
+      console.error('Failed to create pending order:', error);
+      alert('Failed to save pending order. Please try again.');
+    }
   };
 
   const handlePaymentComplete = async (details) => {
@@ -173,7 +224,17 @@ export default function CartSummary ({
       kind: 'sale',
     };
 
-    await printReceipt(receiptOrder);
+    const orderItems = activePendingOrder?.items || cart;
+    const processOrderPayload = buildProcessOrderPayload(orderItems, details, activePendingOrder?.totalDue ?? grandTotal);
+
+    try {
+      await processOrder(processOrderPayload);
+      await printReceipt(receiptOrder);
+    } catch (error) {
+      console.error('Failed to process order:', error);
+      alert('Failed to process order. Please try again.');
+      return;
+    }
 
     if (activePendingOrder?.source !== 'pending') {
       onClearCart();

@@ -3,6 +3,7 @@
 export function createReceiptBytes (order) {
     const encoder = new TextEncoder();
     const commands = [];
+    const totalAmount = Number(order?.total ?? order?.totalAmt ?? order?.refundAmount ?? 0) || 0;
 
     // ESC/POS Native Hex Command Constants
     const ESC = 0x1B;
@@ -47,18 +48,22 @@ export function createReceiptBytes (order) {
     writeLine("--------------------------------");
 
     // 4. Line Items Grid Calculation
-    order.items.forEach((item) => {
+    (order.items || []).forEach((item) => {
         // 1. Fallback for safe naming strings
         const itemName = item.name || "Unknown Item";
+        const quantity = Number(item.quantity || item.qty || 1) || 1;
 
         // 2. Fallback to 0 if the price is missing or undefined
-        const itemPrice = typeof item.price === 'number' ? item.price : Number(item.price || 0);
+        const itemPrice = typeof item.price === 'number'
+            ? item.price
+            : Number(item.price ?? item.finalPrice ?? item.totalPrice ?? 0);
+        const lineTotal = itemPrice * quantity;
 
         // Left side: item name trimmed or padded to exactly 20 characters
         const namePart = itemName.padEnd(20, ' ').substring(0, 20);
 
         // Right side: currency amount padded to exactly 12 characters
-        const pricePart = `$${itemPrice.toFixed(2)}`.padStart(12, ' ');
+        const pricePart = `$${lineTotal.toFixed(2)}`.padStart(12, ' ');
 
         writeLine(`${namePart}${pricePart}`);
     });
@@ -66,7 +71,7 @@ export function createReceiptBytes (order) {
     // 5. Total Calculations Summary
     writeLine("--------------------------------");
     commands.push(...CENTER, ...BOLD_ON);
-    writeLine(`TOTAL AMOUNT: $${order.total.toFixed(2)}`);
+    writeLine(`TOTAL AMOUNT: $${totalAmount.toFixed(2)}`);
 
     // 6. Footer Content
     commands.push(...BOLD_OFF);

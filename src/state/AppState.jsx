@@ -233,16 +233,45 @@ const useAppState = () => {
 
     const addToCart = (item, finalPrice) => {
         if (!item) return;
+        const selectedSizeObj = sizeOptions.find((size) => size.label === chosenSize);
+        const sizeID = selectedSizeObj?.id || item.sizeID || 0;
+        const toppingDetails = selectedToppings.map((topping) => ({
+            itemID: item.id || 0,
+            toppingID: topping.id || topping.toppingID || 0,
+            qty: 1,
+            isAddon: true,
+            modifierName: topping.name,
+            isRemovableTopping: false,
+            isAllergy: false,
+            price: Number(topping.price || 0),
+            totalPrice: Number(topping.price || 0),
+        }));
+        const allergyDetails = selectedAllergies.map((allergy) => ({
+            itemID: item.id || 0,
+            toppingID: allergy.id || 0,
+            qty: 1,
+            isAddon: false,
+            modifierName: allergy.name,
+            isRemovableTopping: false,
+            isAllergy: true,
+            price: 0,
+            totalPrice: 0,
+        }));
+
         setCart((currentCart) => [
             ...currentCart,
             {
                 uid: Date.now(),
                 id: item.id,
                 name: item.submenuName || item.itemName || item.name || 'Acai Item',
+                itemID: item.id || 0,
+                sizeID,
                 size: chosenSize || sizeOptions[0]?.label || 'Medium',
                 base: chosenBase,
                 toppings: selectedToppings.map((t) => t.name),
+                toppingDetails,
                 allergies: selectedAllergies.map((a) => a.name),
+                allergyDetails,
                 finalPrice: finalPrice ?? calculateItemPrice(item),
                 quantity: 1,
                 basePrice: itemPrice,
