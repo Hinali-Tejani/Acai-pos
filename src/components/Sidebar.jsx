@@ -12,9 +12,11 @@ export default function Sidebar ({
   firstName,
   lastName,
   phoneNumber,
+  SelectedCustomerID,
   setFirstName,
   setLastName,
   setPhoneNumber,
+  setSelectedCustomerID,
   onPayPendingOrder,
 }) {
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ export default function Sidebar ({
     setFirstName?.(customer.firstName || '');
     setLastName?.(customer.lastName || '');
     setPhoneNumber?.(customer.phoneNumber || '');
+    setSelectedCustomerID?.(customer.customerID ?? null);
   };
 
   return (

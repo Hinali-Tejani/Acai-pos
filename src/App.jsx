@@ -72,9 +72,25 @@ function App () {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedCustomerID, setSelectedCustomerID] = useState(null);
   const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
   const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
   const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
+
+  const handleSetFirstName = (value) => {
+    setFirstName(value);
+    setSelectedCustomerID(null);
+  };
+
+  const handleSetLastName = (value) => {
+    setLastName(value);
+    setSelectedCustomerID(null);
+  };
+
+  const handleSetPhoneNumber = (value) => {
+    setPhoneNumber(value);
+    setSelectedCustomerID(null);
+  };
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -133,6 +149,7 @@ function App () {
         setFirstName={setFirstName}
         setLastName={setLastName}
         setPhoneNumber={setPhoneNumber}
+        setSelectedCustomerID={setSelectedCustomerID}
         onPayPendingOrder={handlePayPendingOrder}
       />
 
@@ -171,11 +188,11 @@ function App () {
             orderType={orderType}
             setOrderType={setOrderType}
             firstName={firstName}
-            setFirstName={setFirstName}
+            setFirstName={handleSetFirstName}
             lastName={lastName}
-            setLastName={setLastName}
+            setLastName={handleSetLastName}
             phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
+            setPhoneNumber={handleSetPhoneNumber}
             isTakeoutModalOpen={isTakeoutModalOpen}
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
@@ -192,11 +209,13 @@ function App () {
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}
-          setFirstName={setFirstName}
+          setFirstName={handleSetFirstName}
           lastName={lastName}
-          setLastName={setLastName}
+          setLastName={handleSetLastName}
           phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
+          setPhoneNumber={handleSetPhoneNumber}
+          selectedCustomerID={selectedCustomerID}
+          setSelectedCustomerID={setSelectedCustomerID}
           onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
           printRaw={printRaw}
           refundCart={refundCart}
@@ -213,11 +232,11 @@ function App () {
         onClose={() => setIsTakeoutDetailsOpen(false)}
         orderType={orderType}
         firstName={firstName}
-        setFirstName={setFirstName}
+        setFirstName={handleSetFirstName}
         lastName={lastName}
-        setLastName={setLastName}
+        setLastName={handleSetLastName}
         phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
+        setPhoneNumber={handleSetPhoneNumber}
       />
 
       {pendingPaymentOrder && (

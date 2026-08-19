@@ -39,7 +39,7 @@ export async function processOrder (orderPayload) {
         subTotal: normalizeMoney(orderPayload?.subTotal),
         tax: normalizeMoney(orderPayload?.tax),
         customerInfo: {
-            customerID: Number(orderPayload?.customerInfo?.customerID ?? 0) || 0,
+            customerID: orderPayload?.customerInfo?.customerID ?? 0,
             firstName: orderPayload?.customerInfo?.firstName || '',
             lastName: orderPayload?.customerInfo?.lastName || '',
             email: orderPayload?.customerInfo?.email || '',

@@ -23,6 +23,8 @@ export default function CartSummary ({
   setLastName,
   phoneNumber,
   setPhoneNumber,
+  selectedCustomerID,
+  setSelectedCustomerID,
   onRequestTakeoutFormOpen,
   refundCart = [],
   refundTotal = 0,
@@ -82,7 +84,7 @@ export default function CartSummary ({
       subTotal: subtotal,
       tax: taxAmount,
       customerInfo: {
-        customerID: 0,
+        customerID: selectedCustomerID ?? 0,
         firstName: firstName || '',
         lastName: lastName || '',
         email: '',
@@ -90,7 +92,7 @@ export default function CartSummary ({
         address: '',
         zipCode: '',
         password: '',
-        isGuest: true,
+        isGuest: !selectedCustomerID,
       },
       paymentMethod: details?.method || '',
       ispaymentPending: !!opts.isPaymentPending,
@@ -187,15 +189,15 @@ export default function CartSummary ({
     }
 
     // Build payload and create a pending order on the API (ispaymentPending = true)
-    const processOrderPayload = buildProcessOrderPayload(cart, null, grandTotal, { isPaymentPending: true });
+    const processOrderPayload = buildProcessOrderPayload(cart, null, grandTotal, {isPaymentPending: true});
 
     try {
       const resp = await processOrder(processOrderPayload);
 
       const nextOrder = buildPendingOrder();
       // If the API returned an id, use it for the pending order tracking
-      if (resp && (resp.id || resp.orderId)) {
-        nextOrder.id = resp.id || resp.orderId;
+      if (resp && resp.orderID) {
+        nextOrder.id = resp.orderID;
       }
 
       const raw = window.localStorage.getItem('acai-pos-pending-payments');
@@ -208,6 +210,7 @@ export default function CartSummary ({
       setFirstName('');
       setLastName('');
       setPhoneNumber('');
+      setSelectedCustomerID?.(null);
       setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
     } catch (error) {
       console.error('Failed to create pending order:', error);
@@ -242,6 +245,7 @@ export default function CartSummary ({
       setFirstName('');
       setLastName('');
       setPhoneNumber('');
+      setSelectedCustomerID?.(null);
       setShowPayment(false);
       setActivePendingOrder(null);
       setStatusMessage('Payment completed');
@@ -252,6 +256,7 @@ export default function CartSummary ({
     setFirstName('');
     setLastName('');
     setPhoneNumber('');
+    setSelectedCustomerID?.(null);
     setShowPayment(false);
     setActivePendingOrder(null);
     setStatusMessage('Pending payment completed');
