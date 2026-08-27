@@ -16,7 +16,8 @@ export default function Customizer ({
   allergies,
   currentItemPrice,
   onBack,
-  onAddToCart
+  onAddToCart,
+  editingItemIndex
 }) {
   return (
     <div className="space-y-8 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
@@ -112,13 +113,13 @@ export default function Customizer ({
             className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
             onClick={onAddToCart}
           >
-            Add to order
+            {editingItemIndex !== null ? 'Update Order' : 'Add to order'}
           </button>
           <button
             className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
             onClick={onBack}
           >
-            Cancel
+            {editingItemIndex !== null ? 'Discard Changes' : 'Cancel'}
           </button>
         </div>
       </div>

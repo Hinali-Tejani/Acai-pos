@@ -24,8 +24,10 @@ function App () {
     chosenBase,
     setChosenBase,
     selectedToppings,
+    setSelectedToppings,
     toggleTopping,
     selectedAllergies,
+    setSelectedAllergies,
     toggleAllergy,
     selectItem,
     addToCart,
@@ -75,16 +77,57 @@ function App () {
   const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
   const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
   const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
+  const [editingItemIndex, setEditingItemIndex] = useState(null);
 
   const handleSelectItem = (item) => {
     selectItem(item);
+    setEditingItemIndex(null);
+    navigate(`/product/${item.id}`, {state: {item}});
+  };
+
+  const handleEditLineItem = (index) => {
+    const item = cart[index];
+    if (!item) return;
+
+    setEditingItemIndex(index);
+    setSelectedItem(item);
+    setChosenSize(item.size || sizeOptions[0]?.label || 'Medium');
+    setChosenBase(item.base || BASE_OPTIONS[0]);
+    setSelectedToppings((item.toppings || []).map((topping) => (
+      addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
+    )));
+    setSelectedAllergies((item.allergies || []).map((allergy) => (
+      allergies.find((availableAllergy) => availableAllergy.name === allergy) || {name: allergy, id: allergy}
+    )));
     navigate(`/product/${item.id}`, {state: {item}});
   };
 
   const handleAddToCart = (itemParam) => {
     const item = itemParam || selectedItem;
     if (!item) return;
+
+    if (editingItemIndex !== null) {
+      const itemBeingEdited = cart[editingItemIndex];
+      if (itemBeingEdited) {
+        updateCartItem(itemBeingEdited.uid, {
+          size: chosenSize || sizeOptions[0]?.label || 'Medium',
+          base: chosenBase,
+          toppings: selectedToppings.map((topping) => topping.name),
+          allergies: selectedAllergies.map((allergy) => allergy.name),
+          finalPrice: calculateItemPrice(item),
+          basePrice: itemPrice,
+        });
+      }
+      setEditingItemIndex(null);
+      return;
+    }
+
     addToCart(item, calculateItemPrice(item));
+  };
+
+  const handleDiscardChanges = () => {
+    setEditingItemIndex(null);
+    resetSelection();
   };
 
   const removePendingPaymentOrder = (orderId) => {
@@ -157,6 +200,7 @@ function App () {
             chosenBase={chosenBase}
             setChosenBase={setChosenBase}
             selectedToppings={selectedToppings}
+            editingItemIndex={editingItemIndex}
             onToppingToggle={handleToppingToggle}
             selectedAllergies={selectedAllergies}
             onAllergyToggle={handleAllergyToggle}
@@ -166,7 +210,7 @@ function App () {
             allergies={allergies}
             getItemPrice={calculateCurrentItemPrice}
             onAddToCart={handleAddToCart}
-            onBack={resetSelection}
+            onBack={handleDiscardChanges}
             activeCategory={activeCategory}
             orderType={orderType}
             setOrderType={setOrderType}
@@ -189,6 +233,8 @@ function App () {
           onRemoveItem={removeCartItem}
           onClearCart={clearCart}
           onUpdateItem={updateCartItem}
+          onEditItem={handleEditLineItem}
+          editingItemIndex={editingItemIndex}
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}

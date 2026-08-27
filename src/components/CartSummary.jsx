@@ -14,6 +14,8 @@ export default function CartSummary ({
   onRemoveItem,
   onClearCart,
   onUpdateItem,
+  onEditItem,
+  editingItemIndex,
   orderType,
   setOrderType,
   firstName,
@@ -332,6 +334,8 @@ export default function CartSummary ({
             cartTotal={cartTotal}
             onRemoveItem={onRemoveItem}
             onRepeatItem={onRepeatItem}
+            onEditItem={onEditItem}
+            editingItemIndex={editingItemIndex}
             onPayNow={handlePayNow}
             onPayLater={handlePayLater}
             isCartEmpty={isCartEmpty}
