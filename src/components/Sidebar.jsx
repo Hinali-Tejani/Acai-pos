@@ -15,7 +15,8 @@ export default function Sidebar ({
   setFirstName,
   setLastName,
   setPhoneNumber,
-  onPayPendingOrder,
+  onProcessPayment,
+  isProcessing,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -86,7 +87,6 @@ export default function Sidebar ({
         <button
           className="w-full rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
           onClick={() => setIsCustomerModalOpen(true)}
-          onClick={() => setIsCustomerModalOpen(true)}
         >
           Customer Portal
         </button>
@@ -103,7 +103,8 @@ export default function Sidebar ({
       <PendingPaymentOrdersPopup
         isOpen={isPendingOrdersOpen}
         onClose={() => setIsPendingOrdersOpen(false)}
-        onPayNow={onPayPendingOrder}
+        onProcessPayment={onProcessPayment}
+        isProcessing={isProcessing}
       />
 
       <CustomerSelectModal

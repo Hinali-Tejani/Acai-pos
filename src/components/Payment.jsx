@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose}) {
+export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymentComplete, onClose}) {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [cashAmount, setCashAmount] = useState('');
 
@@ -15,6 +15,14 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
     const receivedCash = Number(cashAmount) || 0;
     const changeDue = receivedCash - currentTotalDue;
     const remainingBalance = currentTotalDue - receivedCash;
+
+    const notifyPaymentComplete = (method, payload) => {
+        if (onProcessPayment) {
+            onProcessPayment(method);
+            return;
+        }
+        onPaymentComplete?.(payload);
+    };
 
     const handleNumPress = (val) => {
         setCashAmount((prev) => {
@@ -48,8 +56,8 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
                 cardPaid: 0,
                 change: receivedCash - currentTotalDue
             };
-            onPaymentComplete?.(payload);
-            resetAndClose(payload);
+            notifyPaymentComplete('CASH', payload);
+            resetAndClose();
         } else {
             // Lock in the cash portion and switch to card for the rest
             setSplitCashPaid((prev) => prev + receivedCash);
@@ -64,10 +72,9 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
         setPaymentMethod('cash');
     };
 
-    const resetAndClose = (payload) => {
+    const resetAndClose = () => {
         handleResetAll();
         onClose?.();
-        onPaymentComplete?.(payload);
     };
 
     const handleSubmitPayment = () => {
@@ -81,7 +88,8 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
                     change: 0
                 }
                 : {method: 'card', amountPaid: total, change: 0};
-            resetAndClose(payload);
+            notifyPaymentComplete('CARD', payload);
+            resetAndClose();
         } else {
             if (receivedCash < currentTotalDue) return;
             const payload = {
@@ -91,7 +99,8 @@ export default function CheckoutPanel ({totalDue = 0, onPaymentComplete, onClose
                 cardPaid: 0,
                 change: changeDue
             };
-            resetAndClose(payload);
+            notifyPaymentComplete('CASH', payload);
+            resetAndClose();
         }
     };
 

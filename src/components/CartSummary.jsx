@@ -16,6 +16,8 @@ export default function CartSummary ({
   onUpdateItem,
   onEditItem,
   editingItemIndex,
+  onProcessPayment,
+  isProcessing,
   orderType,
   setOrderType,
   firstName,
@@ -166,18 +168,22 @@ export default function CartSummary ({
     setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
   };
 
-  const handlePaymentComplete = async (details) => {
-    const receiptOrder = {
-      id: activePendingOrder?.id || 'current-order',
-      items: activePendingOrder?.items || cart,
-      total: Number(activePendingOrder?.totalDue ?? grandTotal) || 0,
-      paymentMethod: details?.method,
-      kind: 'sale',
-    };
+  const handlePaymentComplete = async (method) => {
+    const currentTotalDue = Number(activePendingOrder?.totalDue ?? grandTotal) || 0;
+    const currentOrderId = activePendingOrder?.id;
+    const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
+    try {
+      const paymentSucceeded = await onProcessPayment?.(paymentMethod, currentOrderId, currentTotalDue);
+      if (!paymentSucceeded) return;
 
-    await printReceipt(receiptOrder);
+      await printReceipt({
+        id: currentOrderId || 'current-order',
+        items: activePendingOrder?.items || cart,
+        total: currentTotalDue,
+        paymentMethod: paymentMethod.toLowerCase(),
+        kind: 'sale',
+      });
 
-    if (activePendingOrder?.source !== 'pending') {
       onClearCart();
       setOrderType('walk-in');
       setFirstName('');
@@ -186,16 +192,9 @@ export default function CartSummary ({
       setShowPayment(false);
       setActivePendingOrder(null);
       setStatusMessage('Payment completed');
-      return;
+    } catch (error) {
+      console.error('Payment completion failed:', error);
     }
-    onClearCart();
-    setOrderType('walk-in');
-    setFirstName('');
-    setLastName('');
-    setPhoneNumber('');
-    setShowPayment(false);
-    setActivePendingOrder(null);
-    setStatusMessage('Pending payment completed');
   };
 
   const handleClosePayment = () => {
@@ -338,6 +337,7 @@ export default function CartSummary ({
             editingItemIndex={editingItemIndex}
             onPayNow={handlePayNow}
             onPayLater={handlePayLater}
+            isProcessing={isProcessing}
             isCartEmpty={isCartEmpty}
           />
         )}
@@ -346,7 +346,7 @@ export default function CartSummary ({
       {showPayment && (
         <Payment
           totalDue={paymentTotalDue}
-          onPaymentComplete={handlePaymentComplete}
+          onProcessPayment={handlePaymentComplete}
           onClose={handleClosePayment}
         />
       )}

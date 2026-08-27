@@ -9,6 +9,7 @@ export default function CheckoutTicket ({
   editingItemIndex,
   onPayNow,
   onPayLater,
+  isProcessing,
   isCartEmpty,
 }) {
   const estimatedTax = cartTotal * 0.13;
@@ -110,11 +111,11 @@ export default function CheckoutTicket ({
             Pay Later
           </button>
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
-            disabled={isCartEmpty}
+            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty || isProcessing ? 'cursor-not-allowed bg-purple-200 opacity-70' : 'bg-purple-900 hover:bg-purple-800'}`}
+            disabled={isCartEmpty || isProcessing}
             onClick={onPayNow}
           >
-            Pay Now
+            {isProcessing ? 'Processing...' : 'Pay Now'}
           </button>
         </div>
       </div>
