@@ -26,6 +26,7 @@ export default function AppRoutes({
   chosenBase,
   setChosenBase,
   selectedToppings,
+  editingItemIndex,
   onToppingToggle,
   selectedAllergies,
   onAllergyToggle,
@@ -106,6 +107,7 @@ export default function AppRoutes({
             chosenBase={chosenBase}
             setChosenBase={setChosenBase}
             selectedToppings={selectedToppings}
+            editingItemIndex={editingItemIndex}
             onToppingToggle={onToppingToggle}
             selectedAllergies={selectedAllergies}
             onAllergyToggle={onAllergyToggle}

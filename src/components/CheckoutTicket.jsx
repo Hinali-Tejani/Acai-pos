@@ -5,8 +5,11 @@ export default function CheckoutTicket ({
   cartTotal,
   onRemoveItem,
   onRepeatItem,
+  onEditItem,
+  editingItemIndex,
   onPayNow,
   onPayLater,
+  isProcessing,
   isCartEmpty,
 }) {
   const estimatedTax = cartTotal * 0.13;
@@ -27,22 +30,39 @@ export default function CheckoutTicket ({
             No active line-items on ticket. Select a product to begin.
           </div>
         ) : (
-          cart.map((cartItem) => (
-            <div key={cartItem.uid} className="rounded-xl border border-purple-200 bg-white p-2 shadow-sm space-y-2 text-[10px]">
+          cart.map((cartItem, index) => (
+            <div
+              key={cartItem.uid}
+              role="button"
+              tabIndex={0}
+              onClick={() => onEditItem?.(index)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') onEditItem?.(index);
+              }}
+              className={`cursor-pointer rounded-xl border p-2 shadow-sm space-y-2 text-[10px] transition ${editingItemIndex === index ? 'border-purple-900 bg-purple-100 ring-1 ring-purple-900' : 'border-purple-200 bg-white hover:border-purple-400 hover:bg-purple-50'}`}
+            >
               <div className="flex items-center justify-between gap-2 text-xs">
                 <div className="font-semibold text-purple-900">{cartItem.name} - ${cartItem.finalPrice.toFixed(2)}</div>
                 <div className="space-x-1 text-[9px]! font-semibold text-purple-700 whitespace-nowrap">
                   {onRepeatItem && (
                     <button
+                      type="button"
                       className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200"
-                      onClick={() => onRepeatItem(cartItem.uid)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onRepeatItem(cartItem.uid);
+                      }}
                     >
                       Repeat
                     </button>
                   )}
                   <button
+                    type="button"
                     className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200"
-                    onClick={() => onRemoveItem(cartItem.uid)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onRemoveItem(cartItem.uid);
+                    }}
                   >
                     X
                   </button>
@@ -91,11 +111,11 @@ export default function CheckoutTicket ({
             Pay Later
           </button>
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-purple-900 hover:bg-purple-800'}`}
-            disabled={isCartEmpty}
+            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty || isProcessing ? 'cursor-not-allowed bg-purple-200 opacity-70' : 'bg-purple-900 hover:bg-purple-800'}`}
+            disabled={isCartEmpty || isProcessing}
             onClick={onPayNow}
           >
-            Pay Now
+            {isProcessing ? 'Processing...' : 'Pay Now'}
           </button>
         </div>
       </div>

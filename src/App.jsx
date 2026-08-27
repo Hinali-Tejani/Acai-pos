@@ -6,10 +6,9 @@ import {useThermalPrinter} from './hooks/useThermalPrinter';
 import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
-import Payment from './components/Payment';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
-import {PENDING_PAYMENTS_STORAGE_KEY} from './components/PendingPaymentOrdersPopup';
+import {processPOSPayment} from './services/paymentApi';
 
 function App () {
   const {device, connectPrinter, printRaw} = useThermalPrinter();
@@ -24,8 +23,10 @@ function App () {
     chosenBase,
     setChosenBase,
     selectedToppings,
+    setSelectedToppings,
     toggleTopping,
     selectedAllergies,
+    setSelectedAllergies,
     toggleAllergy,
     selectItem,
     addToCart,
@@ -74,43 +75,85 @@ function App () {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
   const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
-  const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [editingItemIndex, setEditingItemIndex] = useState(null);
 
   const handleSelectItem = (item) => {
     selectItem(item);
+    setEditingItemIndex(null);
+    navigate(`/product/${item.id}`, {state: {item}});
+  };
+
+  const handleEditLineItem = (index) => {
+    const item = cart[index];
+    if (!item) return;
+
+    setEditingItemIndex(index);
+    setSelectedItem(item);
+    setChosenSize(item.size || sizeOptions[0]?.label || 'Medium');
+    setChosenBase(item.base || BASE_OPTIONS[0]);
+    setSelectedToppings((item.toppings || []).map((topping) => (
+      addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
+    )));
+    setSelectedAllergies((item.allergies || []).map((allergy) => (
+      allergies.find((availableAllergy) => availableAllergy.name === allergy) || {name: allergy, id: allergy}
+    )));
     navigate(`/product/${item.id}`, {state: {item}});
   };
 
   const handleAddToCart = (itemParam) => {
     const item = itemParam || selectedItem;
     if (!item) return;
+
+    if (editingItemIndex !== null) {
+      const itemBeingEdited = cart[editingItemIndex];
+      if (itemBeingEdited) {
+        updateCartItem(itemBeingEdited.uid, {
+          size: chosenSize || sizeOptions[0]?.label || 'Medium',
+          base: chosenBase,
+          toppings: selectedToppings.map((topping) => topping.name),
+          allergies: selectedAllergies.map((allergy) => allergy.name),
+          finalPrice: calculateItemPrice(item),
+          basePrice: itemPrice,
+        });
+      }
+      setEditingItemIndex(null);
+      return;
+    }
+
     addToCart(item, calculateItemPrice(item));
   };
 
-  const removePendingPaymentOrder = (orderId) => {
-    const raw = window.localStorage.getItem(PENDING_PAYMENTS_STORAGE_KEY);
-    const currentOrders = raw ? JSON.parse(raw) : [];
-    const nextOrders = Array.isArray(currentOrders)
-      ? currentOrders.filter((order) => order.id !== orderId)
-      : [];
-
-    window.localStorage.setItem(PENDING_PAYMENTS_STORAGE_KEY, JSON.stringify(nextOrders));
+  const handleDiscardChanges = () => {
+    setEditingItemIndex(null);
+    resetSelection();
   };
 
-  const handlePayPendingOrder = (order) => {
-    if (!order) return;
-    setPendingPaymentOrder(order);
-  };
+  const handleProcessPayment = async (method, customOrderId = null, customTotal = null) => {
+    const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
+    const checkoutPayload = {
+      totalAmt: customTotal !== null ? Number(customTotal) || 0 : 0,
+      orderID: customOrderId !== null ? Number(customOrderId) || 0 : 0,
+      paymentMethod,
+      cardNumber: paymentMethod === 'CARD' ? 'xxxx-xxxx-xxxx-1234' : '',
+      cardType: paymentMethod === 'CARD' ? 'VISA' : '',
+      transactionID: `${paymentMethod === 'CARD' ? 'TXN' : 'CASH'}-${Date.now()}`,
+      transactionDateTime: new Date().toISOString(),
+      referenceNumber: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
+    };
 
-  const handlePendingPaymentComplete = () => {
-    if (pendingPaymentOrder?.id) {
-      removePendingPaymentOrder(pendingPaymentOrder.id);
+    setIsProcessing(true);
+    try {
+      await processPOSPayment(checkoutPayload);
+      alert('Payment completed successfully.');
+      return true;
+    } catch (error) {
+      console.error('Checkout payment failed:', error);
+      alert('Payment failed. Your order was not changed. Please try again.');
+      return false;
+    } finally {
+      setIsProcessing(false);
     }
-    setPendingPaymentOrder(null);
-  };
-
-  const handleClosePendingPayment = () => {
-    setPendingPaymentOrder(null);
   };
 
   const activeCategoryName = categories.find(cat => cat.id === activeCategory)?.name || 'Category';
@@ -133,7 +176,8 @@ function App () {
         setFirstName={setFirstName}
         setLastName={setLastName}
         setPhoneNumber={setPhoneNumber}
-        onPayPendingOrder={handlePayPendingOrder}
+        onProcessPayment={handleProcessPayment}
+        isProcessing={isProcessing}
       />
 
       <div className="flex-1 overflow-hidden">
@@ -157,6 +201,7 @@ function App () {
             chosenBase={chosenBase}
             setChosenBase={setChosenBase}
             selectedToppings={selectedToppings}
+            editingItemIndex={editingItemIndex}
             onToppingToggle={handleToppingToggle}
             selectedAllergies={selectedAllergies}
             onAllergyToggle={handleAllergyToggle}
@@ -166,7 +211,7 @@ function App () {
             allergies={allergies}
             getItemPrice={calculateCurrentItemPrice}
             onAddToCart={handleAddToCart}
-            onBack={resetSelection}
+            onBack={handleDiscardChanges}
             activeCategory={activeCategory}
             orderType={orderType}
             setOrderType={setOrderType}
@@ -188,7 +233,11 @@ function App () {
           cartTotal={cartTotal}
           onRemoveItem={removeCartItem}
           onClearCart={clearCart}
+          onProcessPayment={handleProcessPayment}
+          isProcessing={isProcessing}
           onUpdateItem={updateCartItem}
+          onEditItem={handleEditLineItem}
+          editingItemIndex={editingItemIndex}
           orderType={orderType}
           setOrderType={setOrderType}
           firstName={firstName}
@@ -220,13 +269,6 @@ function App () {
         setPhoneNumber={setPhoneNumber}
       />
 
-      {pendingPaymentOrder && (
-        <Payment
-          totalDue={Number(pendingPaymentOrder.totalDue || 0).toFixed(2)}
-          onPaymentComplete={handlePendingPaymentComplete}
-          onClose={handleClosePendingPayment}
-        />
-      )}
     </div>
   );
 }

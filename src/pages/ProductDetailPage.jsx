@@ -10,6 +10,7 @@ export default function ProductDetailPage ({
     chosenBase,
     setChosenBase,
     selectedToppings,
+    editingItemIndex,
     onToppingToggle,
     selectedAllergies,
     onAllergyToggle,
@@ -103,6 +104,7 @@ export default function ProductDetailPage ({
                 currentItemPrice={getItemPrice(item)}
                 onBack={handleBack}
                 onAddToCart={handleAddToOrder}
+                editingItemIndex={editingItemIndex}
             />
         </div>
     );

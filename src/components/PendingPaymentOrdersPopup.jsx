@@ -23,8 +23,9 @@ const formatPendingDate = (value) => {
   });
 };
 
-export default function PendingPaymentOrdersPopup ({isOpen, onClose, onPayNow}) {
+export default function PendingPaymentOrdersPopup ({isOpen, onClose, onProcessPayment, isProcessing}) {
   const [pendingOrders, setPendingOrders] = useState([]);
+  const [processingOrderId, setProcessingOrderId] = useState(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -55,7 +56,10 @@ export default function PendingPaymentOrdersPopup ({isOpen, onClose, onPayNow}) 
                 </tr>
               </thead>
               <tbody>
-                {pendingOrders.map((order) => (
+                {pendingOrders.map((order) => {
+                  const isOrderProcessing = isProcessing && processingOrderId === order.id;
+
+                  return (
                   <tr key={order.id} className="border-t border-purple-100">
                     <td className="px-4 py-3 text-purple-900">{order.customerName || 'Walk-in customer'}</td>
                     <td className="px-4 py-3 text-purple-700">{order.phoneNumber || '—'}</td>
@@ -69,17 +73,30 @@ export default function PendingPaymentOrdersPopup ({isOpen, onClose, onPayNow}) 
                     <td className="px-4 py-3">
                       <button
                         type="button"
-                        onClick={() => {
-                          onClose?.();
-                          onPayNow?.(order);
+                        disabled={isProcessing}
+                        onClick={async () => {
+                          setProcessingOrderId(order.id);
+                          try {
+                            const paymentSucceeded = await onProcessPayment?.('CARD', order.id, order.totalDue);
+                            if (!paymentSucceeded) return;
+                            setPendingOrders((currentOrders) => {
+                              const nextOrders = currentOrders.filter((currentOrder) => currentOrder.id !== order.id);
+                              window.localStorage.setItem(PENDING_PAYMENTS_STORAGE_KEY, JSON.stringify(nextOrders));
+                              return nextOrders;
+                            });
+                            onClose?.();
+                          } finally {
+                            setProcessingOrderId(null);
+                          }
                         }}
-                        className="rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-400"
+                        className={`rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition ${isOrderProcessing ? 'bg-emerald-400 opacity-70' : 'bg-emerald-500 hover:bg-emerald-400'} ${isProcessing ? 'cursor-not-allowed' : ''}`}
                       >
-                        Pay Now
+                        {isOrderProcessing ? 'Processing...' : 'Pay Now'}
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
