@@ -70,7 +70,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
               onClick={() => setActiveView('menu')}
               className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
             >
-              Back to Manager Menu
+              Back
             </button>
           </div>
 
