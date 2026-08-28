@@ -1,8 +1,14 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import {fetchEmployeeReportData, fetchSalesReportData} from '../services/managerApi';
 
 export default function ManagerMenu ({connectPrinter, printerDevice}) {
   const navigate = useNavigate();
+  const [activeView, setActiveView] = useState('menu');
+  const [activeReport, setActiveReport] = useState('sales');
+  const [salesData, setSalesData] = useState([]);
+  const [employeeData, setEmployeeData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleConnectPrinter = async () => {
     if (connectPrinter) {
@@ -19,9 +25,101 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
     {
       id: 'reports',
       label: 'Sales Reports',
-      action: () => {},
+      action: () => setActiveView('reports'),
     }
   ];
+
+  useEffect(() => {
+    if (activeView !== 'reports') return;
+
+    let isCurrent = true;
+    const loadReport = async () => {
+      setIsLoading(true);
+      try {
+        const data = activeReport === 'sales'
+          ? await fetchSalesReportData()
+          : await fetchEmployeeReportData();
+        if (isCurrent) {
+          if (activeReport === 'sales') setSalesData(data);
+          if (activeReport === 'employees') setEmployeeData(data);
+        }
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    };
+
+    loadReport();
+    return () => { isCurrent = false; };
+  }, [activeView, activeReport]);
+
+  const salesTotal = salesData.reduce((total, sale) => total + Number(sale.totalAmt || 0), 0);
+  const transactionTotal = employeeData.reduce((total, employee) => total + Number(employee.totalTransactions || 0), 0);
+  const employeeSalesTotal = employeeData.reduce((total, employee) => total + Number(employee.totalSalesVolume || 0), 0);
+
+  if (activeView === 'reports') {
+    return (
+      <div className="min-h-screen bg-purple-50 py-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-purple-900">Manager Reports</h1>
+              <p className="mt-2 text-sm text-purple-600">Review sales and employee activity.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveView('menu')}
+              className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+            >
+              Back to Manager Menu
+            </button>
+          </div>
+
+          <div className="mb-6 flex gap-2 border-b border-purple-200">
+            <button type="button" onClick={() => setActiveReport('sales')} className={`border-b-2 px-4 py-3 text-sm font-semibold ${activeReport === 'sales' ? 'border-purple-900 text-purple-900' : 'border-transparent text-purple-500'}`}>Sales Activity</button>
+            <button type="button" onClick={() => setActiveReport('employees')} className={`border-b-2 px-4 py-3 text-sm font-semibold ${activeReport === 'employees' ? 'border-purple-900 text-purple-900' : 'border-transparent text-purple-500'}`}>Employee Activity</button>
+          </div>
+
+          {isLoading ? (
+            <div className="rounded-xl border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
+          ) : (
+            <div>
+              {activeReport === 'sales' ? (
+              <section className="overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+                <div className="border-b border-purple-100 px-5 py-4">
+                  <h2 className="font-semibold text-purple-900">Sales Report</h2>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-purple-50 text-purple-900">
+                      <tr><th className="px-5 py-3 font-semibold">Invoice</th><th className="px-5 py-3 font-semibold">Payment</th><th className="px-5 py-3 font-semibold">Timestamp</th><th className="px-5 py-3 text-right font-semibold">Total</th></tr>
+                    </thead>
+                    <tbody>{salesData.map((sale) => (
+                      <tr key={sale.id} className="border-t border-purple-100"><td className="px-5 py-3 text-purple-900">{sale.invoiceNum}</td><td className="px-5 py-3 text-purple-700">{sale.paymentMethod}</td><td className="px-5 py-3 text-purple-700">{new Date(sale.timestamp).toLocaleString()}</td><td className="px-5 py-3 text-right font-medium text-purple-900">${Number(sale.totalAmt).toFixed(2)}</td></tr>
+                    ))}</tbody>
+                    <tfoot><tr className="border-t-2 border-purple-200 bg-purple-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="3">Total Sales</td><td className="px-5 py-3 text-right">${salesTotal.toFixed(2)}</td></tr></tfoot>
+                  </table>
+                </div>
+              </section>
+              ) : (
+              <section className="overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+                <div className="border-b border-purple-100 px-5 py-4"><h2 className="font-semibold text-purple-900">Employee Report</h2></div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-left text-sm">
+                    <thead className="bg-purple-50 text-purple-900"><tr><th className="px-5 py-3 font-semibold">Employee</th><th className="px-5 py-3 font-semibold">Name</th><th className="px-5 py-3 text-right font-semibold">Transactions</th><th className="px-5 py-3 text-right font-semibold">Sales Volume</th></tr></thead>
+                    <tbody>{employeeData.map((employee) => (
+                      <tr key={employee.employeeId} className="border-t border-purple-100"><td className="px-5 py-3 text-purple-700">{employee.employeeId}</td><td className="px-5 py-3 font-medium text-purple-900">{employee.name}</td><td className="px-5 py-3 text-right text-purple-700">{employee.totalTransactions}</td><td className="px-5 py-3 text-right font-medium text-purple-900">${Number(employee.totalSalesVolume).toFixed(2)}</td></tr>
+                    ))}</tbody>
+                    <tfoot><tr className="border-t-2 border-purple-200 bg-purple-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="2">Totals</td><td className="px-5 py-3 text-right">{transactionTotal}</td><td className="px-5 py-3 text-right">${employeeSalesTotal.toFixed(2)}</td></tr></tfoot>
+                  </table>
+                </div>
+              </section>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-purple-50 p-8">
