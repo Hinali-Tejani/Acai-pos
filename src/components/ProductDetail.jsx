@@ -30,7 +30,7 @@ export default function Customizer ({
             <button
               key={sz.label}
               onClick={() => setChosenSize(sz.label)}
-              className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+              className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
             >
               {sz.label} {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}
             </button>
@@ -39,13 +39,18 @@ export default function Customizer ({
       </div> */}
 
       <div className="space-y-4">
-        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Core Sorbet Base</div>
+        <div className='flex justify-between gap-3'>
+        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Base</div> 
+        <div className="text-base font-semibold text-purple-900">
+          Total: <span className="text-purple-600">${currentItemPrice.toFixed(2)}</span>
+        </div>
+        </div>
         <div className="flex flex-wrap gap-3 text-xs">
           {baseOptions.map((bs) => (
             <button
               key={bs}
               onClick={() => setChosenBase(bs)}
-              className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${chosenBase === bs ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+              className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${chosenBase === bs ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
             >
               {bs}
             </button>
@@ -59,19 +64,19 @@ export default function Customizer ({
         {addOns.length === 0 ? (
           <div className="text-[11px] text-purple-600">No additional toppings are available.</div>
         ) : (
-          <div className="grid gap-3 grid-cols-2 md:grid-cols-3 text-xs">
+          <div className="grid gap-3 grid-cols-2 md:grid-cols-4 xl:grid-cols-5 text-xs text-center">
             {addOns.map((top) => {
               const isChecked = selectedToppings.some(t => t.name === top.name);
               return (
                 <button
-                  key={top.name}
+                  key={top.addonID}
                   type="button"
                   onClick={() => onToppingToggle(top)}
-                  className={`flex items-center gap-2 flex-wrap rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                  className={`flex items-center gap-2 flex-wrap flex-col rounded-xl border px-3 py-2 font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                 >
-                  <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" />
+                  {/* <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" /> */}
                   <span className="flex-1 wrap-anywhere">{top.name}</span>
-                  <b className="rounded-full bg-purple-100 px-2 py-1 text-[10px] text-purple-700">+${top.price.toFixed(2)}</b>
+                  <b className="text-[10px] text-gray-600">+${top.price.toFixed(2)}</b>
                 </button>
               );
             })}
@@ -85,7 +90,7 @@ export default function Customizer ({
         {allergies.length === 0 ? (
           <div className="text-[11px] text-purple-600">No allergen information available.</div>
         ) : (
-          <div className="grid gap-2 grid-cols-2 md:grid-cols-3 text-xs">
+          <div className="grid gap-2 grid-cols-2 md:grid-cols-5 xl:grid-cols-6 text-xs">
             {allergies.map((allergy) => {
               const isChecked = selectedAllergies.some(a => a.id === allergy.id);
               return (
@@ -104,11 +109,8 @@ export default function Customizer ({
         )}
       </div>
 
-      <div className="flex items-center justify-between gap-3 rounded-xl bg-purple-50 p-3 px-4">
-        <div className="text-base font-semibold text-purple-900">
-          Line Subtotal: <span className="text-purple-600">${currentItemPrice.toFixed(2)}</span>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex gap-3 rounded-xl bg-gray-50 p-3 px-4 justify-end">
+        <div className="flex gap-3 flex-wrap sm:items-center sm:justify-between">
           <button
             className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
             onClick={onAddToCart}

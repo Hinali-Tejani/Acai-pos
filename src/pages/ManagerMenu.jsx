@@ -58,7 +58,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
 
   if (activeView === 'reports') {
     return (
-      <div className="min-h-screen bg-purple-50 py-8">
+      <div className="min-h-screen bg-gray-50 py-8">
         <div className="mx-auto max-w-6xl">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
@@ -90,13 +90,13 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
                 </div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-left text-sm">
-                    <thead className="bg-purple-50 text-purple-900">
+                    <thead className="bg-gray-50 text-purple-900">
                       <tr><th className="px-5 py-3 font-semibold">Invoice</th><th className="px-5 py-3 font-semibold">Payment</th><th className="px-5 py-3 font-semibold">Timestamp</th><th className="px-5 py-3 text-right font-semibold">Total</th></tr>
                     </thead>
                     <tbody>{salesData.map((sale) => (
                       <tr key={sale.id} className="border-t border-purple-100"><td className="px-5 py-3 text-purple-900">{sale.invoiceNum}</td><td className="px-5 py-3 text-purple-700">{sale.paymentMethod}</td><td className="px-5 py-3 text-purple-700">{new Date(sale.timestamp).toLocaleString()}</td><td className="px-5 py-3 text-right font-medium text-purple-900">${Number(sale.totalAmt).toFixed(2)}</td></tr>
                     ))}</tbody>
-                    <tfoot><tr className="border-t-2 border-purple-200 bg-purple-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="3">Total Sales</td><td className="px-5 py-3 text-right">${salesTotal.toFixed(2)}</td></tr></tfoot>
+                    <tfoot><tr className="border-t-2 border-purple-200 bg-gray-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="3">Total Sales</td><td className="px-5 py-3 text-right">${salesTotal.toFixed(2)}</td></tr></tfoot>
                   </table>
                 </div>
               </section>
@@ -105,11 +105,11 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
                 <div className="border-b border-purple-100 px-5 py-4"><h2 className="font-semibold text-purple-900">Employee Report</h2></div>
                 <div className="overflow-x-auto">
                   <table className="min-w-full text-left text-sm">
-                    <thead className="bg-purple-50 text-purple-900"><tr><th className="px-5 py-3 font-semibold">Employee</th><th className="px-5 py-3 font-semibold">Name</th><th className="px-5 py-3 text-right font-semibold">Transactions</th><th className="px-5 py-3 text-right font-semibold">Sales Volume</th></tr></thead>
+                    <thead className="bg-gray-50 text-purple-900"><tr><th className="px-5 py-3 font-semibold">Employee</th><th className="px-5 py-3 font-semibold">Name</th><th className="px-5 py-3 text-right font-semibold">Transactions</th><th className="px-5 py-3 text-right font-semibold">Sales Volume</th></tr></thead>
                     <tbody>{employeeData.map((employee) => (
                       <tr key={employee.employeeId} className="border-t border-purple-100"><td className="px-5 py-3 text-purple-700">{employee.employeeId}</td><td className="px-5 py-3 font-medium text-purple-900">{employee.name}</td><td className="px-5 py-3 text-right text-purple-700">{employee.totalTransactions}</td><td className="px-5 py-3 text-right font-medium text-purple-900">${Number(employee.totalSalesVolume).toFixed(2)}</td></tr>
                     ))}</tbody>
-                    <tfoot><tr className="border-t-2 border-purple-200 bg-purple-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="2">Totals</td><td className="px-5 py-3 text-right">{transactionTotal}</td><td className="px-5 py-3 text-right">${employeeSalesTotal.toFixed(2)}</td></tr></tfoot>
+                    <tfoot><tr className="border-t-2 border-purple-200 bg-gray-50 font-bold text-purple-900"><td className="px-5 py-3" colSpan="2">Totals</td><td className="px-5 py-3 text-right">{transactionTotal}</td><td className="px-5 py-3 text-right">${employeeSalesTotal.toFixed(2)}</td></tr></tfoot>
                   </table>
                 </div>
               </section>
@@ -122,7 +122,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice}) {
   }
 
   return (
-    <div className="min-h-screen bg-purple-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8">
       <div className="mx-auto max-w-4xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-purple-900">Manager Menu</h1>

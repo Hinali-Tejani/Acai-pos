@@ -14,7 +14,7 @@ export default function OrderTypeForm ({
 }) {
   if (!orderType) {
     return (
-      <div className="rounded-xl border border-purple-200 bg-purple-50 p-4 text-sm text-purple-700">
+      <div className="rounded-xl border border-purple-200 bg-gray-50 p-4 text-sm text-purple-700">
         Select a quick action to begin an order.
       </div>
     );

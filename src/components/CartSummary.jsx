@@ -18,6 +18,8 @@ export default function CartSummary ({
   editingItemIndex,
   onProcessPayment,
   isProcessing,
+  pendingPaymentOrder,
+  onPendingPaymentHandled,
   orderType,
   setOrderType,
   firstName,
@@ -53,9 +55,32 @@ export default function CartSummary ({
   const [showRefundPasswordModal, setShowRefundPasswordModal] = React.useState(false);
   const [refundPaymentDetails, setRefundPaymentDetails] = React.useState(null);
 
+  const removePendingPaymentOrderFromStorage = (orderId) => {
+    if (!orderId) return;
+    try {
+      const raw = window.localStorage.getItem('acai-pos-pending-payments');
+      const currentOrders = raw ? JSON.parse(raw) : [];
+      const nextOrders = currentOrders.filter((currentOrder) => currentOrder.id !== orderId);
+      window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
+    } catch (error) {
+      console.error('Failed to update pending payments storage:', error);
+    }
+  };
+
   React.useEffect(() => {
     setPaymentTotalDue(grandTotal.toFixed(2));
   }, [grandTotal]);
+
+  React.useEffect(() => {
+    if (!pendingPaymentOrder) return;
+
+    openPaymentForOrder({
+      ...pendingPaymentOrder,
+      source: 'pending',
+    });
+
+    onPendingPaymentHandled?.();
+  }, [pendingPaymentOrder]);
 
   React.useEffect(() => {
     if (!isRefundRoute) {
@@ -176,6 +201,10 @@ export default function CartSummary ({
       const paymentSucceeded = await onProcessPayment?.(paymentMethod, currentOrderId, currentTotalDue);
       if (!paymentSucceeded) return;
 
+      if (activePendingOrder?.source === 'pending') {
+        removePendingPaymentOrderFromStorage(currentOrderId);
+      }
+
       await printReceipt({
         id: currentOrderId || 'current-order',
         items: activePendingOrder?.items || cart,
@@ -272,7 +301,7 @@ export default function CartSummary ({
 
   return (
     <div className="flex h-full flex-col justify-between gap-3">
-      <div className="space-y-3 rounded-sm border border-purple-200 bg-purple-50 p-4 shadow-sm flex-1">
+      <div className="space-y-3 rounded-sm border border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
         <div className="flex items-center justify-between">
           <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
           <button

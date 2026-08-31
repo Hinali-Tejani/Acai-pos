@@ -174,7 +174,7 @@ export default function CustomerSelectModal ({
   return (
     <PopUp isOpen={isOpen} title="Select Customer" onClose={onClose} size="lg">
       <div className="space-y-4">
-        <div className="flex items-center justify-between gap-3 rounded-2xl border border-purple-100 bg-purple-50 px-4 py-3 text-sm text-purple-700">
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-purple-100 bg-gray-50 px-4 py-3 text-sm text-purple-700">
           <div>
             <div className="font-semibold text-purple-900">Customer picker</div>
             <div>{selectedCustomerLabel || 'No customer selected yet'}</div>
@@ -211,7 +211,7 @@ export default function CustomerSelectModal ({
                 <div className="px-4 py-6 text-sm text-purple-700">No customers found.</div>
               ) : (
                 <table className="min-w-full text-left text-sm">
-                  <thead className="sticky top-0 bg-purple-50 text-purple-900">
+                  <thead className="sticky top-0 bg-gray-50 text-purple-900">
                     <tr>
                       <th className="px-4 py-3 font-semibold">First Name</th>
                       <th className="px-4 py-3 font-semibold">Last Name</th>
@@ -251,7 +251,7 @@ export default function CustomerSelectModal ({
             </div>
           </div>
 
-          <div className="space-y-3 rounded-2xl border border-purple-200 bg-purple-50 p-4 shadow-sm">
+          <div className="space-y-3 rounded-2xl border border-purple-200 bg-gray-50 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-sm font-semibold text-purple-900">

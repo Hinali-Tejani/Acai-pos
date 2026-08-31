@@ -39,7 +39,7 @@ export default function CheckoutTicket ({
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') onEditItem?.(index);
               }}
-              className={`cursor-pointer rounded-xl border p-2 shadow-sm space-y-2 text-[10px] transition ${editingItemIndex === index ? 'border-purple-900 bg-purple-100 ring-1 ring-purple-900' : 'border-purple-200 bg-white hover:border-purple-400 hover:bg-purple-50'}`}
+              className={`cursor-pointer rounded-xl border p-2 shadow-sm space-y-2 text-[10px] transition ${editingItemIndex === index ? 'border-purple-900 bg-purple-100 ring-1 ring-purple-900' : 'border-purple-200 bg-white hover:border-purple-400 hover:bg-gray-50'}`}
             >
               <div className="flex items-center justify-between gap-2 text-xs">
                 <div className="font-semibold text-purple-900">{cartItem.name} - ${cartItem.finalPrice.toFixed(2)}</div>
@@ -74,7 +74,7 @@ export default function CheckoutTicket ({
                 <span className="rounded-sm bg-purple-100 px-1.5 py-0.5">Base: {cartItem.base}</span>
               </div>
               {cartItem.toppings && cartItem.toppings.length > 0 && (
-                <div className="rounded-sm bg-purple-50 p-1 text-purple-700">
+                <div className="rounded-sm bg-gray-50 p-1 text-purple-700">
                   <strong>Add:</strong> {cartItem.toppings.join(', ')}
                 </div>
               )}

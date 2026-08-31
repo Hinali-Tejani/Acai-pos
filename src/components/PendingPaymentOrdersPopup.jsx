@@ -23,7 +23,12 @@ const formatPendingDate = (value) => {
   });
 };
 
-export default function PendingPaymentOrdersPopup ({isOpen, onClose, onProcessPayment, isProcessing}) {
+export default function PendingPaymentOrdersPopup ({
+  isOpen,
+  onClose,
+  onOpenPendingPaymentOrder,
+  isProcessing,
+}) {
   const [pendingOrders, setPendingOrders] = useState([]);
   const [processingOrderId, setProcessingOrderId] = useState(null);
 
@@ -39,13 +44,13 @@ export default function PendingPaymentOrdersPopup ({isOpen, onClose, onProcessPa
     <PopUp isOpen={isOpen} title="Pending Payment Orders" onClose={onClose} size="lg">
       <div className="space-y-4">
         {pendingOrders.length === 0 ? (
-          <div className="rounded-md border border-dashed border-purple-200 bg-purple-50 p-4 text-center text-xs text-purple-600">
+          <div className="rounded-md border border-dashed border-purple-200 bg-gray-50 p-4 text-center text-xs text-purple-600">
             No pending payment orders yet.
           </div>
         ) : (
           <div className="max-h-90 overflow-y-auto pr-1">
             <table className="min-w-full text-left text-sm">
-              <thead className="sticky top-0 bg-purple-50 text-purple-900">
+              <thead className="sticky top-0 bg-gray-50 text-purple-900">
                 <tr>
                   <th className="px-4 py-3 font-semibold">Customer Name</th>
                   <th className="px-4 py-3 font-semibold">Phone</th>
@@ -74,16 +79,10 @@ export default function PendingPaymentOrdersPopup ({isOpen, onClose, onProcessPa
                       <button
                         type="button"
                         disabled={isProcessing}
-                        onClick={async () => {
+                        onClick={() => {
                           setProcessingOrderId(order.id);
                           try {
-                            const paymentSucceeded = await onProcessPayment?.('CARD', order.id, order.totalDue);
-                            if (!paymentSucceeded) return;
-                            setPendingOrders((currentOrders) => {
-                              const nextOrders = currentOrders.filter((currentOrder) => currentOrder.id !== order.id);
-                              window.localStorage.setItem(PENDING_PAYMENTS_STORAGE_KEY, JSON.stringify(nextOrders));
-                              return nextOrders;
-                            });
+                            onOpenPendingPaymentOrder?.(order);
                             onClose?.();
                           } finally {
                             setProcessingOrderId(null);
