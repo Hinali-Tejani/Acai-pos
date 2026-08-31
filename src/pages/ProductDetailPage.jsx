@@ -78,7 +78,7 @@ export default function ProductDetailPage ({
                         <button
                             key={sz.label}
                             onClick={() => setChosenSize(sz.label)}
-                            className={`rounded-sm border px-3 py-2 text-xs! font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-purple-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                            className={`rounded-sm border px-3 py-2 text-xs! font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                         >
                             {sz.label} 
                             {/* <span className='text-[9px]'> {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}</span> */}

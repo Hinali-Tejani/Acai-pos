@@ -17,6 +17,7 @@ export default function Sidebar ({
   setPhoneNumber,
   onProcessPayment,
   isProcessing,
+  onOpenPendingPaymentOrder,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -44,13 +45,13 @@ export default function Sidebar ({
         {/* <span className="text-xs text-purple-300">Live Menu Dashboard</span> */}
       </div>
 
-      <div className="flex-1 overflow-y-auto bg-purple-50 p-4 space-y-3">
+      <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-3">
         <button
           type="button"
           onClick={handleHomeClick}
           className={`w-full rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === 'home'
             ? 'border-purple-900 bg-purple-900 text-white'
-            : 'border-purple-200 bg-white text-purple-800 hover:border-purple-900 hover:bg-purple-50'
+            : 'border-purple-200 bg-white text-purple-800 hover:border-purple-900 hover:bg-gray-50'
             }`}
         >
           Home
@@ -69,7 +70,7 @@ export default function Sidebar ({
             }}
             className={`w-full rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === cat.id
               ? 'border-purple-900 border-2'
-              : 'border-transparent bg-white text-purple-800 hover:border-purple-300 hover:bg-purple-50'
+              : 'border-transparent bg-gray-200 text-purple-800 hover:border-purple-300 hover:bg-gray-50'
               }`}
           >
             {cat.name.toUpperCase()}
@@ -103,7 +104,7 @@ export default function Sidebar ({
       <PendingPaymentOrdersPopup
         isOpen={isPendingOrdersOpen}
         onClose={() => setIsPendingOrdersOpen(false)}
-        onProcessPayment={onProcessPayment}
+        onOpenPendingPaymentOrder={onOpenPendingPaymentOrder}
         isProcessing={isProcessing}
       />
 

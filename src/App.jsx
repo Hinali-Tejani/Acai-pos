@@ -8,6 +8,7 @@ import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
+// import WebOrdersPanel from './components/WebOrdersPanel';
 import {processPOSPayment} from './services/paymentApi';
 
 function App () {
@@ -76,6 +77,7 @@ function App () {
   const [isTakeoutModalOpen, setIsTakeoutModalOpen] = useState(false);
   const [isTakeoutDetailsOpen, setIsTakeoutDetailsOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
   const [editingItemIndex, setEditingItemIndex] = useState(null);
 
   const handleSelectItem = (item) => {
@@ -129,6 +131,10 @@ function App () {
     resetSelection();
   };
 
+  const handleOpenPendingPaymentOrder = (order) => {
+    setPendingPaymentOrder(order);
+  };
+
   const handleProcessPayment = async (method, customOrderId = null, customTotal = null) => {
     const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
     const checkoutPayload = {
@@ -164,7 +170,7 @@ function App () {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-purple-50 text-purple-900">
+    <div className="flex h-screen w-screen bg-gray-50 text-purple-900">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
@@ -178,10 +184,13 @@ function App () {
         setPhoneNumber={setPhoneNumber}
         onProcessPayment={handleProcessPayment}
         isProcessing={isProcessing}
+        onOpenPendingPaymentOrder={handleOpenPendingPaymentOrder}
       />
 
       <div className="flex-1 overflow-hidden">
         <div className="flex h-full flex-col px-6 py-5 overflow-y-auto">
+          {/* <WebOrdersPanel /> */}
+
           <AppRoutes
             itemsLoading={itemsLoading}
             activeItems={activeItems}
@@ -235,6 +244,8 @@ function App () {
           onClearCart={clearCart}
           onProcessPayment={handleProcessPayment}
           isProcessing={isProcessing}
+          pendingPaymentOrder={pendingPaymentOrder}
+          onPendingPaymentHandled={() => setPendingPaymentOrder(null)}
           onUpdateItem={updateCartItem}
           onEditItem={handleEditLineItem}
           editingItemIndex={editingItemIndex}

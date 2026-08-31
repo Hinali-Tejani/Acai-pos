@@ -109,7 +109,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
             <div className="relative flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-3xl border border-purple-200 bg-white shadow-2xl">
 
                 {/* LEFT COLUMN */}
-                <div className="hidden w-[60%] flex-col justify-between bg-purple-50 p-6 md:flex">
+                <div className="hidden w-[60%] flex-col justify-between bg-gray-50 p-6 md:flex">
                     {paymentMethod === 'cash' ? (
                         <>
                             <div>

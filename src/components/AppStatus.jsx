@@ -4,7 +4,7 @@ import Spinner from './Spinner';
 export default function AppStatus({ loading, error, onRetry }) {
   if (loading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-purple-50 px-6">
+      <div className="flex h-screen items-center justify-center bg-gray-50 px-6">
         <Spinner size="lg" />
       </div>
     );
@@ -12,7 +12,7 @@ export default function AppStatus({ loading, error, onRetry }) {
 
   if (error) {
     return (
-      <div className="flex h-screen items-center justify-center bg-purple-50 px-6">
+      <div className="flex h-screen items-center justify-center bg-gray-50 px-6">
         <div className="space-y-4 rounded-xl border border-rose-200 bg-white px-10 py-8 shadow-sm">
           <h4 className="text-lg font-semibold text-rose-700">{error}</h4>
           <button

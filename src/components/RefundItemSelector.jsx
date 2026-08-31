@@ -98,7 +98,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
           <h3 className="text-lg font-semibold text-purple-900 mb-3">Items to Refund</h3>
           <div className="rounded-xl border border-purple-200 bg-white overflow-hidden">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-purple-50">
+              <thead className="bg-gray-50">
                 <tr>
                   <th className="px-4 py-3 font-semibold text-purple-900">Item</th>
                   <th className="px-4 py-3 font-semibold text-purple-900">Qty</th>

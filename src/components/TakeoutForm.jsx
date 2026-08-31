@@ -96,7 +96,7 @@ function TakeoutForm ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-purple-200 bg-purple-50 p-4 pb-0">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-purple-200 bg-gray-50 p-4 pb-0">
       <div>
         <label className="block text-sm font-semibold text-purple-900">First Name</label>
         <input
