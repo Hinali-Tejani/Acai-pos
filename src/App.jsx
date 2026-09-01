@@ -8,7 +8,7 @@ import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
-// import WebOrdersPanel from './components/WebOrdersPanel';
+import WebOrdersPanel from './components/WebOrdersPanel';
 import {processPOSPayment} from './services/paymentApi';
 
 function App () {
@@ -189,7 +189,7 @@ function App () {
 
       <div className="flex-1 overflow-hidden">
         <div className="flex h-full flex-col px-6 py-5 overflow-y-auto">
-          {/* <WebOrdersPanel /> */}
+          <WebOrdersPanel />
 
           <AppRoutes
             itemsLoading={itemsLoading}
