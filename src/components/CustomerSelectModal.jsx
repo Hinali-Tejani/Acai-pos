@@ -179,13 +179,6 @@ export default function CustomerSelectModal ({
             <div className="font-semibold text-purple-900">Customer picker</div>
             <div>{selectedCustomerLabel || 'No customer selected yet'}</div>
           </div>
-          <button
-            type="button"
-            onClick={startAddCustomer}
-            className="rounded-xl bg-purple-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
-          >
-            Add New Customer
-          </button>
         </div>
 
         <div className="space-y-3">
@@ -224,7 +217,7 @@ export default function CustomerSelectModal ({
                       <tr key={customer.customerID} className="border-t border-purple-100">
                         <td className="px-4 py-3 text-purple-900">{customer.firstName}</td>
                         <td className="px-4 py-3 text-purple-900">{customer.lastName}</td>
-                        <td className="px-4 py-3 text-purple-700">{customer.phoneNumber}</td>
+                        <td className="px-4 py-3 text-purple-700">{customer.phoneNumber || '-'}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             <button
