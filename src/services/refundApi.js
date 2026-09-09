@@ -5,18 +5,43 @@ import api from './api';
  * Add your actual API endpoints here when available
  */
 
-// TODO: Add actual endpoint when available
-export async function getRefundableOrders () {
-    try {
-        // const response = await api.get('/Refunds/GetRefundableOrders');
-        // return response.data;
+const normalizeOrders = (data) => {
+    const orders = Array.isArray(data)
+        ? data
+        : data?.orders || data?.data || (data?.orderId || data?.id ? [data] : []);
 
-        // Placeholder - returns empty array until API is connected
-        return [];
+    return orders.map((order) => ({
+        ...order,
+        orderId: order.orderId ?? order.orderID ?? order.id,
+        customerName: order.customerName ?? order.customer?.name ?? '',
+        phoneNumber: order.phoneNumber ?? order.customerPhone ?? order.phone ?? '',
+        items: (order.items || order.orderItems || []).map((item, index) => ({
+            ...item,
+            id: item.id ?? item.itemId ?? item.productId ?? `refund-item-${index}`,
+            name: item.name ?? item.productName ?? item.itemName ?? 'Item',
+            price: Number(item.price ?? item.unitPrice ?? item.finalPrice ?? 0),
+            quantity: Number(item.quantity ?? 1),
+        })),
+    }));
+};
+
+export async function getRefundableOrders (params = {}) {
+    try {
+        const response = await api.get('/Refunds/GetRefundableOrders', {params});
+        return normalizeOrders(response.data);
     } catch (error) {
         console.error('Failed to get refundable orders:', error);
         return [];
     }
+}
+
+export async function searchRefundableOrders ({orderId, customerPhone} = {}) {
+    const params = orderId
+        ? {orderId: String(orderId).trim()}
+        : {customerPhone: String(customerPhone || '').replace(/\D/g, '')};
+
+    if (!params.orderId && !params.customerPhone) return [];
+    return getRefundableOrders(params);
 }
 
 // TODO: Add actual endpoint when available

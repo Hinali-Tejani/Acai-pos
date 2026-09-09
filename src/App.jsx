@@ -198,6 +198,7 @@ function App () {
             onSelectItem={handleSelectItem}
             printerDevice={device}
             connectPrinter={connectPrinter}
+            printRaw={printRaw}
             refundCart={refundCart}
             addToRefundCart={addToRefundCart}
             removeRefundItem={removeRefundItem}

@@ -14,6 +14,7 @@ export default function AppRoutes({
   onSelectItem,
   printerDevice,
   connectPrinter,
+  printRaw,
   refundCart,
   addToRefundCart,
   removeRefundItem,
@@ -132,6 +133,7 @@ export default function AppRoutes({
           <RefundScreen
             refundCart={refundCart}
             addToRefundCart={addToRefundCart}
+            printRaw={printRaw}
             removeRefundItem={removeRefundItem}
             updateRefundQuantity={updateRefundQuantity}
             clearRefundCart={clearRefundCart}
