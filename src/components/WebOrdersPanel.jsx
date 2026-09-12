@@ -11,11 +11,11 @@ export default function WebOrdersPanel() {
   const { orders, isConnected } = useSignalROrders();
 
   return (
-    <div className="mb-6 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-white p-6 shadow-sm">
+    <div className="mb-2 p-2">
       {/* Header with connection status */}
-      <div className="mb-5 flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h3 className="text-lg font-bold text-purple-900">🌐 Web Orders</h3>
+          <h3 className="text-lg font-bold text-purple-900">Web Orders</h3>
           <div className="flex items-center gap-2">
             <span
               className={`inline-flex h-3 w-3 rounded-full transition-all ${

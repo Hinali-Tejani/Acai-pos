@@ -7,11 +7,17 @@ export default defineConfig({
   server: {
     proxy: {
       '/AcaiAPI': {
-        target: 'https://runasp.net',
-  changeOrigin: true,
-  ws: true,
-  secure: false
+        target: 'https://palladiumacaiapi.runasp.net',
+        changeOrigin: true,
+        ws: true, // 👈 Ensures both HTTP and WebSocket streams pass through
+        secure: false
       },
-    },
+      '/orderhub': {
+        target: 'https://runasp.net',
+        changeOrigin: true,
+        ws: true,
+        secure: false,
+      }
+    }
   },
 })
