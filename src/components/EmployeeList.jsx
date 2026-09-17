@@ -23,7 +23,7 @@ const formatTime = (value) => {
 };
 
 export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
-    const {employees, refetchEmployees} = useEmployeeData();
+    const {refetchEmployees} = useEmployeeData();
 
     useEffect(() => {
         refetchEmployees();
@@ -40,9 +40,9 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
                     </tr>
                 </thead>
                 <tbody>
-                    {employees.map((record) => {
-                        const clockIn = record.clockIn ?? record.punchInTime;
-                        const clockOut = record.clockOut ?? record.punchOutTime;
+                    {records.map((record) => {
+                        const clockIn = record.clockIn;
+                        const clockOut = record.clockOut ;
                         const isCurrentlyPunchedIn = Boolean(clockIn && !clockOut);
 
                         return (
@@ -50,7 +50,7 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
                                 <td
                                     className={`px-3 py-2 font-medium ${isCurrentlyPunchedIn ? 'cursor-not-allowed text-purple-400' : 'cursor-pointer text-purple-900 hover:text-purple-700'}`}
                                     onClick={() => {
-                                        if (!isCurrentlyPunchedIn) {
+                                        if (!isCurrentlyPunchedIn && !record.clockOut) {
                                             onPunchIn?.(record);
                                         }
                                     }}
@@ -71,6 +71,7 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
                                         }
                                     }}
                                 >
+                                    {isCurrentlyPunchedIn}
                                     {isCurrentlyPunchedIn ? 'Active' : formatTime(clockOut)}
                                 </td>
                             </tr>

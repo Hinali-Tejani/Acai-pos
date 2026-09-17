@@ -1,13 +1,7 @@
 import { useMemo, useState } from 'react';
 
-const STATIC_EMPLOYEES = [
-  { id: 1, name: 'Alex Carter', role: 'Cashier' },
-  { id: 2, name: 'Mina Patel', role: 'Manager' },
-  { id: 3, name: 'Jordan Lee', role: 'Cook' },
-];
-
 export function useEmployeeState() {
-  const [employees, setEmployees] = useState(STATIC_EMPLOYEES);
+  const [employees, setEmployees] = useState([]);
   const [punchRecords, setPunchRecords] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
@@ -16,8 +10,8 @@ export function useEmployeeState() {
       const record = punchRecords.find((item) => item.employee.id === employee.id);
       return {
         ...employee,
-        punchInTime: record?.punchInTime ?? null,
-        punchOutTime: record?.punchOutTime ?? null,
+        clockIn: record?.clockIn ?? null,
+        clockOut: record?.clockOut ?? null,
       };
     });
   }, [employees, punchRecords]);
@@ -29,7 +23,7 @@ export function useEmployeeState() {
       if (existing) {
         return current.map((record) =>
           record.employee.id === employee.id
-            ? { ...record, punchInTime: new Date(), punchOutTime: null }
+            ? { ...record, clockIn: new Date(), clockOut: null }
             : record,
         );
       }
@@ -39,8 +33,8 @@ export function useEmployeeState() {
         {
           id: `${employee.id}-${Date.now()}`,
           employee,
-          punchInTime: new Date(),
-          punchOutTime: null,
+          clockIn: new Date(),
+          clockOut: null,
         },
       ];
     });
@@ -50,8 +44,8 @@ export function useEmployeeState() {
     setSelectedEmployee(employee);
     setPunchRecords((current) =>
       current.map((record) =>
-        record.employee.id === employee.id && !record.punchOutTime
-          ? { ...record, punchOutTime: new Date() }
+        record.employee.id === employee.id && !record.clockOut
+          ? { ...record, clockOut: new Date() }
           : record,
       ),
     );
@@ -60,7 +54,7 @@ export function useEmployeeState() {
   const getEmployeeStatus = (employeeId) => {
     const record = punchRecords.find((item) => item.employee.id === employeeId);
     if (!record) return 'not-started';
-    if (record.punchInTime && !record.punchOutTime) return 'active';
+    if (record.clockIn && !record.clockOut) return 'active';
     return 'completed';
   };
 
