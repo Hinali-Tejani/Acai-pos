@@ -1,5 +1,6 @@
 import {useEffect, useState, useCallback} from 'react';
 import * as signalR from '@microsoft/signalr';
+import {printKitchenReceipt} from '../services/printerApi';
 
 /**
  * Plays a notification sound when a new order arrives
@@ -38,8 +39,12 @@ export function useSignalROrders () {
           if (isMounted) {
             console.log('📦 New Order Received:', order);
             playNotificationSound();
+            printKitchenReceipt(order).catch((err) => {
+              console.error('❌ Kitchen receipt printing failed:', err);
+            });
             // Append new order to the top of the array using functional update
             setOrders((prevOrders) => [order, ...prevOrders]);
+
           }
         });
 
