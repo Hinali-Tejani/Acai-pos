@@ -1,6 +1,7 @@
 import React from 'react';
 import HomeActions from '../components/HomeActions';
 import OrderTypeForm from '../components/OrderTypeForm';
+import WebOrdersPanel from '../components/WebOrdersPanel';
 
 export default function HomePage({
   orderType,
@@ -16,6 +17,8 @@ export default function HomePage({
 }) {
   return (
     <div className="h-full space-y-4">
+      <WebOrdersPanel />
+
       <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm">
         <HomeActions
           orderType={orderType}

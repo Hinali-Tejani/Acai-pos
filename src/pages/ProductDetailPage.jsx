@@ -74,22 +74,27 @@ export default function ProductDetailPage ({
         );
     }
 
+    const currentItemPrice = getItemPrice(item);
+
     return (
         <div className="space-y-8">
-            <div className="flex items-center justify-between gap-3 rounded-xl border border-purple-200 bg-white px-4 py-3 shadow-sm mb-5">
-                <h2 className="text-xl font-semibold text-purple-900">
-                    {item.submenuName || item.itemName || item.name || 'Product Detail'}
-                </h2>
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-200 bg-white px-4 py-3 shadow-sm mb-2">
+                <div className="flex items-center gap-3">
+                    <h2 className="flex items-center gap-2 text-xl font-semibold text-purple-900">
+                        {item.name} - <span className="text-sm">${currentItemPrice.toFixed(2)}</span>
+                    </h2>
+                    
+                </div>
 
                 <div className="flex gap-3">
                     {sizeOptions.map((sz) => (
-                        
+
                         <button
                             key={sz.id}
                             onClick={() => setChosenSize(sz.name)}
-                            className={`rounded-sm border px-3 py-2 text-xs! font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                            className={`rounded-sm border px-3 py-2 text-xs! font-semibold transition ${chosenSize === sz.name ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                         >
-                            {sz.name} 
+                            {sz.name}
                             {/* <span className='text-[9px]'> {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}</span> */}
                         </button>
                     ))}
@@ -110,7 +115,6 @@ export default function ProductDetailPage ({
                 baseOptions={baseOptions}
                 addOns={addOns}
                 allergies={allergies}
-                currentItemPrice={getItemPrice(item)}
                 onBack={handleBack}
                 onAddToCart={handleAddToOrder}
                 editingItemIndex={editingItemIndex}

@@ -8,7 +8,6 @@ import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
-import WebOrdersPanel from './components/WebOrdersPanel';
 import {processPOSPayment} from './services/paymentApi';
 
 function App () {
@@ -95,7 +94,7 @@ function App () {
   const handleAddToRefundCart = (item) => {
     addToRefundCart({
       ...item,
-      size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
+      size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
       base: chosenBase,
       toppings: selectedToppings.map((topping) => topping.name),
       allergies: selectedAllergies.map((allergy) => allergy.name),
@@ -109,7 +108,7 @@ function App () {
 
     setEditingItemIndex(index);
     setSelectedItem(item);
-    setChosenSize(item.size || sizeOptions[0]?.label || 'REGULAR');
+    setChosenSize(item.size || sizeOptions[0]?.name || 'REGULAR');
     setChosenBase(item.base || BASE_OPTIONS[0]);
     setSelectedToppings((item.toppings || []).map((topping) => (
       addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
@@ -128,7 +127,7 @@ function App () {
       const itemBeingEdited = cart[editingItemIndex];
       if (itemBeingEdited) {
         updateCartItem(itemBeingEdited.uid, {
-          size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
+          size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
           base: chosenBase,
           toppings: selectedToppings.map((topping) => topping.name),
           allergies: selectedAllergies.map((allergy) => allergy.name),
@@ -187,7 +186,7 @@ function App () {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-gray-50 text-purple-900">
+    <div className="flex h-screen w-screen flex-col bg-gray-50 text-purple-900">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
@@ -199,15 +198,12 @@ function App () {
         setFirstName={setFirstName}
         setLastName={setLastName}
         setPhoneNumber={setPhoneNumber}
-        onProcessPayment={handleProcessPayment}
         isProcessing={isProcessing}
         onOpenPendingPaymentOrder={handleOpenPendingPaymentOrder}
       />
 
-      <div className="flex-1 overflow-hidden">
-        <div className="flex h-full flex-col px-6 py-5 overflow-y-auto">
-          <WebOrdersPanel />
-
+      <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
+        <div className="flex min-w-0 flex-1 flex-col overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
           <AppRoutes
             itemsLoading={itemsLoading}
             activeItems={activeItems}
@@ -254,38 +250,38 @@ function App () {
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
           />
         </div>
-      </div>
 
-      <div className="w-95 overflow-y-auto border-l border-purple-200 bg-white p-2">
-        <CartSummary
-          cart={cart}
-          cartTotal={cartTotal}
-          onRemoveItem={removeCartItem}
-          onClearCart={clearCart}
-          onProcessPayment={handleProcessPayment}
-          isProcessing={isProcessing}
-          pendingPaymentOrder={pendingPaymentOrder}
-          onPendingPaymentHandled={() => setPendingPaymentOrder(null)}
-          onUpdateItem={updateCartItem}
-          onEditItem={handleEditLineItem}
-          editingItemIndex={editingItemIndex}
-          orderType={orderType}
-          setOrderType={setOrderType}
-          firstName={firstName}
-          setFirstName={setFirstName}
-          lastName={lastName}
-          setLastName={setLastName}
-          phoneNumber={phoneNumber}
-          setPhoneNumber={setPhoneNumber}
-          onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
-          printRaw={printRaw}
-          refundCart={refundCart}
-          addToRefundCart={addToRefundCart}
-          removeRefundItem={removeRefundItem}
-          updateRefundQuantity={updateRefundQuantity}
-          clearRefundCart={clearRefundCart}
-          refundTotal={refundTotal}
-        />
+        <div className="w-full shrink-0 overflow-y-auto border-t border-purple-200 bg-white lg:w-95 lg:border-t-0">
+          <CartSummary
+            cart={cart}
+            cartTotal={cartTotal}
+            onRemoveItem={removeCartItem}
+            onClearCart={clearCart}
+            onProcessPayment={handleProcessPayment}
+            isProcessing={isProcessing}
+            pendingPaymentOrder={pendingPaymentOrder}
+            onPendingPaymentHandled={() => setPendingPaymentOrder(null)}
+            onUpdateItem={updateCartItem}
+            onEditItem={handleEditLineItem}
+            editingItemIndex={editingItemIndex}
+            orderType={orderType}
+            setOrderType={setOrderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
+            printRaw={printRaw}
+            refundCart={refundCart}
+            addToRefundCart={addToRefundCart}
+            removeRefundItem={removeRefundItem}
+            updateRefundQuantity={updateRefundQuantity}
+            clearRefundCart={clearRefundCart}
+            refundTotal={refundTotal}
+          />
+        </div>
       </div>
 
       <TakeoutDetailsModal

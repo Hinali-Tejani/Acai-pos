@@ -14,37 +14,30 @@ export default function Customizer ({
   baseOptions,
   addOns,
   allergies,
-  currentItemPrice,
   onBack,
   onAddToCart,
   editingItemIndex,
   isRefund
 }) {
   return (
-    <div className="space-y-8 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
-
-      {/* size options */}
-      {/* <div className="space-y-4">
-        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Size Options</div>
-        <div className="flex flex-wrap gap-3">
-          {sizeOptions.map((sz) => (
+    <div className="space-y-4 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Base</div>
+          <div className="flex gap-3">
             <button
-              key={sz.label}
-              onClick={() => setChosenSize(sz.label)}
-              className={`rounded-xl border px-5 py-3 text-sm font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+              className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
+              onClick={onAddToCart}
             >
-              {sz.label} {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}
+              {editingItemIndex !== null ? 'Update Order' : isRefund ? 'Add to refund' : 'Add to order'}
             </button>
-          ))}
-        </div>
-      </div> */}
-
-      <div className="space-y-4">
-        <div className='flex justify-between gap-3'>
-        <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Base</div> 
-        <div className="text-base font-semibold text-purple-900">
-          Total: <span className="text-purple-600">${currentItemPrice.toFixed(2)}</span>
-        </div>
+            <button
+              className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
+              onClick={onBack}
+            >
+              Clear
+            </button>
+          </div>
         </div>
         <div className="flex flex-wrap gap-3 text-xs">
           {baseOptions.map((bs) => (
@@ -59,13 +52,13 @@ export default function Customizer ({
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Extra Toppings Additions</div>
 
         {addOns.length === 0 ? (
           <div className="text-[11px] text-purple-600">No additional toppings are available.</div>
         ) : (
-          <div className="grid gap-3 grid-cols-2 md:grid-cols-4 xl:grid-cols-5 text-xs text-center">
+          <div className="grid gap-3 grid-cols-3 md:grid-cols-6 xl:grid-cols-7 text-xs text-center">
             {addOns.map((top) => {
               const isChecked = selectedToppings.some(t => t.name === top.name);
               return (
@@ -85,7 +78,7 @@ export default function Customizer ({
         )}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Mark Allergens That Apply</div>
         {allergies.length === 0 ? (
           <div className="text-[11px] text-purple-600">No allergen information available.</div>
@@ -109,22 +102,6 @@ export default function Customizer ({
         )}
       </div>
 
-      <div className="flex gap-3 rounded-xl bg-gray-50 p-3 px-4 justify-end">
-        <div className="flex gap-3 flex-wrap sm:items-center sm:justify-between">
-          <button
-            className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
-            onClick={onAddToCart}
-          >
-            {editingItemIndex !== null ? 'Update Order' : isRefund ? 'Add to refund' : 'Add to order'}
-          </button>
-          <button
-            className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
-            onClick={onBack}
-          >
-            {editingItemIndex !== null ? 'Discard Changes' : 'Cancel'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
