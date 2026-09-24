@@ -8,6 +8,7 @@ function TakeoutForm ({
   phoneNumber,
   setPhoneNumber,
   required = true,
+  firstNameRequired = false,
   onSubmit,
   onCancel,
   submitLabel = 'Submit',
@@ -16,7 +17,7 @@ function TakeoutForm ({
   const [errors, setErrors] = useState({});
 
   const getFieldError = (field, value) => {
-    if (!required) return '';
+    if (!required && !(field === 'firstName' && firstNameRequired)) return '';
 
     const trimmed = (value || '').trim();
 
@@ -65,11 +66,6 @@ function TakeoutForm ({
 
   const validateForm = () => {
     const nextErrors = {};
-
-    if (!required) {
-      setErrors({});
-      return true;
-    }
 
     ['firstName', 'lastName', 'phoneNumber'].forEach((field) => {
       const value = field === 'firstName' ? firstName : field === 'lastName' ? lastName : phoneNumber;

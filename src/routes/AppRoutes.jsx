@@ -12,10 +12,12 @@ export default function AppRoutes({
   activeItems,
   activeCategoryName,
   onSelectItem,
+  onSelectRefundItem,
   printerDevice,
   connectPrinter,
   refundCart,
   addToRefundCart,
+  onAddToRefundCart,
   removeRefundItem,
   updateRefundQuantity,
   clearRefundCart,
@@ -38,6 +40,7 @@ export default function AppRoutes({
   onAddToCart,
   onBack,
   activeCategory,
+  setActiveCategory,
   orderType,
   setOrderType,
   firstName,
@@ -117,6 +120,7 @@ export default function AppRoutes({
             allergies={allergies}
             getItemPrice={getItemPrice}
             onAddToCart={onAddToCart}
+            onAddToRefundCart={onAddToRefundCart}
             onBack={onBack}
             activeCategory={activeCategory}
           />
@@ -132,10 +136,12 @@ export default function AppRoutes({
           <RefundScreen
             refundCart={refundCart}
             addToRefundCart={addToRefundCart}
+            onSelectItem={onSelectRefundItem}
             removeRefundItem={removeRefundItem}
             updateRefundQuantity={updateRefundQuantity}
             clearRefundCart={clearRefundCart}
             refundTotal={refundTotal}
+            setActiveCategory={setActiveCategory}
           />
         }
       />

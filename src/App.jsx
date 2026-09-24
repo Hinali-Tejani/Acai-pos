@@ -86,13 +86,30 @@ function App () {
     navigate(`/product/${item.id}`, {state: {item}});
   };
 
+  const handleSelectRefundItem = (item) => {
+    selectItem(item);
+    setEditingItemIndex(null);
+    navigate(`/product/${item.id}`, {state: {item, refund: true}});
+  };
+
+  const handleAddToRefundCart = (item) => {
+    addToRefundCart({
+      ...item,
+      size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
+      base: chosenBase,
+      toppings: selectedToppings.map((topping) => topping.name),
+      allergies: selectedAllergies.map((allergy) => allergy.name),
+      finalPrice: calculateItemPrice(item),
+    });
+  };
+
   const handleEditLineItem = (index) => {
     const item = cart[index];
     if (!item) return;
 
     setEditingItemIndex(index);
     setSelectedItem(item);
-    setChosenSize(item.size || sizeOptions[0]?.label || 'Medium');
+    setChosenSize(item.size || sizeOptions[0]?.label || 'REGULAR');
     setChosenBase(item.base || BASE_OPTIONS[0]);
     setSelectedToppings((item.toppings || []).map((topping) => (
       addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
@@ -111,7 +128,7 @@ function App () {
       const itemBeingEdited = cart[editingItemIndex];
       if (itemBeingEdited) {
         updateCartItem(itemBeingEdited.uid, {
-          size: chosenSize || sizeOptions[0]?.label || 'Medium',
+          size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
           base: chosenBase,
           toppings: selectedToppings.map((topping) => topping.name),
           allergies: selectedAllergies.map((allergy) => allergy.name),
@@ -196,10 +213,12 @@ function App () {
             activeItems={activeItems}
             activeCategoryName={activeCategoryName}
             onSelectItem={handleSelectItem}
+            onSelectRefundItem={handleSelectRefundItem}
             printerDevice={device}
             connectPrinter={connectPrinter}
             refundCart={refundCart}
             addToRefundCart={addToRefundCart}
+            onAddToRefundCart={handleAddToRefundCart}
             removeRefundItem={removeRefundItem}
             updateRefundQuantity={updateRefundQuantity}
             clearRefundCart={clearRefundCart}
@@ -222,6 +241,7 @@ function App () {
             onAddToCart={handleAddToCart}
             onBack={handleDiscardChanges}
             activeCategory={activeCategory}
+            setActiveCategory={setActiveCategory}
             orderType={orderType}
             setOrderType={setOrderType}
             firstName={firstName}

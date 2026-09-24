@@ -4,13 +4,16 @@ export default function RefundTicket({
   refundCart,
   refundTotal,
   onRemoveItem,
-  onUpdateItem,
+  onRepeatItem,
   onClearCart,
   onProceedToRefund,
   isCartEmpty,
 }) {
   const itemCount = refundCart.length;
   const displayTotal = Math.abs(Number(refundTotal) || 0);
+  // 13% tax of the refund total 
+  const estimatedTax = displayTotal * 0.13; 
+  const finalTotal = displayTotal + estimatedTax;
 
   return (
     <div>
@@ -38,18 +41,14 @@ export default function RefundTicket({
                   </div>
                   <div className="space-x-1 whitespace-nowrap text-[9px]! font-semibold text-purple-700">
                     <button
+                      type="button"
                       className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200"
-                      onClick={() => onUpdateItem?.(cartItem.uid, -1)}
+                      onClick={() => onRepeatItem?.(cartItem.uid)}
                     >
-                      -
+                      Repeat
                     </button>
                     <button
-                      className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200"
-                      onClick={() => onUpdateItem?.(cartItem.uid, 1)}
-                    >
-                      +
-                    </button>
-                    <button
+                      type="button"
                       className="rounded-full bg-purple-100 px-2 py-1 transition hover:bg-purple-200"
                       onClick={() => onRemoveItem?.(cartItem.uid)}
                     >
@@ -59,8 +58,7 @@ export default function RefundTicket({
                 </div>
 
                 <div className="text-purple-600">
-                  <span className="mr-1 rounded-sm bg-purple-100 px-1.5 py-0.5">Qty: {cartItem.quantity || 1}</span>
-                  <span className="rounded-sm bg-purple-100 px-1.5 py-0.5">Refund: ${lineTotal.toFixed(2)}</span>
+                  <span className="rounded-sm bg-purple-100 px-1.5 py-0.5">Refund: $-{lineTotal.toFixed(2)}</span>
                 </div>
               </div>
             );
@@ -71,15 +69,15 @@ export default function RefundTicket({
       <div className="mt-4 space-y-2 border-t border-purple-200 pt-3">
         <div className="flex items-center justify-between text-sm text-purple-600">
           <span>Subtotal</span>
-          <span>${displayTotal.toFixed(2)}</span>
+          <span>-${displayTotal.toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between text-sm text-purple-600">
           <span>Estimated Tax</span>
-          <span>$0.00</span>
+          <span>-${estimatedTax.toFixed(2)}</span>
         </div>
         <div className="flex items-center justify-between border-t border-purple-200 pt-3 text-base font-semibold text-purple-900">
           <span>Total Refund</span>
-          <span>${displayTotal.toFixed(2)}</span>
+          <span>-${finalTotal.toFixed(2)}</span>
         </div>
 
         <div className="grid grid-cols-2 gap-2">

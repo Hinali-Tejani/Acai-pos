@@ -17,7 +17,8 @@ export default function Customizer ({
   currentItemPrice,
   onBack,
   onAddToCart,
-  editingItemIndex
+  editingItemIndex,
+  isRefund
 }) {
   return (
     <div className="space-y-8 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
@@ -76,13 +77,12 @@ export default function Customizer ({
                 >
                   {/* <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-purple-300 bg-white text-purple-900" /> */}
                   <span className="flex-1 wrap-anywhere">{top.name}</span>
-                  <b className="text-[10px] text-gray-600">+${top.price.toFixed(2)}</b>
+                  <b className={`text-[10px] ${isChecked ? 'text-white' : 'text-gray-600'}`}>+${top.price.toFixed(2)}</b>
                 </button>
               );
             })}
           </div>
         )}
-
       </div>
 
       <div className="space-y-4">
@@ -115,7 +115,7 @@ export default function Customizer ({
             className="rounded-lg bg-purple-900 px-2.5 py-1.5 text-sm! font-semibold text-white transition hover:bg-purple-800"
             onClick={onAddToCart}
           >
-            {editingItemIndex !== null ? 'Update Order' : 'Add to order'}
+            {editingItemIndex !== null ? 'Update Order' : isRefund ? 'Add to refund' : 'Add to order'}
           </button>
           <button
             className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"

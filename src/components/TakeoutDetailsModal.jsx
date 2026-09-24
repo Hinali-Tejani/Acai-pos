@@ -17,7 +17,7 @@ export default function TakeoutDetailsModal ({
     <PopUp isOpen={isOpen} title="Takeout order details" onClose={onClose} size="md">
       <div className="space-y-3">
         <p className="text-sm text-purple-700">
-          Customer information is required before you can pay now or pay later on a takeout order.
+          Customer information is required before you can pay now or pay later.
         </p>
         <OrderTypeForm
           orderType={orderType}

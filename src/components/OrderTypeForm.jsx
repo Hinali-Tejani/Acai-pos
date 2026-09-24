@@ -33,6 +33,7 @@ export default function OrderTypeForm ({
         phoneNumber={phoneNumber}
         setPhoneNumber={setPhoneNumber}
         required={orderType === 'takeout'}
+        firstNameRequired={orderType === 'walk-in'}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />

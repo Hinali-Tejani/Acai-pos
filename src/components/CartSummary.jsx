@@ -30,6 +30,7 @@ export default function CartSummary ({
   setPhoneNumber,
   onRequestTakeoutFormOpen,
   refundCart = [],
+  addToRefundCart,
   refundTotal = 0,
   removeRefundItem,
   updateRefundQuantity,
@@ -38,6 +39,7 @@ export default function CartSummary ({
 }) {
   const location = useLocation();
   const isRefundRoute = location.pathname.startsWith('/manager/refund');
+  const isRefundMode = isRefundRoute || location.state?.refund === true;
 
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
@@ -83,13 +85,13 @@ export default function CartSummary ({
   }, [pendingPaymentOrder]);
 
   React.useEffect(() => {
-    if (!isRefundRoute) {
+    if (!isRefundMode) {
       setShowRefundPayment(false);
       setShowRefundPasswordModal(false);
       setRefundPaymentDetails(null);
       return;
     }
-  }, [isRefundRoute]);
+  }, [isRefundMode]);
 
   const printReceipt = async (receiptData) => {
     try {
@@ -136,13 +138,12 @@ export default function CartSummary ({
     setShowPayment(true);
   };
 
-  const handlePayNow = () => {
-    if (isCartEmpty) return;
-    if (isTakeout) {
-      const trimmedFirstName = firstName.trim();
-      const trimmedLastName = lastName.trim();
-      const trimmedPhoneNumber = phoneNumber.trim();
+  const checkTakeoutFormRequired = () => {
+    const trimmedFirstName = firstName.trim();
+    const trimmedLastName = lastName.trim();
+    const trimmedPhoneNumber = phoneNumber.trim();
 
+    if (isTakeout) {
       if (!trimmedFirstName || !trimmedLastName || !trimmedPhoneNumber) {
         onRequestTakeoutFormOpen?.();
         return;
@@ -155,29 +156,34 @@ export default function CartSummary ({
         onRequestTakeoutFormOpen?.();
         return;
       }
+    } else {
+      if (!trimmedFirstName) {
+        onRequestTakeoutFormOpen?.();
+        return;
+      }
+    }
+
+    if (!firstName.trim() || (isTakeout && !lastName.trim()) || (isTakeout && !phoneNumber.trim())) {
+      return;
+    }
+  }
+
+  const handlePayNow = () => {
+    if (isCartEmpty) return;
+    checkTakeoutFormRequired();
+    // If the form is valid, proceed to open the payment modal
+    if (!firstName.trim() || (isTakeout && !lastName.trim()) || (isTakeout && !phoneNumber.trim())) {
+      return;
     }
     openPaymentForOrder();
   };
 
   const handlePayLater = () => {
     if (isCartEmpty) return;
-    if (isTakeout) {
-      const trimmedFirstName = firstName.trim();
-      const trimmedLastName = lastName.trim();
-      const trimmedPhoneNumber = phoneNumber.trim();
-
-      if (!trimmedFirstName || !trimmedLastName || !trimmedPhoneNumber) {
-        onRequestTakeoutFormOpen?.();
-        return;
-      }
-      if (!/^[0-9]+$/.test(trimmedPhoneNumber)) {
-        onRequestTakeoutFormOpen?.();
-        return;
-      }
-      if (trimmedPhoneNumber.length !== 10) {
-        onRequestTakeoutFormOpen?.();
-        return;
-      }
+    checkTakeoutFormRequired();
+    // If the form is valid, proceed to open the payment modal
+    if (!firstName.trim() || (isTakeout && !lastName.trim()) || (isTakeout && !phoneNumber.trim())) {
+      return;
     }
 
     const nextOrder = buildPendingOrder();
@@ -299,6 +305,17 @@ export default function CartSummary ({
     }
   }
 
+  const onRepeatRefundItem = (uid) => {
+    const itemToRepeat = refundCart.find((item) => item.uid === uid);
+    if (!itemToRepeat) return;
+
+    addToRefundCart?.({
+      ...itemToRepeat,
+      uid: `${itemToRepeat.uid}-${Date.now()}`,
+      quantity: 1,
+    });
+  };
+
   return (
     <div className="flex h-full flex-col justify-between gap-3">
       <div className="space-y-3 rounded-sm border border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
@@ -346,12 +363,12 @@ export default function CartSummary ({
         </div>
 
 
-        {isRefundRoute ? (
+        {isRefundMode ? (
           <RefundTicket
             refundCart={refundCart}
             refundTotal={refundTotal}
             onRemoveItem={removeRefundItem}
-            onUpdateItem={updateRefundQuantity}
+            onRepeatItem={onRepeatRefundItem}
             onClearCart={clearRefundCart}
             onProceedToRefund={handleProceedToRefundPayment}
             isCartEmpty={refundCart.length === 0}
@@ -393,10 +410,11 @@ export default function CartSummary ({
           totalDue={refundGrandTotal.toFixed(2)}
           onPaymentComplete={handleRefundPaymentComplete}
           onClose={handleCloseRefundPayment}
+          isRefund
         />
       )}
 
-      {refundPaymentDetails && isRefundRoute && (
+      {refundPaymentDetails && isRefundMode && (
         <div className="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
           Refund completed
         </div>

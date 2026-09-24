@@ -20,6 +20,7 @@ export default function ProductDetailPage ({
     allergies,
     getItemPrice,
     onAddToCart,
+    onAddToRefundCart,
     onBack,
     activeCategory = 'home'
 }) {
@@ -28,6 +29,7 @@ export default function ProductDetailPage ({
     const navigate = useNavigate();
 
     const itemFromState = location.state?.item;
+    const isRefund = location.state?.refund === true;
     const item = selectedItem || itemFromState || activeItems.find((it) => String(it.id) === String(id));
 
     useEffect(() => {
@@ -40,7 +42,9 @@ export default function ProductDetailPage ({
         }
     }, [item, chosenSize, chosenBase, setChosenSize, setChosenBase]);
 
-    const returnPath = activeCategory && activeCategory !== 'home' ? `/products/${activeCategory}` : '/home';
+    const returnPath = isRefund
+        ? '/manager/refund'
+        : activeCategory && activeCategory !== 'home' ? `/products/${activeCategory}` : '/home';
 
     const handleBack = () => {
         if (onBack) onBack();
@@ -48,7 +52,11 @@ export default function ProductDetailPage ({
     };
 
     const handleAddToOrder = () => {
-        onAddToCart(item);
+        if (isRefund) {
+            onAddToRefundCart(item);
+        } else {
+            onAddToCart(item);
+        }
         navigate(returnPath);
     };
 
@@ -75,12 +83,13 @@ export default function ProductDetailPage ({
 
                 <div className="flex gap-3">
                     {sizeOptions.map((sz) => (
+                        
                         <button
-                            key={sz.label}
-                            onClick={() => setChosenSize(sz.label)}
+                            key={sz.id}
+                            onClick={() => setChosenSize(sz.name)}
                             className={`rounded-sm border px-3 py-2 text-xs! font-semibold transition ${chosenSize === sz.label ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                         >
-                            {sz.label} 
+                            {sz.name} 
                             {/* <span className='text-[9px]'> {sz.priceModifier !== 0 && `(${sz.priceModifier > 0 ? '+' : ''}$${sz.priceModifier.toFixed(2)})`}</span> */}
                         </button>
                     ))}
@@ -105,6 +114,7 @@ export default function ProductDetailPage ({
                 onBack={handleBack}
                 onAddToCart={handleAddToOrder}
                 editingItemIndex={editingItemIndex}
+                isRefund={isRefund}
             />
         </div>
     );

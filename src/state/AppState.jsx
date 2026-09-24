@@ -39,16 +39,7 @@ const useAppState = () => {
             try {
                 setAllergiesLoading(true);
                 const fetchedAllergies = await getAllergies();
-
-                // Transform API response to match expected format
-                const formattedAllergies = Array.isArray(fetchedAllergies)
-                    ? fetchedAllergies.map(allergy => ({
-                        id: allergy.id || allergy.allergyID || allergy.ID || '',
-                        name: allergy.name || allergy.title || allergy.allergyName || 'Unknown'
-                    }))
-                    : [];
-
-                setAllergies(formattedAllergies);
+                setAllergies(fetchedAllergies);
                 allergiesLoaded.current = true;
             } catch (error) {
                 console.error('Error loading allergies:', error);
@@ -78,18 +69,9 @@ const useAppState = () => {
             try {
                 setAddOnsLoading(true);
                 const fetchedAddOns = await getAddOns(activeCategory);
-
-                // Transform API response to match expected format
-                const formattedAddOns = Array.isArray(fetchedAddOns)
-                    ? fetchedAddOns.map(addon => ({
-                        name: addon.name || addon.title || addon.addOnName || 'Unknown',
-                        price: addon.price ?? addon.cost ?? 0
-                    }))
-                    : [];
-
-                setAddOns(formattedAddOns);
+                setAddOns(fetchedAddOns);
                 // Cache the result
-                addonsCache.current[activeCategory] = formattedAddOns;
+                addonsCache.current[activeCategory] = fetchedAddOns;
             } catch (error) {
                 console.error('Error loading add-ons:', error);
                 setAddOns([]);
@@ -118,19 +100,9 @@ const useAppState = () => {
             try {
                 setSizesLoading(true);
                 const fetchedSizes = await getSizes(activeCategory);
-
-                // Transform API response to match expected format if needed
-                const formattedSizes = Array.isArray(fetchedSizes)
-                    ? fetchedSizes.map(size => ({
-                        id: size.id || size.sizeID || size.ID || '',
-                        label: size.label || size.name || size.sizeName || 'Unknown',
-                        priceModifier: size.priceModifier ?? size.price ?? 0
-                    }))
-                    : [];
-
-                setSizeOptions(formattedSizes);
+                setSizeOptions(fetchedSizes);
                 // Cache the result
-                sizesCache.current[activeCategory] = formattedSizes;
+                sizesCache.current[activeCategory] = fetchedSizes;
                 // Reset chosen size when sizes change
                 setChosenSize('');
             } catch (error) {
@@ -225,7 +197,7 @@ const useAppState = () => {
 
     const selectItem = (item) => {
         setSelectedItem(item);
-        setChosenSize(item.size || sizeOptions[0]?.label || 'Medium');
+        setChosenSize(item.size || sizeOptions[0]?.label || 'REGULAR');
         setChosenBase('Traditional Acai Blend');
         setSelectedToppings([]);
         setSelectedAllergies([]);
@@ -238,8 +210,8 @@ const useAppState = () => {
             {
                 uid: Date.now(),
                 id: item.id,
-                name: item.submenuName || item.itemName || item.name || 'Acai Item',
-                size: chosenSize || sizeOptions[0]?.label || 'Medium',
+                name: item.name,
+                size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
                 base: chosenBase,
                 toppings: selectedToppings.map((t) => t.name),
                 allergies: selectedAllergies.map((a) => a.name),
@@ -264,7 +236,11 @@ const useAppState = () => {
                 uid,
                 id: item.id,
                 name: item.submenuName || item.itemName || item.name || 'Item',
-                finalPrice: -(parseFloat(item.submenuPrice || item.price || 0) || 0),
+                size: item.size,
+                base: item.base,
+                toppings: item.toppings || [],
+                allergies: item.allergies || [],
+                finalPrice: -(item.finalPrice ?? (parseFloat(item.submenuPrice || item.price || 0) || 0)),
                 quantity: 1,
             }
         ]));

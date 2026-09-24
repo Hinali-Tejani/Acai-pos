@@ -1,6 +1,6 @@
 import {useState} from 'react';
 
-export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymentComplete, onClose}) {
+export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymentComplete, onClose, isRefund = false}) {
     const [paymentMethod, setPaymentMethod] = useState('card');
     const [cashAmount, setCashAmount] = useState('');
 
@@ -106,10 +106,10 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4 py-6">
-            <div className="relative flex max-h-[90vh] w-full max-w-6xl overflow-hidden rounded-3xl border border-purple-200 bg-white shadow-2xl">
+            <div className={`relative flex max-h-[90vh] w-full overflow-hidden rounded-3xl border border-purple-200 bg-white shadow-2xl ${isRefund ? 'max-w-fit' : 'max-w-6xl'}`}>
 
                 {/* LEFT COLUMN */}
-                <div className="hidden w-[60%] flex-col justify-between bg-gray-50 p-6 md:flex">
+                {!isRefund && <div className="hidden w-[60%] flex-col justify-between bg-gray-50 p-6 md:flex">
                     {paymentMethod === 'cash' ? (
                         <>
                             <div>
@@ -195,10 +195,10 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                             </button>
                         </div>
                     )}
-                </div>
+                </div>}
 
                 {/* RIGHT COLUMN */}
-                <div className="flex w-full flex-col bg-linear-to-br from-purple-400 via-purple-500 to-purple-300 p-6 text-white md:w-[40%]">
+                <div className={`flex w-full flex-col bg-linear-to-br from-purple-400 via-purple-500 to-purple-300 p-6 text-white ${isRefund ? 'md:w-full' : 'md:w-[40%]'}`}>
                     <div className="mb-6 flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-200">Payment</p>

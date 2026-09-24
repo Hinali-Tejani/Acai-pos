@@ -3,22 +3,19 @@ import {useNavigate} from 'react-router-dom';
 import {useMenuState} from '../state/MenuState';
 import ProductGrid from '../components/ProductGrid';
 
-export default function RefundScreen ({addToRefundCart}) {
+const BOWLS_CATEGORY_ID = 1;
+
+export default function RefundScreen ({onSelectItem, setActiveCategory}) {
   const navigate = useNavigate();
   const {categories, activeItems, activeCategory, loading, itemsLoading, loadSubmenu} = useMenuState();
 
-  const activeCategoryName = useMemo(() => categories.find(cat => cat.id === activeCategory)?.name || 'Category', [categories, activeCategory]);
+  const activeCategoryName = useMemo(() => categories.find(cat => cat.id === activeCategory)?.name || 'Bowls', [categories, activeCategory]);
 
   // Load menu on mount
   useEffect(() => {
-    if (activeCategory) {
-        loadSubmenu(activeCategory);
-    }
+    setActiveCategory(BOWLS_CATEGORY_ID);
+    loadSubmenu(BOWLS_CATEGORY_ID);
   }, []);
-
-  const handleSelectItem = (item) => {
-    addToRefundCart?.(item);
-  };
 
   return (
     <div className="space-y-4">
@@ -40,7 +37,7 @@ export default function RefundScreen ({addToRefundCart}) {
       <ProductGrid
         items={activeItems || []}
         activeCategory={activeCategoryName}
-        onSelectItem={handleSelectItem}
+        onSelectItem={onSelectItem}
       />
     </div>
   );
