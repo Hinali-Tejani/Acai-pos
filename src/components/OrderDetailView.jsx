@@ -92,7 +92,7 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
                     onClick={handleRefundSelected}
                     className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    Refund Selected
+                    Refund
                 </button>
                 <button
                     type="button"
@@ -100,7 +100,7 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
                     onClick={handleDelete}
                     className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    Delete Order
+                    Delete
                 </button>
             </div>
 

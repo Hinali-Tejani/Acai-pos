@@ -70,7 +70,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
 
           <div className="mb-3 flex gap-2 border-b border-purple-200">
             <button type="button" onClick={() => setActiveReport('sales')} className={`border-b-2 px-4 py-3 text-sm font-semibold ${activeReport === 'sales' ? 'border-purple-900 text-purple-900' : 'border-transparent text-purple-500'}`}>Sales Activity</button>
-            <button type="button" onClick={() => setActiveReport('employees')} className={`border-b-2 px-4 py-3 text-sm font-semibold ${activeReport === 'employees' ? 'border-purple-900 text-purple-900' : 'border-transparent text-purple-500'}`}>Employee Activity</button>
+            {/* <button type="button" onClick={() => setActiveReport('employees')} className={`border-b-2 px-4 py-3 text-sm font-semibold ${activeReport === 'employees' ? 'border-purple-900 text-purple-900' : 'border-transparent text-purple-500'}`}>Employee Activity</button> */}
           </div>
 
           {isLoading ? (
