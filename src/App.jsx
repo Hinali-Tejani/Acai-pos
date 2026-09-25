@@ -8,7 +8,7 @@ import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
-import {processPOSPayment} from './services/paymentApi';
+import {processOrder, processPOSPayment} from './services/paymentApi';
 
 function App () {
   const {device, connectPrinter, printRaw} = useThermalPrinter();
@@ -97,8 +97,8 @@ function App () {
       ...item,
       size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
       base: chosenBase,
-      toppings: selectedToppings.map((topping) => topping.name),
-      allergies: selectedAllergies.map((allergy) => allergy.name),
+      toppings: selectedToppings,
+      allergies: selectedAllergies,
       finalPrice: item.refundOrderId ? item.finalPrice : calculateItemPrice(item),
       quantity: item.quantity || 1,
       refundOrderId: item.refundOrderId,
@@ -118,10 +118,14 @@ function App () {
     setChosenSize(item.size || sizeOptions[0]?.name || 'REGULAR');
     setChosenBase(item.base || BASE_OPTIONS[0]);
     setSelectedToppings((item.toppings || []).map((topping) => (
-      addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
+      typeof topping === 'string'
+        ? addOns.find((addOn) => addOn.name === topping) || {name: topping, price: 0}
+        : topping
     )));
     setSelectedAllergies((item.allergies || []).map((allergy) => (
-      allergies.find((availableAllergy) => availableAllergy.name === allergy) || {name: allergy, id: allergy}
+      typeof allergy === 'string'
+        ? allergies.find((availableAllergy) => availableAllergy.name === allergy) || {name: allergy, id: allergy}
+        : allergy
     )));
     navigate(`/product/${item.id}`, {state: {item}});
   };
@@ -136,8 +140,8 @@ function App () {
         updateCartItem(itemBeingEdited.uid, {
           size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
           base: chosenBase,
-          toppings: selectedToppings.map((topping) => topping.name),
-          allergies: selectedAllergies.map((allergy) => allergy.name),
+          toppings: selectedToppings,
+          allergies: selectedAllergies,
           finalPrice: calculateItemPrice(item),
           basePrice: itemPrice,
         });
@@ -158,24 +162,45 @@ function App () {
     setPendingPaymentOrder(order);
   };
 
-  const handleProcessPayment = async (method, customOrderId = null, customTotal = null) => {
+  const handleProcessPayment = async (method, customOrderId = null, customTotal = null, isPayLater = false) => {
     const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
-    const checkoutPayload = {
-      totalAmt: customTotal !== null ? Number(customTotal) || 0 : 0,
-      orderID: customOrderId !== null ? Number(customOrderId) || 0 : 0,
-      paymentMethod,
-      cardNumber: paymentMethod === 'CARD' ? 'xxxx-xxxx-xxxx-1234' : '',
-      cardType: paymentMethod === 'CARD' ? 'VISA' : '',
-      transactionID: `${paymentMethod === 'CARD' ? 'TXN' : 'CASH'}-${Date.now()}`,
-      transactionDateTime: new Date().toISOString(),
-      referenceNumber: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
-    };
 
     setIsProcessing(true);
     try {
-      await processPOSPayment(checkoutPayload);
-      alert('Payment completed successfully.');
-      return true;
+      let orderID = customOrderId;
+      if (orderID === null) {
+        const subTotal = cart.reduce((sum, item) => sum + (item.finalPrice || 0) * (item.quantity || 1), 0);
+        const tax = subTotal * 0.13;
+        const orderResponse = await processOrder({
+          totalAmt: customTotal !== null ? Number(customTotal) || 0 : subTotal + tax,
+          subTotal,
+          tax,
+          firstName,
+          lastName,
+          phoneNumber,
+          cart,
+          paymentMethod,
+          isPayLater,
+        });
+        orderID = orderResponse?.orderID ?? orderResponse?.data?.orderID ?? orderResponse?.id;
+        if (!orderID) throw new Error('ProcessOrder did not return an order ID');
+      }
+
+      if (!isPayLater) {
+        await processPOSPayment({
+          totalAmt: customTotal !== null ? Number(customTotal) || 0 : 0,
+          orderID: Number(orderID) || 0,
+          paymentMethod,
+          cardNumber: paymentMethod === 'CARD' ? 'xxxx-xxxx-xxxx-1234' : '',
+          cardType: paymentMethod === 'CARD' ? 'VISA' : '',
+          transactionID: `${paymentMethod === 'CARD' ? 'TXN' : 'CASH'}-${Date.now()}`,
+          transactionDateTime: new Date().toISOString(),
+          referenceNumber: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
+        });
+      }
+
+      alert(isPayLater ? 'Order saved for later payment.' : 'Payment completed successfully.');
+      return orderID;
     } catch (error) {
       console.error('Checkout payment failed:', error);
       alert('Payment failed. Your order was not changed. Please try again.');
@@ -184,6 +209,8 @@ function App () {
       setIsProcessing(false);
     }
   };
+
+  const handleCreateOrder = () => handleProcessPayment('CASH', null, cartTotal + cartTotal * 0.13, true);
 
   const activeCategoryName = categories.find(cat => cat.id === activeCategory)?.name || 'Category';
   const cartTotal = cart.reduce((sum, item) => sum + item.finalPrice * (item.quantity || 1), 0);
@@ -267,6 +294,7 @@ function App () {
             onRemoveItem={removeCartItem}
             onClearCart={clearCart}
             onProcessPayment={handleProcessPayment}
+                        onCreateOrder={handleCreateOrder}
             isProcessing={isProcessing}
             pendingPaymentOrder={pendingPaymentOrder}
             onPendingPaymentHandled={() => setPendingPaymentOrder(null)}

@@ -18,6 +18,7 @@ export default function CartSummary ({
   onEditItem,
   editingItemIndex,
   onProcessPayment,
+  onCreateOrder,
   isProcessing,
   pendingPaymentOrder,
   onPendingPaymentHandled,
@@ -187,7 +188,7 @@ export default function CartSummary ({
     openPaymentForOrder();
   };
 
-  const handlePayLater = () => {
+  const handlePayLater = async () => {
     if (isCartEmpty) return;
     checkTakeoutFormRequired();
     // If the form is valid, proceed to open the payment modal
@@ -195,7 +196,10 @@ export default function CartSummary ({
       return;
     }
 
-    const nextOrder = buildPendingOrder();
+    const orderID = await onCreateOrder?.();
+    if (!orderID) return;
+
+    const nextOrder = {...buildPendingOrder(), id: orderID};
     const raw = window.localStorage.getItem('acai-pos-pending-payments');
     const currentOrders = raw ? JSON.parse(raw) : [];
     const nextOrders = [nextOrder, ...currentOrders];
@@ -210,7 +214,7 @@ export default function CartSummary ({
 
   const handlePaymentComplete = async (method) => {
     const currentTotalDue = Number(activePendingOrder?.totalDue ?? grandTotal) || 0;
-    const currentOrderId = activePendingOrder?.id;
+    const currentOrderId = activePendingOrder?.source === 'pending' ? activePendingOrder.id : null;
     const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
     try {
       const paymentSucceeded = await onProcessPayment?.(paymentMethod, currentOrderId, currentTotalDue);
