@@ -77,7 +77,7 @@ export default function ProductDetailPage ({
     const currentItemPrice = getItemPrice(item);
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 overflow-y-auto">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-200 bg-white px-4 py-3 shadow-sm mb-2">
                 <div className="flex items-center gap-3">
                     <h2 className="flex items-center gap-2 text-xl font-semibold text-purple-900">

@@ -241,7 +241,12 @@ const useAppState = () => {
                 toppings: item.toppings || [],
                 allergies: item.allergies || [],
                 finalPrice: -(item.finalPrice ?? (parseFloat(item.price || 0) || 0)),
-                quantity: 1,
+                quantity: item.quantity || item.itemQty || 1,
+                refundOrderId: item.refundOrderId,
+                totalBeforeTax: item.totalBeforeTax,
+                itemID: item.itemID,
+                itemSizeID: item.itemSizeID,
+                totalItemRefund: item.totalItemRefund,
             }
         ]));
     };

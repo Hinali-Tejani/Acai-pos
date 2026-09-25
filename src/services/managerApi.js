@@ -1,26 +1,4 @@
-export const mockSalesReportData = [
-  {
-    id: 1,
-    invoiceNum: 'INV-1001',
-    totalAmt: 18.5,
-    paymentMethod: 'CARD',
-    timestamp: '2026-08-28T09:15:00.000Z',
-  },
-  {
-    id: 2,
-    invoiceNum: 'INV-1002',
-    totalAmt: 24.75,
-    paymentMethod: 'CASH',
-    timestamp: '2026-08-28T10:42:00.000Z',
-  },
-  {
-    id: 3,
-    invoiceNum: 'INV-1003',
-    totalAmt: 31.2,
-    paymentMethod: 'CARD',
-    timestamp: '2026-08-28T12:08:00.000Z',
-  },
-];
+import api from './api';
 
 export const mockEmployeeReportData = [
   {
@@ -47,9 +25,38 @@ const wait = (milliseconds) => new Promise((resolve) => {
   setTimeout(resolve, milliseconds);
 });
 
-export async function fetchSalesReportData () {
-  await wait(350);
-  return mockSalesReportData;
+export async function fetchOrdersList (startDate, endDate = null) {
+  const params = {startDate};
+  if (endDate) params.endDate = endDate;
+
+  const response = await api.get('/Order/GetOrdersList', {params});
+  return Array.isArray(response.data) ? response.data : response.data?.items || [];
+}
+
+export async function fetchOrderDetails (orderId) {
+  const response = await api.get('/Order/GetOrderDetails', {params: {orderId}});
+  return response.data;
+}
+
+export async function saveRefundDetails (orderId, totalRefund, amtBeforeTax, itemArray) {
+  if (Array.isArray(orderId)) {
+    const response = await api.post('/Order/SaveRefundDetails', orderId);
+    return response.data;
+  }
+
+  const response = await api.post('/Order/SaveRefundDetails', itemArray, {
+    params: {
+      OrderID: orderId,
+      TotalRefundAmount: totalRefund,
+      RefundAmtbeforeTax: amtBeforeTax,
+    },
+  });
+  return response.data;
+}
+
+export async function deleteOrder (orderId) {
+  const response = await api.delete('/Order/DeleteOrder', {params: {orderId}});
+  return response.data;
 }
 
 export async function fetchEmployeeReportData () {

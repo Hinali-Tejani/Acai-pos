@@ -6,6 +6,7 @@ import CheckoutTicket from './CheckoutTicket';
 import RefundTicket from './RefundTicket';
 import ManagerPasswordModal from './ManagerPasswordModal';
 import {processRefund} from '../services/refundApi';
+import {saveRefundDetails} from '../services/managerApi';
 import {createReceiptBytes} from '../utils/receiptGenerator';
 
 export default function CartSummary ({
@@ -36,14 +37,18 @@ export default function CartSummary ({
   updateRefundQuantity,
   clearRefundCart,
   printRaw,
+  onRefundComplete,
 }) {
   const location = useLocation();
   const isRefundRoute = location.pathname.startsWith('/manager/refund');
-  const isRefundMode = isRefundRoute || location.state?.refund === true;
+  const hasOrderRefundItems = refundCart.some((item) => item.refundOrderId);
+  const isRefundMode = isRefundRoute || location.state?.refund === true || hasOrderRefundItems;
 
   const estimatedTax = cartTotal * 0.13;
   const grandTotal = cartTotal + estimatedTax;
-  const refundGrandTotal = Math.abs(Number(refundTotal) || 0);
+  const refundSubtotal = Math.abs(Number(refundTotal) || 0);
+  const refundTax = refundSubtotal * 0.13;
+  const refundGrandTotal = refundSubtotal + refundTax;
 
   const isTakeout = orderType === 'takeout';
   const isCartEmpty = cart.length === 0;
@@ -92,6 +97,10 @@ export default function CartSummary ({
       return;
     }
   }, [isRefundMode]);
+
+  React.useEffect(() => {
+    if (location.pathname === '/home') clearRefundCart?.();
+  }, [location.pathname]);
 
   const printReceipt = async (receiptData) => {
     try {
@@ -249,9 +258,35 @@ export default function CartSummary ({
     setShowRefundPasswordModal(true);
   };
 
-  const handleRefundPasswordVerified = () => {
+  const handleRefundPasswordVerified = async () => {
     setShowRefundPasswordModal(false);
-    setShowRefundPayment(true);
+
+    try {
+      const orderId = refundCart.find((item) => item.refundOrderId)?.refundOrderId;
+      if (orderId) {
+        const itemArray = refundCart.map((item) => ({
+          itemID: item.itemID,
+          itemSizeID: item.itemSizeID,
+          totalItemRefund: Math.abs(Number(item.totalItemRefund ?? item.finalPrice ?? 0)),
+          itemQty: item.quantity || item.itemQty || 1,
+        }));
+        const refundSubtotalFromItems = itemArray.reduce((sum, item) => sum + item.totalItemRefund * item.itemQty, 0);
+        const totalRefund = refundSubtotalFromItems * 1.13;
+        const amtBeforeTax = refundCart.reduce(
+          (sum, item) => sum + Math.abs(Number(item.totalBeforeTax ?? item.finalPrice ?? 0)) * (item.quantity || 1),
+          0
+        );
+
+        await saveRefundDetails(orderId, totalRefund, amtBeforeTax, itemArray);
+      } else {
+        await saveRefundDetails(refundCart);
+      }
+
+      setShowRefundPayment(true);
+    } catch (error) {
+      console.error('Failed to save refund details:', error);
+      alert('Failed to save refund details. Please try again.');
+    }
   };
 
   const handleRefundPaymentComplete = async (details) => {
@@ -279,6 +314,7 @@ export default function CartSummary ({
       clearRefundCart?.();
       setShowRefundPayment(false);
       setStatusMessage('Refund completed');
+      onRefundComplete?.();
     } catch (error) {
       console.error('Failed to process refund:', error);
       alert('Failed to process refund. Please try again.');
@@ -401,7 +437,7 @@ export default function CartSummary ({
         <ManagerPasswordModal
           isOpen={showRefundPasswordModal}
           onClose={() => setShowRefundPasswordModal(false)}
-          onSuccess={handleRefundPasswordVerified}
+          onSubmit={handleRefundPasswordVerified}
         />
       )}
 

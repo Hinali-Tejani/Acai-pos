@@ -78,6 +78,7 @@ function App () {
   const [isProcessing, setIsProcessing] = useState(false);
   const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
   const [editingItemIndex, setEditingItemIndex] = useState(null);
+  const [refundVersion, setRefundVersion] = useState(0);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -98,7 +99,13 @@ function App () {
       base: chosenBase,
       toppings: selectedToppings.map((topping) => topping.name),
       allergies: selectedAllergies.map((allergy) => allergy.name),
-      finalPrice: calculateItemPrice(item),
+      finalPrice: item.refundOrderId ? item.finalPrice : calculateItemPrice(item),
+      quantity: item.quantity || 1,
+      refundOrderId: item.refundOrderId,
+      totalBeforeTax: item.totalBeforeTax,
+      itemID: item.itemID,
+      itemSizeID: item.itemSizeID,
+      totalItemRefund: item.totalItemRefund,
     });
   };
 
@@ -203,7 +210,7 @@ function App () {
       />
 
       <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
-        <div className="flex min-w-0 flex-1 flex-col overflow-y-auto px-2 py-4 sm:px-2 sm:py-2">
+        <div className="flex min-w-0 flex-1 flex-col px-2 py-4 sm:px-2 sm:py-2">
           <AppRoutes
             itemsLoading={itemsLoading}
             activeItems={activeItems}
@@ -248,6 +255,8 @@ function App () {
             setPhoneNumber={setPhoneNumber}
             isTakeoutModalOpen={isTakeoutModalOpen}
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
+            refundVersion={refundVersion}
+            onClearRefundCart={clearRefundCart}
           />
         </div>
 
@@ -280,6 +289,7 @@ function App () {
             updateRefundQuantity={updateRefundQuantity}
             clearRefundCart={clearRefundCart}
             refundTotal={refundTotal}
+            onRefundComplete={() => setRefundVersion((version) => version + 1)}
           />
         </div>
       </div>

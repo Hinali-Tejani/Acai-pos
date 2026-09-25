@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ProductGrid ({items, activeCategory, onSelectItem}) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 px-2 overflow-y-auto">
       <h2 className="text-2xl font-semibold text-purple-900">{activeCategory}</h2>
       <div className="grid gap-4 grid-cols-3 xl:grid-cols-5 lg:grid-cols-4 ">
         {items.map((item, idx) => (

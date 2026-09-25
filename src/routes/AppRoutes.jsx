@@ -51,6 +51,8 @@ export default function AppRoutes({
   setPhoneNumber,
   isTakeoutModalOpen,
   setIsTakeoutModalOpen,
+  refundVersion,
+  onClearRefundCart,
 }) {
   return (
     <Routes>
@@ -128,7 +130,7 @@ export default function AppRoutes({
       />
       <Route
         path="/manager-menu"
-        element={<ManagerMenu connectPrinter={connectPrinter} printerDevice={printerDevice} />}
+        element={<ManagerMenu connectPrinter={connectPrinter} printerDevice={printerDevice} onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} />}
       />
       <Route
         path="/manager/refund"
