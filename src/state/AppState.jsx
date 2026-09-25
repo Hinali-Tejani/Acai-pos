@@ -126,7 +126,7 @@ const useAppState = () => {
             }
 
             // Find the size object to get its ID
-            const selectedSizeObj = sizeOptions.find(s => s.label === chosenSize);
+            const selectedSizeObj = sizeOptions.find(s => s.name === chosenSize);
             const sizeID = selectedSizeObj?.id;
 
             if (!sizeID) {
@@ -170,7 +170,7 @@ const useAppState = () => {
 
     const calculateItemPrice = (item, size = chosenSize, toppings = selectedToppings) => {
         // Use API-fetched price as base if available
-        const basePrice = itemPrice || parseFloat(item.price || item.submenuPrice || 0) || 10;
+        const basePrice = itemPrice || parseFloat(item.price || 0) || 10;
 
         // Add toppings cost
         const toppingsMod = toppings.reduce((sum, topping) => sum + (topping.price || 0), 0);
@@ -197,7 +197,7 @@ const useAppState = () => {
 
     const selectItem = (item) => {
         setSelectedItem(item);
-        setChosenSize(item.size || sizeOptions[0]?.label || 'REGULAR');
+        setChosenSize(item.size || sizeOptions[0]?.name || 'REGULAR');
         setChosenBase('Traditional Acai Blend');
         setSelectedToppings([]);
         setSelectedAllergies([]);
@@ -211,10 +211,10 @@ const useAppState = () => {
                 uid: Date.now(),
                 id: item.id,
                 name: item.name,
-                size: chosenSize || sizeOptions[0]?.label || 'REGULAR',
+                size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
                 base: chosenBase,
-                toppings: selectedToppings.map((t) => t.name),
-                allergies: selectedAllergies.map((a) => a.name),
+                toppings: selectedToppings,
+                allergies: selectedAllergies,
                 finalPrice: finalPrice ?? calculateItemPrice(item),
                 quantity: 1,
                 basePrice: itemPrice,
@@ -235,13 +235,18 @@ const useAppState = () => {
             {
                 uid,
                 id: item.id,
-                name: item.submenuName || item.itemName || item.name || 'Item',
+                name: item.name,
                 size: item.size,
                 base: item.base,
                 toppings: item.toppings || [],
                 allergies: item.allergies || [],
-                finalPrice: -(item.finalPrice ?? (parseFloat(item.submenuPrice || item.price || 0) || 0)),
-                quantity: 1,
+                finalPrice: -(item.finalPrice ?? (parseFloat(item.price || 0) || 0)),
+                quantity: item.quantity || item.itemQty || 1,
+                refundOrderId: item.refundOrderId,
+                totalBeforeTax: item.totalBeforeTax,
+                itemID: item.itemID,
+                itemSizeID: item.itemSizeID,
+                totalItemRefund: item.totalItemRefund,
             }
         ]));
     };

@@ -15,7 +15,6 @@ export default function Sidebar ({
   setFirstName,
   setLastName,
   setPhoneNumber,
-  onProcessPayment,
   isProcessing,
   onOpenPendingPaymentOrder,
 }) {
@@ -39,17 +38,12 @@ export default function Sidebar ({
   };
 
   return (
-    <aside className="flex w-70 flex-col border-r border-purple-200 bg-white">
-      <div className="space-y-2 bg-purple px-6 py-5 text-white">
-        <h2 className="text-xl font-bold tracking-widest">ACAI AVENUE</h2>
-        {/* <span className="text-xs text-purple-300">Live Menu Dashboard</span> */}
-      </div>
-
-      <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-3">
+    <div className="flex w-full shrink-0 justify-between border-b border-purple-200 bg-white">
+      <div className="flex items-center gap-3 overflow-x-auto bg-gray-50 px-4 py-3">
         <button
           type="button"
           onClick={handleHomeClick}
-          className={`w-full rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === 'home'
+          className={`shrink-0 rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === 'home'
             ? 'border-purple-900 bg-purple-900 text-white'
             : 'border-purple-200 bg-white text-purple-800 hover:border-purple-900 hover:bg-gray-50'
             }`}
@@ -68,7 +62,7 @@ export default function Sidebar ({
                 navigate(`/products/${cat.id}`);
               }
             }}
-            className={`w-full rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === cat.id
+            className={`rounded-lg border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === cat.id
               ? 'border-purple-900 border-2'
               : 'border-transparent bg-gray-200 text-purple-800 hover:border-purple-300 hover:bg-gray-50'
               }`}
@@ -78,15 +72,15 @@ export default function Sidebar ({
         ))}
       </div>
 
-      <div className="border-t border-purple-200 bg-white p-4">
+      <div className="flex shrink-0 items-center gap-3 bg-white px-4 py-3 sm:justify-end">
         <button
-          className="mb-2 w-full rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-500"
+          className="rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-500"
           onClick={() => setIsPendingOrdersOpen(true)}
         >
           Pending Payments
         </button>
         <button
-          className="w-full rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
+          className="rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
           onClick={() => setIsCustomerModalOpen(true)}
         >
           Customer Portal
@@ -108,12 +102,6 @@ export default function Sidebar ({
         isProcessing={isProcessing}
       />
 
-      <CustomerSelectModal
-        isOpen={isCustomerModalOpen}
-        onClose={() => setIsCustomerModalOpen(false)}
-        onSelectCustomer={handleCustomerSelect}
-        selectedCustomerLabel={selectedCustomerLabel}
-      />
-    </aside>
+    </div>
   );
 }

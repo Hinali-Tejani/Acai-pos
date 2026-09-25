@@ -1,7 +1,6 @@
 import React from 'react';
 import ProductGrid from './ProductGrid';
 import HomeActions from './HomeActions';
-import OrderTypeForm from './OrderTypeForm';
 import Spinner from './Spinner';
 
 export default function MainWorkspace ({
@@ -29,7 +28,7 @@ export default function MainWorkspace ({
   }
 
   return (
-    <div className=" space-y-4">
+    <div className="w-full space-y-4">
       <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm h-full">
         <HomeActions
           orderType={orderType}

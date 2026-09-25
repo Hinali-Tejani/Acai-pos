@@ -12,7 +12,8 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
     // Remaining total changes if they already locked in some cash
     const currentTotalDue = total - splitCashPaid;
 
-    const receivedCash = Number(cashAmount) || 0;
+    const enteredCash = Number(cashAmount) || 0;
+    const receivedCash = isRefund && paymentMethod === 'cash' ? currentTotalDue : enteredCash;
     const changeDue = receivedCash - currentTotalDue;
     const remainingBalance = currentTotalDue - receivedCash;
 
@@ -198,7 +199,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                 </div>}
 
                 {/* RIGHT COLUMN */}
-                <div className={`flex w-full flex-col bg-linear-to-br from-purple-400 via-purple-500 to-purple-300 p-6 text-white ${isRefund ? 'md:w-full' : 'md:w-[40%]'}`}>
+                <div className={`flex w-full flex-col bg-linear-to-br from-purple-400 via-purple-500 to-purple-300 p-6 text-white ${isRefund ? 'md:w-full min-w-125' : 'md:w-[40%]'}`}>
                     <div className="mb-6 flex items-center justify-between">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.3em] text-purple-200">Payment</p>
@@ -279,7 +280,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                             type="button"
                             onClick={handleSubmitPayment}
                             // Disable only if it's pure cash mode and they haven't handed over enough money yet
-                            disabled={paymentMethod === 'cash' && receivedCash < currentTotalDue}
+                            disabled={!isRefund && paymentMethod === 'cash' && receivedCash < currentTotalDue}
                             className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-purple-700 disabled:opacity-50"
                         >
                             {paymentMethod === 'card'

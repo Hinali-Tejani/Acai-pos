@@ -127,7 +127,7 @@ export default function HomeActions({
       <ManagerPasswordModal
         isOpen={showPasswordModal}
         onClose={() => setShowPasswordModal(false)}
-        onSuccess={handlePasswordVerified}
+        onSubmit={handlePasswordVerified}
       />
     </div>
   );

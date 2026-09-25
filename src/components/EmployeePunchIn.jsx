@@ -84,7 +84,7 @@ export default function EmployeePunchIn () {
                 onClose={() => {
                     setShowPasswordModal(false);
                 }}
-                onSuccess={handlePasswordVerified}
+                onSubmit={handlePasswordVerified}
             />
         </div>
     );

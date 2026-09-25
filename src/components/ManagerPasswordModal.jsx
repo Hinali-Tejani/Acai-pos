@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PopUp from './PopUp';
 import {API_CONFIG} from '../config/apiConfig';
 
-export default function ManagerPasswordModal ({isOpen, onClose, onSuccess}) {
+export default function ManagerPasswordModal ({isOpen, onClose, onSubmit}) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -11,7 +11,7 @@ export default function ManagerPasswordModal ({isOpen, onClose, onSuccess}) {
     if (password === API_CONFIG.MANAGER_PASSWORD) {
       setError('');
       setPassword('');
-      onSuccess?.();
+      onSubmit?.(password);
     } else {
       setError('Incorrect manager password');
     }
