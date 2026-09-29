@@ -78,12 +78,17 @@ function App () {
   const [isProcessing, setIsProcessing] = useState(false);
   const [pendingPaymentOrder, setPendingPaymentOrder] = useState(null);
   const [editingItemIndex, setEditingItemIndex] = useState(null);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [refundVersion, setRefundVersion] = useState(0);
 
   const handleSelectItem = (item) => {
     selectItem(item);
     setEditingItemIndex(null);
     navigate(`/product/${item.id}`, {state: {item}});
+  };
+
+  const handleCustomerSelect = (customer) => {
+    setSelectedCustomer(customer);
   };
 
   const handleSelectRefundItem = (item) => {
@@ -181,6 +186,8 @@ function App () {
           cart,
           paymentMethod,
           isPayLater,
+          orderType,
+          selectedCustomer,
         });
         orderID = orderResponse?.orderID ?? orderResponse?.data?.orderID ?? orderResponse?.id;
         if (!orderID) throw new Error('ProcessOrder did not return an order ID');
@@ -200,6 +207,7 @@ function App () {
       }
 
       alert(isPayLater ? 'Order saved for later payment.' : 'Payment completed successfully.');
+      setSelectedCustomer(null);
       return orderID;
     } catch (error) {
       console.error('Checkout payment failed:', error);
@@ -234,6 +242,7 @@ function App () {
         setPhoneNumber={setPhoneNumber}
         isProcessing={isProcessing}
         onOpenPendingPaymentOrder={handleOpenPendingPaymentOrder}
+        onCustomerSelect={handleCustomerSelect}
       />
 
       <div className="flex min-h-0 flex-1 flex-row overflow-hidden">

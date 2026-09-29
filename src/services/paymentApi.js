@@ -1,18 +1,18 @@
 import api from './api';
 
-export async function processOrder ({totalAmt, subTotal, tax, firstName, lastName, phoneNumber, cart, paymentMethod, isPayLater}) {
+export async function processOrder ({totalAmt, subTotal, tax, firstName, lastName, phoneNumber, cart, paymentMethod, isPayLater, orderType, selectedCustomer}) {
 
 	const response = await api.post('/Checkout/ProcessOrder', {
 		totalAmt,
 		subTotal,
 		tax,
 		customerInfo: {
-			customerID: 0,
+			customerID: selectedCustomer?.customerID || selectedCustomer?.id || 0,
 			firstName: firstName || '',
 			lastName: lastName || '',
 			email: '',
 			phoneNumber: phoneNumber || '',
-			isGuest: phoneNumber || firstName ? 0 : 1,
+			isGuest: (orderType === 'walk-in' && !phoneNumber && !selectedCustomer),
 		},
 		paymentMethod,
 		isWebOrder: false,

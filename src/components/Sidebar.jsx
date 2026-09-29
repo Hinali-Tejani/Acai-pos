@@ -17,6 +17,7 @@ export default function Sidebar ({
   setPhoneNumber,
   isProcessing,
   onOpenPendingPaymentOrder,
+  onCustomerSelect,
 }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,6 +36,7 @@ export default function Sidebar ({
     setFirstName?.(customer.firstName || '');
     setLastName?.(customer.lastName || '');
     setPhoneNumber?.(customer.phoneNumber || '');
+    onCustomerSelect?.(customer);
   };
 
   return (
