@@ -56,5 +56,8 @@ export async function processOrder ({totalAmt, subTotal, tax, firstName, lastNam
 
 export async function processPOSPayment (paymentData) {
 	const response = await api.post('/Checkout/ProcessPOSPayment', paymentData);
+	if (response.status !== 200) {
+		throw new Error(`Payment request returned status ${response.status}`);
+	}
 	return response.data;
 }

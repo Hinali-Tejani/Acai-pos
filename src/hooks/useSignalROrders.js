@@ -1,6 +1,5 @@
 import {useEffect, useState, useCallback} from 'react';
 import * as signalR from '@microsoft/signalr';
-// import {createReceiptBytes} from '../utils/receiptGenerator';
 
 /**
  * Plays a notification sound when a new order arrives

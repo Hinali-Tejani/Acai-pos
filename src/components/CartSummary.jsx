@@ -18,6 +18,7 @@ export default function CartSummary ({
   onEditItem,
   editingItemIndex,
   onProcessPayment,
+  executeReceiptPrint,
   onCreateOrder,
   isProcessing,
   pendingPaymentOrder,
@@ -224,12 +225,13 @@ export default function CartSummary ({
         removePendingPaymentOrderFromStorage(currentOrderId);
       }
 
-      await printReceipt({
-        id: currentOrderId || 'current-order',
+      executeReceiptPrint?.({
+        orderId: currentOrderId || 'current-order',
+        createdAt: new Date().toISOString(),
         items: activePendingOrder?.items || cart,
+        subtotal: activePendingOrder?.subtotal ?? cartTotal,
+        tax: activePendingOrder?.tax ?? estimatedTax,
         total: currentTotalDue,
-        paymentMethod: paymentMethod.toLowerCase(),
-        kind: 'sale',
       });
 
       onClearCart();

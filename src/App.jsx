@@ -6,6 +6,7 @@ import {useThermalPrinter} from './hooks/useThermalPrinter';
 import Sidebar from './components/Sidebar';
 import AppStatus from './components/AppStatus';
 import CartSummary from './components/CartSummary';
+import PrintReceipt from './components/PrintReceipt';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
 import {processOrder, processPOSPayment} from './services/paymentApi';
@@ -80,6 +81,20 @@ function App () {
   const [editingItemIndex, setEditingItemIndex] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [refundVersion, setRefundVersion] = useState(0);
+  const [receiptToPrint, setReceiptToPrint] = useState(null);
+
+  const executeReceiptPrint = () => window.print();
+
+  useEffect(() => {
+    if (!receiptToPrint) return undefined;
+
+    const printReceipt = () => executeReceiptPrint();
+    const clearReceipt = () => setReceiptToPrint(null);
+    window.addEventListener('afterprint', clearReceipt, {once: true});
+    requestAnimationFrame(printReceipt);
+
+    return () => window.removeEventListener('afterprint', clearReceipt);
+  }, [receiptToPrint]);
 
   const handleSelectItem = (item) => {
     selectItem(item);
@@ -206,7 +221,7 @@ function App () {
         });
       }
 
-      alert(isPayLater ? 'Order saved for later payment.' : 'Payment completed successfully.');
+      if (isPayLater) alert('Order saved for later payment.');
       setSelectedCustomer(null);
       return orderID;
     } catch (error) {
@@ -228,7 +243,8 @@ function App () {
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col bg-gray-50 text-purple-900">
+    <>
+    <div className="print:hidden flex h-screen w-screen flex-col bg-gray-50 text-purple-900">
       <Sidebar
         categories={categories}
         activeCategory={activeCategory}
@@ -303,6 +319,7 @@ function App () {
             onRemoveItem={removeCartItem}
             onClearCart={clearCart}
             onProcessPayment={handleProcessPayment}
+            executeReceiptPrint={(receipt) => setReceiptToPrint(receipt)}
                         onCreateOrder={handleCreateOrder}
             isProcessing={isProcessing}
             pendingPaymentOrder={pendingPaymentOrder}
@@ -344,6 +361,8 @@ function App () {
       />
 
     </div>
+    <PrintReceipt receipt={receiptToPrint} />
+    </>
   );
 }
 
