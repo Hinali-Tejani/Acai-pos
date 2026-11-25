@@ -69,13 +69,13 @@ export default function Customizer ({
                 </h4>
                 <div className="grid grid-cols-3 gap-1 text-center text-xs md:grid-cols-2 xl:grid-cols-2">
                   {categoryAddOns.map((top) => {
-                    const isChecked = selectedToppings.some(t => t.name === top.name);
+                    const isChecked = selectedToppings.some(t => t.addonID === top.addonID);
                     return (
                       <button
                         key={top.addonID}
                         type="button"
                         onClick={() => onToppingToggle(top)}
-                        className={`flex flex-wrap flex-col items-center gap-1 rounded-xl border p-2 font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                        className={`flex flex-wrap flex-col items-center gap-1 rounded-md border p-1 font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                       >
                         <span className="flex-1 wrap-anywhere">{top.name}</span>
                         <b className={`text-[10px] ${isChecked ? 'text-white' : 'text-gray-600'}`}>+${top.price.toFixed(2)}</b>

@@ -4,7 +4,7 @@ import {fetchEmployeeReportData} from '../services/managerApi';
 import SalesReport from '../components/SalesReport';
 import EmployeeReport from '../components/EmployeeReport';
 
-export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefundCart, refundVersion, onClearRefundCart}) {
+export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefundCart, refundVersion, onClearRefundCart, refundCart = []}) {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('menu');
   const [activeReport, setActiveReport] = useState('sales');
@@ -52,7 +52,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
 
   if (activeView === 'reports') {
     return (
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 pt-2">
         <div className="mx-auto max-w-6xl">
           <div className="mb-3 flex items-center justify-between gap-4">
             <div>
@@ -77,7 +77,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
             <div className="rounded-xl border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
           ) : (
             activeReport === 'sales'
-              ? <SalesReport onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} />
+              ? <SalesReport onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} refundCart={refundCart} />
               : <EmployeeReport employees={employeeData} />
           )}
         </div>

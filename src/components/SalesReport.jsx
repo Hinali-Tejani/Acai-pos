@@ -9,7 +9,7 @@ const getToday = () => {
     return `${today.getFullYear()}-${month}-${day}`;
 };
 
-export default function SalesReport ({onAddToRefundCart, refundVersion, onClearRefundCart}) {
+export default function SalesReport ({onAddToRefundCart, refundVersion, onClearRefundCart, refundCart = []}) {
     const [startDate, setStartDate] = useState(getToday);
     const [endDate, setEndDate] = useState('');
     const [orders, setOrders] = useState([]);
@@ -17,6 +17,10 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [orderDetails, setOrderDetails] = useState(null);
     const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+    useEffect(() => {
+        loadOrders();
+    }, []);
 
     useEffect(() => {
         if (!refundVersion || !selectedOrder) return;
@@ -45,8 +49,18 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
         setIsDetailsLoading(true);
         try {
             const details = await fetchOrderDetails(order.orderID);
-            setOrderDetails(details[0]);
-            // console.log('Fetched order details:', details);
+            const payload = Array.isArray(details) ? details[0] : details;
+            const normalizedDetails = payload?.items
+                ? payload
+                : payload?.orderDetails
+                    ? payload.orderDetails
+                    : payload?.data
+                        ? payload.data
+                        : Array.isArray(details)
+                            ? {items: details}
+                            : {items: []};
+
+            setOrderDetails(normalizedDetails);
         } catch (error) {
             console.error('Failed to load order details:', error);
             setOrderDetails(null);
@@ -68,6 +82,7 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
                 }}
                 onRefresh={loadOrders}
                 onAddToRefundCart={onAddToRefundCart}
+                refundCart={refundCart}
             />
         );
     };

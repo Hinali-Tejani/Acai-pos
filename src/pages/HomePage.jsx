@@ -14,10 +14,21 @@ export default function HomePage({
   setPhoneNumber,
   isTakeoutModalOpen,
   setIsTakeoutModalOpen,
+  webOrders,
+  webOrderNotification,
+  dismissWebOrderNotification,
+  webOrdersConnected,
+  webOrdersError,
 }) {
   return (
     <div className="h-full space-y-4">
-      <WebOrdersPanel />
+      <WebOrdersPanel
+        orders={webOrders}
+        notification={webOrderNotification}
+        onDismissNotification={dismissWebOrderNotification}
+        isConnected={webOrdersConnected}
+        error={webOrdersError}
+      />
 
       <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm">
         <HomeActions

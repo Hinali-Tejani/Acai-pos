@@ -126,16 +126,16 @@ const useAppState = () => {
             }
 
             // Find the size object to get its ID
-            const selectedSizeObj = sizeOptions.find(s => s.name === chosenSize);
-            const sizeID = selectedSizeObj?.id;
+            const selectedSizeObj = sizeOptions.find((size) => size.name === (chosenSize || sizeOptions[0]?.name));
+            const sizeId = selectedSizeObj?.id || selectedSizeObj?.sizeID || selectedItem.sizeId || selectedItem.sizeID || 0;
 
-            if (!sizeID) {
+            if (!sizeId) {
                 setItemPrice(0);
                 return;
             }
 
             // Check cache first
-            const cacheKey = `${selectedItem.id}-${sizeID}`;
+            const cacheKey = `${selectedItem.id}-${sizeId}`;
             if (priceCache[cacheKey] !== undefined) {
                 setItemPrice(priceCache[cacheKey]);
                 return;
@@ -143,7 +143,7 @@ const useAppState = () => {
 
             try {
                 setPriceLoading(true);
-                const price = await getPrice(selectedItem.id, sizeID);
+                const price = await getPrice(selectedItem.id, sizeId);
                 const numPrice = typeof price === 'number' ? price : parseFloat(price) || 0;
                 setItemPrice(numPrice);
                 // Cache the result
@@ -179,8 +179,8 @@ const useAppState = () => {
 
     const toggleTopping = (topping) => {
         setSelectedToppings((current) => {
-            if (current.some((item) => item.name === topping.name)) {
-                return current.filter((item) => item.name !== topping.name);
+            if (current.some((item) => item.addonID === topping.addonID)) {
+                return current.filter((item) => item.addonID !== topping.addonID);
             }
             return [...current, topping];
         });
@@ -197,7 +197,7 @@ const useAppState = () => {
 
     const selectItem = (item) => {
         setSelectedItem(item);
-        setChosenSize(item.size || sizeOptions[0]?.name || 'REGULAR');
+        setChosenSize(item.size || sizeOptions[0]?.name);
         setChosenBase('Traditional Acai Blend');
         setSelectedToppings([]);
         setSelectedAllergies([]);
@@ -205,13 +205,18 @@ const useAppState = () => {
 
     const addToCart = (item, finalPrice) => {
         if (!item) return;
+
+        const selectedSizeObj = sizeOptions.find((size) => size.name === (chosenSize || sizeOptions[0]?.name));
+        const sizeId = selectedSizeObj?.id || selectedSizeObj?.sizeID || item.sizeId || item.sizeID || 0;
+
         setCart((currentCart) => [
             ...currentCart,
             {
                 uid: Date.now(),
                 id: item.id,
                 name: item.name,
-                size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
+                size: chosenSize || sizeOptions[0]?.name,
+                sizeId,
                 base: chosenBase,
                 toppings: selectedToppings,
                 allergies: selectedAllergies,
@@ -224,44 +229,56 @@ const useAppState = () => {
 
     const addToRefundCart = (item) => {
         if (!item) return;
-        const uid = item.uid || Date.now().toString();
-        const existing = refundCart.find(i => i.uid === uid);
-        if (existing) {
-            setRefundCart((current) => current.map(i => i.uid === uid ? {...i, quantity: i.quantity + 1} : i));
-            return;
-        }
-        setRefundCart((current) => ([
-            ...current,
-            {
-                uid,
-                id: item.id,
-                name: item.name,
-                size: item.size,
-                base: item.base,
-                toppings: item.toppings || [],
-                allergies: item.allergies || [],
-                finalPrice: -(item.finalPrice ?? (parseFloat(item.price || 0) || 0)),
-                quantity: item.quantity || item.itemQty || 1,
-                refundOrderId: item.refundOrderId,
-                totalBeforeTax: item.totalBeforeTax,
-                itemID: item.itemID,
-                itemSizeID: item.itemSizeID,
-                totalItemRefund: item.totalItemRefund,
+
+        const uniqueKey = item.uniqueKey;
+
+        setRefundCart((current) => {
+            const safeCurrent = Array.isArray(current) ? current : [];
+
+            if (uniqueKey && safeCurrent.some((cartItem) => cartItem.uniqueKey === uniqueKey)) {
+                return safeCurrent;
             }
-        ]));
+
+            const uid = uniqueKey || item.uid || `${item.itemID ?? 'item'}-${item.itemSizeID ?? 'size'}-${Date.now()}`;
+
+            return [
+                ...safeCurrent,
+                {
+                    uid,
+                    uniqueKey,
+                    qty: 1,
+                    id: item.id,
+                    name: item.name,
+                    size: item.size,
+                    base: item.base,
+                    toppings: item.toppings || [],
+                    allergies: item.allergies || [],
+                    finalPrice: -(item.finalPrice ?? (parseFloat(item.price || 0) || 0)),
+                    quantity: 1,
+                    refundOrderId: item.refundOrderId,
+                    totalBeforeTax: item.totalBeforeTax,
+                    itemID: item.itemID,
+                    itemSizeID: item.itemSizeID,
+                    totalItemRefund: Math.abs(Number(item.totalItemRefund ?? item.finalPrice ?? 0)),
+                    isAlreadyRefunded: item.isAlreadyRefunded || false,
+                }
+            ];
+        });
     };
 
-    const removeRefundItem = (uid) => {
-        setRefundCart((current) => current.filter(item => item.uid !== uid));
-    };
-
-    const updateRefundQuantity = (uid, delta) => {
-        setRefundCart((current) => current.map(item => item.uid === uid ? {...item, quantity: Math.max(1, item.quantity + delta)} : item));
+    const removeRefundItem = (keyOrUid) => {
+        setRefundCart((current) => (
+            Array.isArray(current)
+                ? current.filter((item) => item.uniqueKey !== keyOrUid && item.uid !== keyOrUid)
+                : []
+        ));
     };
 
     const clearRefundCart = () => setRefundCart([]);
 
-    const refundTotal = refundCart.reduce((sum, item) => sum + (item.finalPrice * (item.quantity || 1)), 0);
+    const refundTotal = Array.isArray(refundCart)
+        ? refundCart.reduce((sum, item) => sum + (item.finalPrice * (item.quantity || 1)), 0)
+        : 0;
 
     const updateCartItem = (uid, changes) => {
         setCart((currentCart) => currentCart.map((it) => it.uid === uid ? {...it, ...changes} : it));
@@ -308,7 +325,6 @@ const useAppState = () => {
         allergiesLoading, refundCart,
         addToRefundCart,
         removeRefundItem,
-        updateRefundQuantity,
         clearRefundCart,
         refundTotal
     };

@@ -18,6 +18,7 @@ const playNotificationSound = () => {
  */
 export function useSignalROrders () {
   const [orders, setOrders] = useState([]);
+  const [notification, setNotification] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState(null);
 
@@ -25,30 +26,81 @@ export function useSignalROrders () {
   useEffect(() => {
     let isMounted = true;
     let connection = null;
+    let retryTimer = null;
+    let isStarting = false;
 
-    const initializeConnection = async () => {
+    const scheduleInitialRetry = (attempt) => {
+      if (!isMounted) return;
+      const delay = Math.min(1000 * (2 ** attempt), 30000);
+      retryTimer = window.setTimeout(() => initializeConnection(attempt + 1), delay);
+    };
+
+    const initializeConnection = async (attempt = 0) => {
+      if (isStarting) return;
+      isStarting = true;
+
       try {
-        // Create the hub connection
-        connection = new signalR.HubConnectionBuilder()
-          .withUrl(`https://palladiumacaiapi.runasp.net/orderhub`)
-          .withAutomaticReconnect()
-          .build();
+        if (!connection || connection.state === signalR.HubConnectionState.Disconnected) {
+          connection = new signalR.HubConnectionBuilder()
+            .withUrl('https://palladiumacaiapi.runasp.net/orderhub')
+            .withAutomaticReconnect([0, 2000, 5000, 10000, 30000])
+            .build();
 
-        // Set up the event listener BEFORE starting the connection
-        connection.on('ReceiveWebOrder', (order) => {
-          if (isMounted) {
+          connection.onreconnecting(() => {
+            if (isMounted) {
+              setIsConnected(false);
+              setError('Reconnecting to web orders...');
+            }
+          });
+
+          connection.onreconnected(() => {
+            if (isMounted) {
+              setIsConnected(true);
+              setError(null);
+              console.log('✅ Reconnected to SignalR hub');
+            }
+          });
+
+          connection.onclose(() => {
+            if (isMounted) {
+              setIsConnected(false);
+              setError('Web orders disconnected');
+            }
+          });
+
+          connection.on('ReceiveWebOrder', (order) => {
+            if (!isMounted) return;
+
             console.log('📦 New Order Received:', order);
             playNotificationSound();
-            // printLocalReceipt(order).catch((err) => {
-            //   console.error('❌ Local kitchen receipt printing failed:', err);
-            // });
-            // Append new order to the top of the array using functional update
-            setOrders((prevOrders) => [order, ...prevOrders]);
 
-          }
-        });
+            const orderID = order?.orderID;
+            const isPaymentPending = order?.ispaymentPending === true
+              || String(order?.paymentStatus || '').toLowerCase() === 'pending';
 
-        // Start the connection
+            if (isPaymentPending) {
+              setNotification({
+                type: 'pending',
+                message: `New Pending Web Order #${orderID ?? 'Unknown'} received.`,
+              });
+              return;
+            }
+
+            setOrders((current) => {
+              const safeCurrent = Array.isArray(current) ? current : [];
+              const isDuplicate = safeCurrent.some((paid) => paid.orderID === orderID);
+
+              if (isDuplicate || orderID == null) return safeCurrent;
+              return [order, ...safeCurrent];
+            });
+
+            setNotification({
+              type: 'paid',
+              message: `New Paid Online Order Received! (#${orderID})`,
+            });
+          });
+        }
+
         await connection.start();
 
         if (isMounted) {
@@ -57,20 +109,24 @@ export function useSignalROrders () {
           console.log('✅ Connected to SignalR hub');
         }
       } catch (err) {
-        if (isMounted) {
-          setError(err.message || 'Failed to connect');
-          setIsConnected(false);
-          console.error('❌ SignalR connection failed:', err);
-        }
+        if (!isMounted) return;
+
+        setIsConnected(false);
+        setError(err.message || 'Failed to connect');
+        console.error('❌ SignalR connection failed:', err);
+        scheduleInitialRetry(attempt);
+      } finally {
+        isStarting = false;
       }
     };
 
     initializeConnection();
 
-    // Cleanup: stop the connection when component unmounts
     return () => {
       isMounted = false;
+      if (retryTimer) window.clearTimeout(retryTimer);
       if (connection) {
+        connection.off('ReceiveWebOrder');
         connection.stop().catch((err) => console.error('Error stopping connection:', err));
       }
     };
@@ -79,8 +135,8 @@ export function useSignalROrders () {
   /**
    * Removes a completed order from the state
    */
-  const completeOrder = useCallback((orderNo) => {
-    setOrders((prevOrders) => prevOrders.filter((order) => order.orderNo !== orderNo));
+  const completeOrder = useCallback((orderID) => {
+    setOrders((prevOrders) => prevOrders.filter((order) => order.orderID !== orderID));
   }, []);
 
   /**
@@ -90,8 +146,12 @@ export function useSignalROrders () {
     setOrders([]);
   }, []);
 
+  const dismissNotification = useCallback(() => setNotification(null), []);
+
   return {
     orders,
+    notification,
+    dismissNotification,
     isConnected,
     error,
     completeOrder,

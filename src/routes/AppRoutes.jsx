@@ -53,6 +53,11 @@ export default function AppRoutes({
   setIsTakeoutModalOpen,
   refundVersion,
   onClearRefundCart,
+  webOrders,
+  webOrderNotification,
+  dismissWebOrderNotification,
+  webOrdersConnected,
+  webOrdersError,
 }) {
   return (
     <Routes>
@@ -70,6 +75,11 @@ export default function AppRoutes({
             setPhoneNumber={setPhoneNumber}
             isTakeoutModalOpen={isTakeoutModalOpen}
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
+            webOrders={webOrders}
+            webOrderNotification={webOrderNotification}
+            dismissWebOrderNotification={dismissWebOrderNotification}
+            webOrdersConnected={webOrdersConnected}
+            webOrdersError={webOrdersError}
           />
         }
       />
@@ -87,6 +97,11 @@ export default function AppRoutes({
             setPhoneNumber={setPhoneNumber}
             isTakeoutModalOpen={isTakeoutModalOpen}
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
+            webOrders={webOrders}
+            webOrderNotification={webOrderNotification}
+            dismissWebOrderNotification={dismissWebOrderNotification}
+            webOrdersConnected={webOrdersConnected}
+            webOrdersError={webOrdersError}
           />
         }
       />
@@ -130,7 +145,7 @@ export default function AppRoutes({
       />
       <Route
         path="/manager-menu"
-        element={<ManagerMenu connectPrinter={connectPrinter} printerDevice={printerDevice} onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} />}
+        element={<ManagerMenu connectPrinter={connectPrinter} printerDevice={printerDevice} onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} refundCart={refundCart} />}
       />
       <Route
         path="/manager/refund"
