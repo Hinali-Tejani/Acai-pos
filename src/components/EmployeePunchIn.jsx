@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import EmployeeList from './EmployeeList';
 import PopUp from './PopUp';
 import ManagerPasswordModal from './ManagerPasswordModal';
@@ -9,6 +9,24 @@ export default function EmployeePunchIn () {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
     const {employees, punchEmployee, refetchEmployees} = useEmployeeData();
+    const statusTimeoutRef = useRef(null);
+
+    const showStatusMessage = (message) => {
+        setStatusMessage(message);
+        if (statusTimeoutRef.current) {
+            window.clearTimeout(statusTimeoutRef.current);
+        }
+        statusTimeoutRef.current = window.setTimeout(() => {
+            setStatusMessage('');
+            statusTimeoutRef.current = null;
+        }, 3000);
+    };
+
+    React.useEffect(() => () => {
+        if (statusTimeoutRef.current) {
+            window.clearTimeout(statusTimeoutRef.current);
+        }
+    }, []);
 
     const handlePunchAction = () => {
         setShowPasswordModal(true);
@@ -17,7 +35,7 @@ export default function EmployeePunchIn () {
     const handlePasswordVerified = () => {
         setShowPasswordModal(false);
         setIsModalOpen(true);
-        setStatusMessage('Select an employee to punch in or punch out');
+        showStatusMessage('Select an employee to punch in or punch out');
     };
 
     const handleEmployeePunchIn = async (employee) => {
@@ -27,12 +45,12 @@ export default function EmployeePunchIn () {
         setIsModalOpen(false);
         const result = await punchEmployee(employee.empID, 1);
         if (!result.success) {
-            setStatusMessage(result.error);
+            showStatusMessage(result.error);
             return;
         }
 
         await refetchEmployees();
-        setStatusMessage(`Punched in ${employee.firstName} ${employee.lastName} successfully`);
+        showStatusMessage(`Punched in ${employee.firstName} ${employee.lastName} successfully`);
     };
 
     const handleEmployeePunchOut = async (employee) => {
@@ -41,18 +59,18 @@ export default function EmployeePunchIn () {
         setIsModalOpen(false);
 
         if (!employee.clockIn || employee.clockOut) {
-            setStatusMessage('This employee is not currently punched in');
+            showStatusMessage('This employee is not currently punched in');
             return;
         }
 
         const result = await punchEmployee(employee.empID, 2);
         if (!result.success) {
-            setStatusMessage(result.error);
+            showStatusMessage(result.error);
             return;
         }
 
         await refetchEmployees();
-        setStatusMessage(`Punched out ${employee.firstName} ${employee.lastName} successfully`);
+        showStatusMessage(`Punched out ${employee.firstName} ${employee.lastName} successfully`);
     };
 
     return (
