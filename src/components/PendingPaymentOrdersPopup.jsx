@@ -1,17 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import PopUp from './PopUp';
-
-export const PENDING_PAYMENTS_STORAGE_KEY = 'acai-pos-pending-payments';
-
-const readPendingPayments = () => {
-  try {
-    const raw = window.localStorage.getItem(PENDING_PAYMENTS_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
+import {fetchNonPaidOrders} from '../services/managerApi';
 
 const formatPendingDate = (value) => {
   if (!value) return '—';
@@ -33,11 +22,39 @@ export default function PendingPaymentOrdersPopup ({
   const [processingOrderId, setProcessingOrderId] = useState(null);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
+    if (!isOpen) return;
 
-    setPendingOrders(readPendingPayments());
+    let isCurrent = true;
+
+    const loadPendingOrders = async () => {
+      try {
+        const data = await fetchNonPaidOrders();
+        if (!isCurrent) return;
+
+        setPendingOrders(data.map((order) => ({
+          id: order.orderID,
+          orderID: order.orderID,
+          orderNumber: order.orderNumber,
+          customerName: [order.firstName, order.lastName].filter(Boolean).join(' ') || 'Walk-in customer',
+          phoneNumber: order.phonenumber || '',
+          createdAt: order.orderDate,
+          orderType: 'walk-in',
+          totalDue: Number(order.totalAmount || 0),
+          subTotal: Number(order.subTotal || 0),
+          tax: Number(order.tax || 0),
+          isWebOrder: Boolean(order.isWebOrder),
+          source: 'pending-api',
+        })));
+      } catch (error) {
+        console.error('Failed to load non-paid orders:', error);
+        if (isCurrent) setPendingOrders([]);
+      } finally {
+        if (isCurrent) setProcessingOrderId(null);
+      }
+    };
+
+    loadPendingOrders();
+    return () => {isCurrent = false;};
   }, [isOpen]);
 
   return (
@@ -62,10 +79,10 @@ export default function PendingPaymentOrdersPopup ({
               </thead>
               <tbody>
                 {pendingOrders.map((order) => {
-                  const isOrderProcessing = isProcessing && processingOrderId === order.id;
+                  const isOrderProcessing = isProcessing && processingOrderId === order.orderID;
 
                   return (
-                  <tr key={order.id} className="border-t border-purple-100">
+                  <tr key={order.orderID} className="border-t border-purple-100">
                     <td className="px-4 py-3 text-purple-900">{order.customerName || 'Walk-in customer'}</td>
                     <td className="px-4 py-3 text-purple-700">{order.phoneNumber || '—'}</td>
                     <td className="px-4 py-3 text-purple-700">{formatPendingDate(order.createdAt)}</td>
@@ -80,7 +97,7 @@ export default function PendingPaymentOrdersPopup ({
                         type="button"
                         disabled={isProcessing}
                         onClick={() => {
-                          setProcessingOrderId(order.id);
+                          setProcessingOrderId(order.orderID);
                           try {
                             onOpenPendingPaymentOrder?.(order);
                             onClose?.();

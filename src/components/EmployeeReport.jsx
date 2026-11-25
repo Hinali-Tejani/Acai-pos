@@ -5,7 +5,7 @@ export default function EmployeeReport ({employees}) {
   const salesTotal = employees.reduce((sum, employee) => sum + Number(employee.totalSalesVolume || 0), 0);
 
   return (
-    <section className="overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-lg border border-purple-200 bg-white shadow-sm">
       <div className="border-b border-purple-100 px-5 py-4">
         <h2 className="font-semibold text-purple-900">Employee Report</h2>
       </div>

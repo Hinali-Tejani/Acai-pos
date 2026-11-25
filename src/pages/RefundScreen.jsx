@@ -19,7 +19,7 @@ export default function RefundScreen ({onSelectItem, setActiveCategory}) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm">
+      <div className="rounded-lg border border-purple-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-purple-900">Process Refund</h1>
@@ -27,7 +27,7 @@ export default function RefundScreen ({onSelectItem, setActiveCategory}) {
           </div>
           <button
             onClick={() => navigate('/manager-menu')}
-            className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+            className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
           >
             Back
           </button>

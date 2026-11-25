@@ -62,10 +62,10 @@ export default function ProductDetailPage ({
 
     if (!item) {
         return (
-            <div className="flex h-full flex-col items-center justify-center rounded-xl border border-purple-200 bg-white p-10 shadow-sm">
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-purple-200 bg-white p-10 shadow-sm">
                 <h3 className="mb-4 text-2xl font-semibold text-purple-900">Product not found</h3>
                 <button
-                    className="rounded-xl bg-purple-900 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-800"
+                    className="rounded-lg bg-purple-900 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-800"
                     onClick={() => navigate(returnPath)}
                 >
                     Back to Home
@@ -78,7 +78,7 @@ export default function ProductDetailPage ({
 
     return (
         <div className="space-y-8 overflow-y-auto">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-purple-200 bg-white px-4 py-3 shadow-sm mb-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-purple-200 bg-white px-4 py-3 shadow-sm mb-2">
                 <div className="flex items-center gap-3">
                     <h2 className="flex items-center gap-2 text-xl font-semibold text-purple-900">
                         {item.name} - <span className="text-sm">${currentItemPrice.toFixed(2)}</span>

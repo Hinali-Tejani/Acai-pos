@@ -56,13 +56,13 @@ export default function EmployeePunchIn () {
     };
 
     return (
-        <div className="space-y-3 rounded-lg border border-purple-200 bg-white p-3 text-purple-600">
+        <div className="space-y-3 border border-purple-200 bg-white p-3 text-purple-600">
             <h2 className="text-sm font-semibold text-purple-900">Employee Punch IN/OUT</h2>
             <div className="flex gap-2">
                 <button
                     type="button"
                     onClick={handlePunchAction}
-                    className="flex-1 rounded-xl bg-purple-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
+                    className="flex-1 rounded-lg bg-purple-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
                 >
                     Punch In/Out
                 </button>

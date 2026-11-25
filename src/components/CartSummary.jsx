@@ -17,11 +17,10 @@ export default function CartSummary ({
   onUpdateItem,
   onEditItem,
   editingItemIndex,
-  onProcessPayment,
-  onCreateOrder,
+  onProcessOrder,
   isProcessing,
   pendingPaymentOrder,
-  onPendingPaymentHandled,
+  onProcessPendingPayment,
   orderType,
   setOrderType,
   firstName,
@@ -42,7 +41,8 @@ export default function CartSummary ({
 }) {
   const location = useLocation();
   const isRefundRoute = location.pathname.startsWith('/manager/refund');
-  const hasOrderRefundItems = refundCart.some((item) => item.refundOrderId);
+  const safeRefundCart = Array.isArray(refundCart) ? refundCart : [];
+  const hasOrderRefundItems = safeRefundCart.some((item) => item.refundOrderId);
   const isRefundMode = isRefundRoute || location.state?.refund === true || hasOrderRefundItems;
 
   const estimatedTax = cartTotal * 0.13;
@@ -63,18 +63,6 @@ export default function CartSummary ({
   const [showRefundPasswordModal, setShowRefundPasswordModal] = React.useState(false);
   const [refundPaymentDetails, setRefundPaymentDetails] = React.useState(null);
 
-  const removePendingPaymentOrderFromStorage = (orderId) => {
-    if (!orderId) return;
-    try {
-      const raw = window.localStorage.getItem('acai-pos-pending-payments');
-      const currentOrders = raw ? JSON.parse(raw) : [];
-      const nextOrders = currentOrders.filter((currentOrder) => currentOrder.id !== orderId);
-      window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
-    } catch (error) {
-      console.error('Failed to update pending payments storage:', error);
-    }
-  };
-
   React.useEffect(() => {
     setPaymentTotalDue(grandTotal.toFixed(2));
   }, [grandTotal]);
@@ -86,8 +74,6 @@ export default function CartSummary ({
       ...pendingPaymentOrder,
       source: 'pending',
     });
-
-    onPendingPaymentHandled?.();
   }, [pendingPaymentOrder]);
 
   React.useEffect(() => {
@@ -191,43 +177,35 @@ export default function CartSummary ({
   const handlePayLater = async () => {
     if (isCartEmpty) return;
     checkTakeoutFormRequired();
-    // If the form is valid, proceed to open the payment modal
-    if (!firstName.trim() || (isTakeout && !lastName.trim()) || (isTakeout && !phoneNumber.trim())) {
-      return;
+    if (!firstName.trim() || (isTakeout && !lastName.trim()) || (isTakeout && !phoneNumber.trim())) return;
+
+    try {
+      await onProcessOrder?.('CASH', true);
+      onClearCart();
+      setOrderType('walk-in');
+      setFirstName('');
+      setLastName('');
+      setPhoneNumber('');
+      setStatusMessage(`Saved pending payment order for ${grandTotal.toFixed(2)}`);
+    } catch (error) {
+      console.error('Failed to create pending order:', error);
     }
-
-    const orderID = await onCreateOrder?.();
-    if (!orderID) return;
-
-    const nextOrder = {...buildPendingOrder(), id: orderID};
-    const raw = window.localStorage.getItem('acai-pos-pending-payments');
-    const currentOrders = raw ? JSON.parse(raw) : [];
-    const nextOrders = [nextOrder, ...currentOrders];
-    window.localStorage.setItem('acai-pos-pending-payments', JSON.stringify(nextOrders));
-    onClearCart();
-    setOrderType('walk-in');
-    setFirstName('');
-    setLastName('');
-    setPhoneNumber('');
-    setStatusMessage(`Saved pending payment order for ${nextOrder.totalDue.toFixed(2)}`);
   };
 
   const handlePaymentComplete = async (method) => {
-    const currentTotalDue = Number(activePendingOrder?.totalDue ?? grandTotal) || 0;
-    const currentOrderId = activePendingOrder?.source === 'pending' ? activePendingOrder.id : null;
     const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
-    try {
-      const paymentSucceeded = await onProcessPayment?.(paymentMethod, currentOrderId, currentTotalDue);
-      if (!paymentSucceeded) return;
 
+    try {
       if (activePendingOrder?.source === 'pending') {
-        removePendingPaymentOrderFromStorage(currentOrderId);
+        await onProcessPendingPayment?.(paymentMethod, activePendingOrder);
+      } else {
+        await onProcessOrder?.(paymentMethod, false);
       }
 
       await printReceipt({
-        id: currentOrderId || 'current-order',
+        id: activePendingOrder?.orderID ?? activePendingOrder?.id ?? 'current-order',
         items: activePendingOrder?.items || cart,
-        total: currentTotalDue,
+        total: activePendingOrder?.totalDue ?? grandTotal,
         paymentMethod: paymentMethod.toLowerCase(),
         kind: 'sale',
       });
@@ -258,7 +236,7 @@ export default function CartSummary ({
   };
 
   const handleProceedToRefundPayment = () => {
-    if (!refundCart.length) return;
+    if (!safeRefundCart.length) return;
     setShowRefundPasswordModal(true);
   };
 
@@ -266,24 +244,45 @@ export default function CartSummary ({
     setShowRefundPasswordModal(false);
 
     try {
-      const orderId = refundCart.find((item) => item.refundOrderId)?.refundOrderId;
+      const orderId = safeRefundCart.find((item) => item.refundOrderId)?.refundOrderId;
       if (orderId) {
-        const itemArray = refundCart.map((item) => ({
+        const groupedRefundItems = safeRefundCart.reduce((groups, item) => {
+          const itemID = item.itemID;
+          const itemSizeID = item.itemSizeID;
+          const key = `${itemID ?? 'item'}-${itemSizeID ?? 'size'}`;
+          const unitRefund = Math.abs(Number(item.totalItemRefund ?? item.finalPrice ?? 0));
+
+          if (!groups[key]) {
+            groups[key] = {
+              itemID,
+              itemSizeID,
+              totalItemRefund: unitRefund,
+              itemQty: 1,
+            };
+          } else {
+            groups[key].itemQty += 1;
+            groups[key].totalItemRefund += unitRefund;
+          }
+
+          return groups;
+        }, {});
+
+        const itemArray = Object.values(groupedRefundItems).map((item) => ({
           itemID: item.itemID,
           itemSizeID: item.itemSizeID,
-          totalItemRefund: Math.abs(Number(item.totalItemRefund ?? item.finalPrice ?? 0)),
-          itemQty: item.quantity || item.itemQty || 1,
+          totalItemRefund: Number(item.totalItemRefund.toFixed(2)),
+          itemQty: item.itemQty,
         }));
-        const refundSubtotalFromItems = itemArray.reduce((sum, item) => sum + item.totalItemRefund * item.itemQty, 0);
+        const refundSubtotalFromItems = itemArray.reduce((sum, item) => sum + item.totalItemRefund, 0);
         const totalRefund = refundSubtotalFromItems * 1.13;
-        const amtBeforeTax = refundCart.reduce(
+        const amtBeforeTax = safeRefundCart.reduce(
           (sum, item) => sum + Math.abs(Number(item.totalBeforeTax ?? item.finalPrice ?? 0)) * (item.quantity || 1),
           0
         );
 
         await saveRefundDetails(orderId, totalRefund, amtBeforeTax, itemArray);
       } else {
-        await saveRefundDetails(refundCart);
+        await saveRefundDetails(safeRefundCart);
       }
 
       setShowRefundPayment(true);
@@ -296,7 +295,7 @@ export default function CartSummary ({
   const handleRefundPaymentComplete = async (details) => {
     try {
       const refundData = {
-        items: refundCart,
+        items: safeRefundCart,
         refundAmount: refundGrandTotal,
         paymentMethod: details.method,
         cashReceived: details.cashPaid,
@@ -308,7 +307,7 @@ export default function CartSummary ({
       await processRefund(refundData);
       await printReceipt({
         id: `refund-${Date.now()}`,
-        items: refundCart,
+        items: safeRefundCart,
         total: refundGrandTotal,
         paymentMethod: details?.method,
         kind: 'refund',
@@ -338,7 +337,7 @@ export default function CartSummary ({
     if (itemToRepeat) {
       const newItem = {
         ...itemToRepeat,
-        uid: `${itemToRepeat.uid}-${Date.now()}`, // Generate a new unique ID
+        uid: `${itemToRepeat.uid}-${Date.now()}`,
       };
       cart.push(newItem);
       onUpdateItem(newItem);
@@ -346,19 +345,19 @@ export default function CartSummary ({
   }
 
   const onRepeatRefundItem = (uid) => {
-    const itemToRepeat = refundCart.find((item) => item.uid === uid);
+    const itemToRepeat = safeRefundCart.find((item) => item.uid === uid);
     if (!itemToRepeat) return;
 
     addToRefundCart?.({
       ...itemToRepeat,
-      uid: `${itemToRepeat.uid}-${Date.now()}`,
+      uid: itemToRepeat.uid,
       quantity: 1,
     });
   };
 
   return (
     <div className="flex h-full flex-col justify-between gap-3">
-      <div className="space-y-3 border-l border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
+      <div className="space-y-3 border-t border-r border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
         <div className="flex items-center justify-between">
           <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
           <button
@@ -389,7 +388,9 @@ export default function CartSummary ({
               {phoneNumber && (
                 <div>
                   <span className="font-semibold text-purple-900">phoneNumber: </span>
-                  <span className="ml-1 text-xs text-purple-700">{phoneNumber}</span>
+                  <span className="ml-1 text-xs text-purple-700">
+                    {phoneNumber}
+                  </span>
                 </div>
               )}
               <div>
@@ -402,16 +403,15 @@ export default function CartSummary ({
           )}
         </div>
 
-
         {isRefundMode ? (
           <RefundTicket
-            refundCart={refundCart}
+            refundCart={safeRefundCart}
             refundTotal={refundTotal}
             onRemoveItem={removeRefundItem}
             onRepeatItem={onRepeatRefundItem}
             onClearCart={clearRefundCart}
             onProceedToRefund={handleProceedToRefundPayment}
-            isCartEmpty={refundCart.length === 0}
+            isCartEmpty={safeRefundCart.length === 0}
           />
         ) : (
           <CheckoutTicket

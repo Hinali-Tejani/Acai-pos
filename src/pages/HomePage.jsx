@@ -14,12 +14,23 @@ export default function HomePage({
   setPhoneNumber,
   isTakeoutModalOpen,
   setIsTakeoutModalOpen,
+  webOrders,
+  webOrderNotification,
+  dismissWebOrderNotification,
+  webOrdersConnected,
+  webOrdersError,
 }) {
   return (
     <div className="h-full space-y-4">
-      <WebOrdersPanel />
+      <WebOrdersPanel
+        orders={webOrders}
+        notification={webOrderNotification}
+        onDismissNotification={dismissWebOrderNotification}
+        isConnected={webOrdersConnected}
+        error={webOrdersError}
+      />
 
-      <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm">
+      <div className="border border-purple-200 bg-white p-5 shadow-sm">
         <HomeActions
           orderType={orderType}
           setOrderType={setOrderType}
@@ -45,7 +56,7 @@ export default function HomePage({
         </div> */}
       </div>
 
-      {/* <div className="rounded-xl border border-dashed border-purple-200 bg-white px-6 py-8 text-sm text-purple-700 shadow-sm">
+      {/* <div className="rounded-lg border border-dashed border-purple-200 bg-white px-6 py-8 text-sm text-purple-700 shadow-sm">
         <h3 className="text-lg font-semibold text-purple-900">Home</h3>
         <p className="mt-2">Choose a menu category from the sidebar to view products for that category.</p>
       </div> */}

@@ -23,7 +23,7 @@ export default function Customizer ({
   }, {});
 
   return (
-    <div className="space-y-4 rounded-xl border border-purple-200 bg-white px-4 py-2 shadow-sm overflow-y-auto">
+    <div className="space-y-4 rounded-lg border border-purple-200 bg-white px-4 py-2 shadow-sm overflow-y-auto">
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="text-sm font-semibold uppercase tracking-[0.24em] text-purple-500">Choose Base</div>
@@ -35,7 +35,7 @@ export default function Customizer ({
               {editingItemIndex !== null ? 'Update Order' : isRefund ? 'Add to refund' : 'Add to order'}
             </button>
             <button
-              className="rounded-xl border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
+              className="rounded-lg border border-purple-300 bg-white px-2.5 py-1.5 text-sm! font-semibold text-purple-700 transition hover:border-purple-400 hover:bg-purple-100"
               onClick={onBack}
             >
               Clear
@@ -47,7 +47,7 @@ export default function Customizer ({
             <button
               key={bs}
               onClick={() => setChosenBase(bs)}
-              className={`rounded-xl border px-5 py-2 text-sm font-semibold transition ${chosenBase === bs ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+              className={`rounded-lg border px-5 py-2 text-sm font-semibold transition ${chosenBase === bs ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
             >
               {bs}
             </button>
@@ -69,13 +69,13 @@ export default function Customizer ({
                 </h4>
                 <div className="grid grid-cols-3 gap-1 text-center text-xs md:grid-cols-2 xl:grid-cols-2">
                   {categoryAddOns.map((top) => {
-                    const isChecked = selectedToppings.some(t => t.name === top.name);
+                    const isChecked = selectedToppings.some(t => t.addonID === top.addonID);
                     return (
                       <button
                         key={top.addonID}
                         type="button"
                         onClick={() => onToppingToggle(top)}
-                        className={`flex flex-wrap flex-col items-center gap-1 rounded-xl border p-2 font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
+                        className={`flex flex-wrap flex-col items-center gap-1 rounded-md border p-1 font-semibold transition ${isChecked ? 'border-purple-900 bg-purple-900 text-white' : 'border-purple-200 bg-gray-50 text-purple-800 hover:border-purple-300 hover:bg-purple-100'}`}
                       >
                         <span className="flex-1 wrap-anywhere">{top.name}</span>
                         <b className={`text-[10px] ${isChecked ? 'text-white' : 'text-gray-600'}`}>+${top.price.toFixed(2)}</b>
@@ -102,7 +102,7 @@ export default function Customizer ({
                   key={allergy.id || allergy.name}
                   type="button"
                   onClick={() => onAllergyToggle(allergy)}
-                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-amber-500 bg-amber-300 text-amber-900' : 'border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100'}`}
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-left font-semibold transition ${isChecked ? 'border-amber-500 bg-amber-300 text-amber-900' : 'border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-300 hover:bg-amber-100'}`}
                 >
                   {/* <input type="checkbox" checked={isChecked} readOnly className="h-4 w-4 rounded border-amber-300 bg-white text-amber-900" /> */}
                   <span className="flex-1"> {allergy.name}</span>

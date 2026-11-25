@@ -9,9 +9,17 @@ import CartSummary from './components/CartSummary';
 import AppRoutes from './routes/AppRoutes';
 import TakeoutDetailsModal from './components/TakeoutDetailsModal';
 import {processOrder, processPOSPayment} from './services/paymentApi';
+import {useSignalROrders} from './hooks/useSignalROrders';
 
 function App () {
   const {device, connectPrinter, printRaw} = useThermalPrinter();
+  const {
+    orders: webOrders,
+    notification: webOrderNotification,
+    dismissNotification: dismissWebOrderNotification,
+    isConnected: webOrdersConnected,
+    error: webOrdersError,
+  } = useSignalROrders();
   const {categories, activeItems, loading, itemsLoading, error, loadSubmenu} = useMenuState();
   const {
     activeCategory,
@@ -43,13 +51,9 @@ function App () {
     cart,
     updateCartItem,
     sizeOptions,
-    sizesLoading,
     itemPrice,
-    priceLoading,
     addOns,
-    addOnsLoading,
     allergies,
-    allergiesLoading
   } = useAppState();
 
   useEffect(() => {
@@ -100,7 +104,7 @@ function App () {
   const handleAddToRefundCart = (item) => {
     addToRefundCart({
       ...item,
-      size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
+      size: chosenSize || sizeOptions[0]?.name,
       base: chosenBase,
       toppings: selectedToppings,
       allergies: selectedAllergies,
@@ -120,7 +124,7 @@ function App () {
 
     setEditingItemIndex(index);
     setSelectedItem(item);
-    setChosenSize(item.size || sizeOptions[0]?.name || 'REGULAR');
+    setChosenSize(item.size || sizeOptions[0]?.name);
     setChosenBase(item.base || BASE_OPTIONS[0]);
     setSelectedToppings((item.toppings || []).map((topping) => (
       typeof topping === 'string'
@@ -143,7 +147,7 @@ function App () {
       const itemBeingEdited = cart[editingItemIndex];
       if (itemBeingEdited) {
         updateCartItem(itemBeingEdited.uid, {
-          size: chosenSize || sizeOptions[0]?.name || 'REGULAR',
+          size: chosenSize || sizeOptions[0]?.name,
           base: chosenBase,
           toppings: selectedToppings,
           allergies: selectedAllergies,
@@ -167,58 +171,51 @@ function App () {
     setPendingPaymentOrder(order);
   };
 
-  const handleProcessPayment = async (method, customOrderId = null, customTotal = null, isPayLater = false) => {
+  const handleProcessOrder = async (method = 'CASH', isPayLater = false) => {
     const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
+    const subTotal = cart.reduce((sum, item) => sum + (item.finalPrice || 0) * (item.quantity || 1), 0);
+    const tax = subTotal * 0.13;
 
     setIsProcessing(true);
     try {
-      let orderID = customOrderId;
-      if (orderID === null) {
-        const subTotal = cart.reduce((sum, item) => sum + (item.finalPrice || 0) * (item.quantity || 1), 0);
-        const tax = subTotal * 0.13;
-        const orderResponse = await processOrder({
-          totalAmt: customTotal !== null ? Number(customTotal) || 0 : subTotal + tax,
-          subTotal,
-          tax,
-          firstName,
-          lastName,
-          phoneNumber,
-          cart,
-          paymentMethod,
-          isPayLater,
-          orderType,
-          selectedCustomer,
-        });
-        orderID = orderResponse?.orderID ?? orderResponse?.data?.orderID ?? orderResponse?.id;
-        if (!orderID) throw new Error('ProcessOrder did not return an order ID');
-      }
-
-      if (!isPayLater) {
-        await processPOSPayment({
-          totalAmt: customTotal !== null ? Number(customTotal) || 0 : 0,
-          orderID: Number(orderID) || 0,
-          paymentMethod,
-          cardNumber: paymentMethod === 'CARD' ? 'xxxx-xxxx-xxxx-1234' : '',
-          cardType: paymentMethod === 'CARD' ? 'VISA' : '',
-          transactionID: `${paymentMethod === 'CARD' ? 'TXN' : 'CASH'}-${Date.now()}`,
-          transactionDateTime: new Date().toISOString(),
-          referenceNumber: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
-        });
-      }
-
-      alert(isPayLater ? 'Order saved for later payment.' : 'Payment completed successfully.');
-      setSelectedCustomer(null);
-      return orderID;
-    } catch (error) {
-      console.error('Checkout payment failed:', error);
-      alert('Payment failed. Your order was not changed. Please try again.');
-      return false;
+      return await processOrder({
+        totalAmt: subTotal + tax,
+        subTotal,
+        tax,
+        firstName,
+        lastName,
+        phoneNumber,
+        cart,
+        paymentMethod,
+        isPayLater,
+        orderType,
+        selectedCustomer,
+      });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleCreateOrder = () => handleProcessPayment('CASH', null, cartTotal + cartTotal * 0.13, true);
+  const handleProcessPendingPayment = async (method, order) => {
+    const paymentMethod = method === 'CASH' ? 'CASH' : 'CARD';
+    const totalAmt = Number(order?.totalDue ?? order?.totalAmount ?? 0);
+
+    setIsProcessing(true);
+    try {
+      return await processPOSPayment({
+        totalAmt,
+        orderID: Number(order?.orderID ?? order?.id ?? 0),
+        paymentMethod,
+        cardNumber: '',
+        cardType: '',
+        transactionID: '',
+        transactionDateTime: new Date().toISOString(),
+        referenceNumber: '',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const activeCategoryName = categories.find(cat => cat.id === activeCategory)?.name || 'Category';
   const cartTotal = cart.reduce((sum, item) => sum + item.finalPrice * (item.quantity || 1), 0);
@@ -242,10 +239,41 @@ function App () {
         setPhoneNumber={setPhoneNumber}
         isProcessing={isProcessing}
         onOpenPendingPaymentOrder={handleOpenPendingPaymentOrder}
-        onCustomerSelect={handleCustomerSelect}
       />
 
       <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
+        <div className="w-full shrink-0 overflow-y-auto border-t border-purple-200 bg-white sm:max-w-87.5 lg:border-t-0">
+          <CartSummary
+            cart={cart}
+            cartTotal={cartTotal}
+            onRemoveItem={removeCartItem}
+            onClearCart={clearCart}
+            onUpdateItem={updateCartItem}
+            onEditItem={handleEditLineItem}
+            editingItemIndex={editingItemIndex}
+            isProcessing={isProcessing}
+            pendingPaymentOrder={pendingPaymentOrder}
+            onPendingPaymentHandled={() => setPendingPaymentOrder(null)}
+            orderType={orderType}
+            setOrderType={setOrderType}
+            firstName={firstName}
+            setFirstName={setFirstName}
+            lastName={lastName}
+            setLastName={setLastName}
+            phoneNumber={phoneNumber}
+            setPhoneNumber={setPhoneNumber}
+            onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
+            printRaw={printRaw}
+            refundCart={refundCart}
+            addToRefundCart={addToRefundCart}
+            removeRefundItem={removeRefundItem}
+            updateRefundQuantity={updateRefundQuantity}
+            clearRefundCart={clearRefundCart}
+            refundTotal={refundTotal}
+            onProcessOrder={handleProcessOrder}
+            onProcessPendingPayment={handleProcessPendingPayment}
+          />
+        </div>
         <div className="flex min-w-0 flex-1 flex-col px-2 py-4 sm:px-2 sm:py-2">
           <AppRoutes
             itemsLoading={itemsLoading}
@@ -293,42 +321,15 @@ function App () {
             setIsTakeoutModalOpen={setIsTakeoutModalOpen}
             refundVersion={refundVersion}
             onClearRefundCart={clearRefundCart}
+            webOrders={webOrders}
+            webOrderNotification={webOrderNotification}
+            dismissWebOrderNotification={dismissWebOrderNotification}
+            webOrdersConnected={webOrdersConnected}
+            webOrdersError={webOrdersError}
           />
         </div>
 
-        <div className="w-full shrink-0 overflow-y-auto border-t border-purple-200 bg-white lg:w-95 lg:border-t-0">
-          <CartSummary
-            cart={cart}
-            cartTotal={cartTotal}
-            onRemoveItem={removeCartItem}
-            onClearCart={clearCart}
-            onProcessPayment={handleProcessPayment}
-                        onCreateOrder={handleCreateOrder}
-            isProcessing={isProcessing}
-            pendingPaymentOrder={pendingPaymentOrder}
-            onPendingPaymentHandled={() => setPendingPaymentOrder(null)}
-            onUpdateItem={updateCartItem}
-            onEditItem={handleEditLineItem}
-            editingItemIndex={editingItemIndex}
-            orderType={orderType}
-            setOrderType={setOrderType}
-            firstName={firstName}
-            setFirstName={setFirstName}
-            lastName={lastName}
-            setLastName={setLastName}
-            phoneNumber={phoneNumber}
-            setPhoneNumber={setPhoneNumber}
-            onRequestTakeoutFormOpen={() => setIsTakeoutDetailsOpen(true)}
-            printRaw={printRaw}
-            refundCart={refundCart}
-            addToRefundCart={addToRefundCart}
-            removeRefundItem={removeRefundItem}
-            updateRefundQuantity={updateRefundQuantity}
-            clearRefundCart={clearRefundCart}
-            refundTotal={refundTotal}
-            onRefundComplete={() => setRefundVersion((version) => version + 1)}
-          />
-        </div>
+
       </div>
 
       <TakeoutDetailsModal

@@ -47,7 +47,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
   return (
     <div className="space-y-6">
       {/* Add Item Form */}
-      <div className="rounded-xl border border-purple-200 bg-white p-4">
+      <div className="rounded-lg border border-purple-200 bg-white p-4">
         <h3 className="text-lg font-semibold text-purple-900 mb-4">Add Item to Refund</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -56,7 +56,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
               type="text"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
-              className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
+              className="w-full rounded-lg border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
               placeholder="Enter item name"
             />
           </div>
@@ -67,7 +67,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
               min="1"
               value={itemQuantity}
               onChange={(e) => setItemQuantity(e.target.value)}
-              className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
+              className="w-full rounded-lg border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
               placeholder="1"
             />
           </div>
@@ -79,14 +79,14 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
               step="0.01"
               value={itemPrice}
               onChange={(e) => setItemPrice(e.target.value)}
-              className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
+              className="w-full rounded-lg border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
               placeholder="0.00"
             />
           </div>
         </div>
         <button
           onClick={handleAddItem}
-          className="mt-4 w-full rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-700"
+          className="mt-4 w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-700"
         >
           Add Item
         </button>
@@ -96,7 +96,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
       {items.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-purple-900 mb-3">Items to Refund</h3>
-          <div className="rounded-xl border border-purple-200 bg-white overflow-hidden">
+          <div className="rounded-lg border border-purple-200 bg-white overflow-hidden">
             <table className="min-w-full text-left text-sm">
               <thead className="bg-gray-50">
                 <tr>
@@ -132,7 +132,7 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
 
       {/* Refund Summary */}
       {items.length > 0 && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm font-semibold text-emerald-900">Total Refund Amount</span>
             <span className="text-lg font-bold text-emerald-900">${refundTotal.toFixed(2)}</span>
@@ -147,14 +147,14 @@ export default function RefundItemSelector ({onItemsSelected, onCancel}) {
       <div className="flex gap-3">
         <button
           onClick={onCancel}
-          className="flex-1 rounded-xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+          className="flex-1 rounded-lg bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
         >
           Cancel
         </button>
         <button
           onClick={handleSubmit}
           disabled={items.length === 0}
-          className="flex-1 rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
+          className="flex-1 rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500"
         >
           Continue to Payment
         </button>

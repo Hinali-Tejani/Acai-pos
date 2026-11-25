@@ -29,7 +29,7 @@ export default function MainWorkspace ({
 
   return (
     <div className="w-full space-y-4">
-      <div className="rounded-xl border border-purple-200 bg-white p-5 shadow-sm h-full">
+      <div className="rounded-lg border border-purple-200 bg-white p-5 shadow-sm h-full">
         <HomeActions
           orderType={orderType}
           setOrderType={setOrderType}
@@ -54,7 +54,7 @@ export default function MainWorkspace ({
       </div>
 
       {isHomeView ? (
-        <div className="rounded-xl border border-dashed border-purple-200 bg-white px-6 py-8 text-sm text-purple-700 shadow-sm">
+        <div className="rounded-lg border border-dashed border-purple-200 bg-white px-6 py-8 text-sm text-purple-700 shadow-sm">
           <h3 className="text-lg font-semibold text-purple-900">Home</h3>
           <p className="mt-2">Choose a menu category from the sidebar to view bowls and products.</p>
         </div>

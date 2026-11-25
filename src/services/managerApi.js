@@ -33,6 +33,18 @@ export async function fetchOrdersList (startDate, endDate = null) {
   return Array.isArray(response.data) ? response.data : response.data?.items || [];
 }
 
+export async function fetchNonPaidOrders () {
+  const response = await api.get('/Order/GetNonPaidOrders', {
+    params:
+    {
+      date: new Date().toISOString()
+    }
+  });
+  return Array.isArray(response.data)
+    ? response.data
+    : response.data?.items || response.data?.orders || [];
+}
+
 export async function fetchOrderDetails (orderId) {
   const response = await api.get('/Order/GetOrderDetails', {params: {orderId}});
   return response.data;
@@ -47,7 +59,7 @@ export async function saveRefundDetails (orderId, totalRefund, amtBeforeTax, ite
   const response = await api.post('/Order/SaveRefundDetails', itemArray, {
     params: {
       OrderID: orderId,
-      TotalRefundAmount: totalRefund,
+      TotalRefundAmount: totalRefund.toFixed(2),
       RefundAmtbeforeTax: amtBeforeTax,
     },
   });

@@ -9,7 +9,7 @@ const getToday = () => {
     return `${today.getFullYear()}-${month}-${day}`;
 };
 
-export default function SalesReport ({onAddToRefundCart, refundVersion, onClearRefundCart}) {
+export default function SalesReport ({onAddToRefundCart, refundVersion, onClearRefundCart, refundCart = []}) {
     const [startDate, setStartDate] = useState(getToday);
     const [endDate, setEndDate] = useState('');
     const [orders, setOrders] = useState([]);
@@ -17,6 +17,10 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [orderDetails, setOrderDetails] = useState(null);
     const [isDetailsLoading, setIsDetailsLoading] = useState(false);
+
+    useEffect(() => {
+        loadOrders();
+    }, []);
 
     useEffect(() => {
         if (!refundVersion || !selectedOrder) return;
@@ -45,8 +49,18 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
         setIsDetailsLoading(true);
         try {
             const details = await fetchOrderDetails(order.orderID);
-            setOrderDetails(details[0]);
-            // console.log('Fetched order details:', details);
+            const payload = Array.isArray(details) ? details[0] : details;
+            const normalizedDetails = payload?.items
+                ? payload
+                : payload?.orderDetails
+                    ? payload.orderDetails
+                    : payload?.data
+                        ? payload.data
+                        : Array.isArray(details)
+                            ? {items: details}
+                            : {items: []};
+
+            setOrderDetails(normalizedDetails);
         } catch (error) {
             console.error('Failed to load order details:', error);
             setOrderDetails(null);
@@ -68,12 +82,13 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
                 }}
                 onRefresh={loadOrders}
                 onAddToRefundCart={onAddToRefundCart}
+                refundCart={refundCart}
             />
         );
     };
 
     return (
-        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-lg border border-purple-200 bg-white shadow-sm">
             <div className="shrink-0 border-b border-purple-100 px-5 py-4">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <h2 className="font-semibold text-purple-900">Sales Report</h2>

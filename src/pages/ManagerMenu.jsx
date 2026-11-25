@@ -4,7 +4,7 @@ import {fetchEmployeeReportData} from '../services/managerApi';
 import SalesReport from '../components/SalesReport';
 import EmployeeReport from '../components/EmployeeReport';
 
-export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefundCart, refundVersion, onClearRefundCart}) {
+export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefundCart, refundVersion, onClearRefundCart, refundCart = []}) {
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('menu');
   const [activeReport, setActiveReport] = useState('sales');
@@ -52,7 +52,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
 
   if (activeView === 'reports') {
     return (
-      <div className="min-h-screen bg-gray-50 pt-8">
+      <div className="min-h-screen bg-gray-50 pt-2">
         <div className="mx-auto max-w-6xl">
           <div className="mb-3 flex items-center justify-between gap-4">
             <div>
@@ -62,7 +62,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
             <button
               type="button"
               onClick={() => setActiveView('menu')}
-              className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+              className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
             >
               Back
             </button>
@@ -74,10 +74,10 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
           </div>
 
           {isLoading ? (
-            <div className="rounded-xl border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
+            <div className="rounded-lg border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
           ) : (
             activeReport === 'sales'
-              ? <SalesReport onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} />
+              ? <SalesReport onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} refundCart={refundCart} />
               : <EmployeeReport employees={employeeData} />
           )}
         </div>
@@ -93,7 +93,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
           <p className="mt-2 text-sm text-purple-600">Select an action to perform</p>
         </div>
 
-        <div className="mb-3 rounded-xl border border-purple-200 bg-white p-4 shadow-sm">
+        <div className="mb-3 rounded-lg border border-purple-200 bg-white p-4 shadow-sm">
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-purple-900">Thermal Printer</div>
@@ -102,7 +102,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
             <button
               type="button"
               onClick={handleConnectPrinter}
-              className="rounded-xl bg-purple-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
+              className="rounded-lg bg-purple-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
             >
               Connect Printer
             </button>
@@ -114,7 +114,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
             <button
               key={item.id}
               onClick={item.action}
-              className="flex items-start gap-4 rounded-xl border border-purple-200 bg-white p-6 text-left shadow-sm transition hover:border-purple-400 hover:shadow-md"
+              className="flex items-start gap-4 rounded-lg border border-purple-200 bg-white p-6 text-left shadow-sm transition hover:border-purple-400 hover:shadow-md"
             >
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-purple-900">{item.label}</h3>
@@ -126,7 +126,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
 
         <button
           onClick={() => navigate('/home')}
-          className="mt-8 rounded-xl bg-gray-200 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+          className="mt-8 rounded-lg bg-gray-200 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
         >
           Back to Home
         </button>

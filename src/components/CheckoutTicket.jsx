@@ -24,7 +24,7 @@ export default function CheckoutTicket ({
         </span>
       </div>
 
-      <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
+      <div className="max-h-75 space-y-2 overflow-y-auto pr-1">
         {cart.length === 0 ? (
           <div className="rounded-md border border-dashed border-purple-200 bg-white p-4 text-center text-xs text-purple-600">
             No active line-items on ticket. Select a product to begin.
@@ -39,7 +39,7 @@ export default function CheckoutTicket ({
               onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') onEditItem?.(index);
               }}
-              className={`cursor-pointer rounded-xl border p-2 shadow-sm space-y-1 text-[10px] transition ${editingItemIndex === index ? 'border-purple-900 bg-purple-100 ring-1 ring-purple-900' : 'border-purple-200 bg-white hover:border-purple-400 hover:bg-gray-50'}`}
+              className={`cursor-pointer rounded-sm border p-2 shadow-sm space-y-1 text-[10px] transition ${editingItemIndex === index ? 'border-purple-900 bg-purple-100 ring-1 ring-purple-900' : 'border-purple-200 bg-white hover:border-purple-400 hover:bg-gray-50'}`}
             >
               <div className="flex items-center justify-between gap-2 text-xs">
                 <div className="font-semibold text-purple-900">{cartItem.name} - ${cartItem.finalPrice.toFixed(2)}</div>
@@ -114,14 +114,14 @@ export default function CheckoutTicket ({
 
         <div className="grid grid-cols-2 gap-2">
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-amber-600 hover:bg-amber-500'}`}
+            className={`rounded-sm px-4 py-2 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-amber-600 hover:bg-amber-500'}`}
             disabled={isCartEmpty}
             onClick={onPayLater}
           >
             Pay Later
           </button>
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty || isProcessing ? 'cursor-not-allowed bg-purple-200 opacity-70' : 'bg-purple-900 hover:bg-purple-800'}`}
+            className={`rounded-sm px-4 py-2 text-sm font-semibold text-white transition ${isCartEmpty || isProcessing ? 'cursor-not-allowed bg-purple-200 opacity-70' : 'bg-purple-900 hover:bg-purple-800'}`}
             disabled={isCartEmpty || isProcessing}
             onClick={onPayNow}
           >

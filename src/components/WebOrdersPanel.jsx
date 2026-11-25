@@ -1,15 +1,17 @@
 import React from 'react';
-import { useSignalROrders } from '../hooks/useSignalROrders';
 
 /**
  * WebOrdersPanel Component
  * Displays incoming web orders from SignalR connection
  * Provides UI for completing orders and managing the queue
  */
-export default function WebOrdersPanel() {
-//   const { orders, isConnected, error, completeOrder, clearAllOrders } = useSignalROrders();
-  const { orders, isConnected } = useSignalROrders();
-
+export default function WebOrdersPanel({
+  orders = [],
+  notification = null,
+  onDismissNotification,
+  isConnected = false,
+  error = null,
+}) {
   return (
     <div className="mb-2 p-2">
       {/* Header with connection status */}
@@ -29,17 +31,22 @@ export default function WebOrdersPanel() {
             </span>
           </div>
         </div>
+      </div>
 
-        {/* {orders.length > 0 && (
+      {notification && (
+        <div className={`mt-3 flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm font-semibold ${notification.type === 'paid'
+          ? 'border-emerald-300 bg-emerald-50 text-emerald-800'
+          : 'border-amber-300 bg-amber-50 text-amber-800'}`}>
+          <span>{notification.message}</span>
           <button
             type="button"
-            onClick={clearAllOrders}
-            className="rounded-lg bg-purple-100 px-3 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-200 active:scale-95"
+            onClick={onDismissNotification}
+            className={`shrink-0 rounded-md px-3 py-1.5 text-xs font-bold text-white ${notification.type === 'paid' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-amber-600 hover:bg-amber-500'}`}
           >
-            Clear All
+            {notification.type === 'paid' ? 'View / Acknowledge' : 'Dismiss'}
           </button>
-        )} */}
-      </div>
+        </div>
+      )}
 
       {/* Error message */}
       {/* {error && (
@@ -49,7 +56,6 @@ export default function WebOrdersPanel() {
       )} */}
 
       {/* Orders list */}
-      
     </div>
   );
 }

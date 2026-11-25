@@ -1,38 +1,107 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import RefundItemCard from './RefundItemCard';
 import {deleteOrder} from '../services/managerApi';
 
-export default function OrderDetailView ({order, details, isLoading, onClose, onRefresh, onAddToRefundCart}) {
-    const [selectedItems, setSelectedItems] = useState([]);
+export default function OrderDetailView ({order, details, isLoading, onClose, onRefresh, onAddToRefundCart, refundCart = []}) {
+    const [selectedKeys, setSelectedKeys] = useState([]);
     const [isSaving, setIsSaving] = useState(false);
-    const items = details?.items || [];
 
-    const selectedRows = useMemo(
-        () => items.filter((item, index) => selectedItems.includes(index) && Number(item.remainingRefundQty || 0) > 0),
-        [items, selectedItems]
+    const addedRefundKeys = useMemo(
+        () => refundCart.map((item) => item.uniqueKey).filter(Boolean),
+        [refundCart]
     );
 
-    const toggleItem = (index) => {
-        if (Number(items[index]?.remainingRefundQty || 0) <= 0) return;
+    useEffect(() => {
+        setSelectedKeys([]);
+    }, [order?.orderID]);
 
-        setSelectedItems((current) => current.includes(index)
-            ? current.filter((itemIndex) => itemIndex !== index)
-            : [...current, index]);
+    useEffect(() => {
+        if (refundCart.length === 0) setSelectedKeys([]);
+    }, [refundCart.length]);
+
+    const expandedItems = useMemo(() => {
+        let sourceItems = [];
+
+        if (Array.isArray(details)) {
+            sourceItems = details;
+        } else if (Array.isArray(details?.items)) {
+            sourceItems = details.items;
+        } else if (Array.isArray(details?.orderDetails)) {
+            sourceItems = details.orderDetails;
+        } else if (Array.isArray(details?.data?.items)) {
+            sourceItems = details.data.items;
+        } else if (Array.isArray(details?.data)) {
+            sourceItems = details.data;
+        } else if (details?.itemID != null) {
+            sourceItems = [details];
+        }
+
+        return sourceItems.flatMap((item, itemIndex) => {
+            const rawItemQty = item.itemQty ?? item.quantity ?? item.qty ?? 1;
+            const itemQty = Math.max(1, Math.floor(Number(rawItemQty) || 1));
+            const remainingRefundQty = Math.max(
+                0,
+                Math.min(itemQty, Math.floor(Number(item.remainingRefundQty ?? itemQty)))
+            );
+            const rawQuantity = Number(item.itemQty ?? item.quantity ?? item.qty ?? itemQty);
+            const rawTotalPrice = Number(item.totalItemPrice ?? item.totalAmount ?? item.itemBasePrice ?? 0);
+            const unitPrice = rawQuantity > 0
+                ? rawTotalPrice / rawQuantity
+                : Number(item.itemBasePrice || 0);
+            const safeUnitPrice = Number.isFinite(unitPrice) && unitPrice >= 0
+                ? unitPrice
+                : Number(item.itemBasePrice || 0);
+
+            return Array.from({length: itemQty}, (_, unitIndex) => {
+                const uniqueKey = `${item.itemID ?? 'item'}-${item.itemSizeID ?? 'size'}-${itemIndex}-${unitIndex}`;
+
+                return {
+                    ...item,
+                    qty: 1,
+                    itemQty: 1,
+                    remainingRefundQty: unitIndex < remainingRefundQty ? 1 : 0,
+                    isAlreadyRefunded: unitIndex >= remainingRefundQty,
+                    totalItemPrice: safeUnitPrice,
+                    itemBasePrice: safeUnitPrice,
+                    unitPrice: safeUnitPrice,
+                    uniqueKey,
+                };
+            });
+        });
+    }, [details]);
+
+    const selectedRows = useMemo(
+        () => expandedItems.filter((item) => selectedKeys.includes(item.uniqueKey)),
+        [expandedItems, selectedKeys]
+    );
+
+    const toggleItem = (item) => {
+        if (item.isAlreadyRefunded || addedRefundKeys.includes(item.uniqueKey)) return;
+
+        setSelectedKeys((current) => current.includes(item.uniqueKey)
+            ? current.filter((key) => key !== item.uniqueKey)
+            : [...current, item.uniqueKey]);
     };
 
     const handleRefundSelected = () => {
         selectedRows.forEach((item) => {
             onAddToRefundCart?.({
                 ...item,
-                uid: `order-${order.orderID}-${item.itemID}-${item.itemSizeID}`,
+                uid: `order-${order.orderID}-${item.uniqueKey}`,
+                uniqueKey: item.uniqueKey,
+                qty: 1,
                 refundOrderId: order.orderID,
                 name: item.itemName,
-                finalPrice: Number(item.totalItemPrice || 0),
-                quantity: Number(item.itemQty || 1),
-                totalBeforeTax: Number(item.totalItemPrice || 0),
+                finalPrice: item.unitPrice,
+                quantity: 1,
+                totalBeforeTax: item.unitPrice,
+                totalItemRefund: item.unitPrice,
+                itemQty: 1,
+                itemID: item.itemID,
+                itemSizeID: item.itemSizeID,
             });
         });
-        setSelectedItems([]);
+        setSelectedKeys([]);
     };
 
     const handleDelete = async () => {
@@ -51,7 +120,7 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
     };
 
     return (
-        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-lg border border-purple-200 bg-white shadow-sm">
             <div className="flex shrink-0 items-start justify-between gap-4 border-b border-purple-100 px-5 py-4">
                 <div>
                     <h2 className="text-lg font-semibold text-purple-900">Order #{order.orderID}</h2>
@@ -69,18 +138,25 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
             <div className="min-h-0 flex-1 overflow-y-auto p-5">
                 {isLoading ? (
                     <p className="text-center text-sm text-purple-600">Loading order details...</p>
-                ) : items.length === 0 ? (
+                ) : expandedItems.length === 0 ? (
                     <p className="text-center text-sm text-purple-600">No items found</p>
                 ) : (
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {details?.items.map((item, index) => (
-                            <RefundItemCard
-                                key={item.itemID}
-                                item={item}
-                                isSelected={selectedItems.includes(index)}
-                                onToggle={() => toggleItem(index)}
-                            />
-                        ))}
+                    <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                        {expandedItems.map((item) => {
+                            const isAddedToRefund = addedRefundKeys.includes(item.uniqueKey);
+                            const isDisabled = item.isAlreadyRefunded || isAddedToRefund;
+
+                            return (
+                                <RefundItemCard
+                                    key={item.uniqueKey}
+                                    item={item}
+                                    isSelected={selectedKeys.includes(item.uniqueKey)}
+                                    isDisabled={isDisabled}
+                                    isAddedToRefund={isAddedToRefund}
+                                    onToggle={() => toggleItem(item)}
+                                />
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -92,7 +168,7 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
                     onClick={handleRefundSelected}
                     className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                    Refund
+                    Add Refund
                 </button>
                 <button
                     type="button"
@@ -103,7 +179,6 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
                     Delete
                 </button>
             </div>
-
         </section>
     );
 }

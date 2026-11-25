@@ -92,11 +92,11 @@ function TakeoutForm ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-purple-200 bg-gray-50 p-4 pb-0">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-purple-200 bg-gray-50 p-4 pb-0">
       <div>
         <label className="block text-sm font-semibold text-purple-900">First Name</label>
         <input
-          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.firstName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.firstName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="text"
           value={firstName}
           onChange={(e) => updateField('firstName', setFirstName, e.target.value)}
@@ -108,7 +108,7 @@ function TakeoutForm ({
       <div>
         <label className="block text-sm font-semibold text-purple-900">Last Name</label>
         <input
-          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.lastName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.lastName ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="text"
           value={lastName}
           onChange={(e) => updateField('lastName', setLastName, e.target.value)}
@@ -120,7 +120,7 @@ function TakeoutForm ({
       <div>
         <label className="block text-sm font-semibold text-purple-900">Phone Number</label>
         <input
-          className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phoneNumber ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
+          className={`mt-2 w-full rounded-lg border bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400 ${errors.phoneNumber ? 'border-red-500 focus:border-red-500' : 'border-purple-200'}`}
           type="tel"
           value={phoneNumber}
           onChange={(e) => updateField('phoneNumber', setPhoneNumber, e.target.value)}
@@ -129,13 +129,13 @@ function TakeoutForm ({
         {errors.phoneNumber && <p className="mt-1 text-xs text-red-600">{errors.phoneNumber}</p>}
       </div>
 
-      <button type="submit" className="mr-2 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700">
+      <button type="submit" className="mr-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700">
         {submitLabel}
       </button>
       <button
         type="button"
         onClick={handleCancel}
-        className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+        className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
       >
         {cancelLabel}
       </button>

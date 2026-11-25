@@ -17,16 +17,16 @@ export function useThermalPrinter() {
       
       await selectedDevice.claimInterface(0);
       setDevice(selectedDevice);
-      alert(`Connected: ${selectedDevice.productName || "Thermal Printer"}`);
+      console.log(`Connected: ${selectedDevice.productName || "Thermal Printer"}`);
     } catch (error) {
       console.error("WebUSB Connection Error:", error);
-      alert("Device pairing failed.");
+      console.log("Device pairing failed.");
     }
   };
 
   const printRaw = async (uint8ArrayBytes) => {
     if (!device) {
-      alert("Printer is not active. Please connect first.");
+      console.log("Printer is not active. Please connect first.");
       return;
     }
 
@@ -44,7 +44,7 @@ export function useThermalPrinter() {
       await device.transferOut(endpoint.endpointNumber, uint8ArrayBytes);
     } catch (error) {
       console.error("USB Write Failure:", error);
-      alert("Printing failed.");
+      console.log("Printing failed.");
     }
   };
 
