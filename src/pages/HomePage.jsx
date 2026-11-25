@@ -30,7 +30,7 @@ export default function HomePage({
         error={webOrdersError}
       />
 
-      <div className="rounded-lg border border-purple-200 bg-white p-5 shadow-sm">
+      <div className="border border-purple-200 bg-white p-5 shadow-sm">
         <HomeActions
           orderType={orderType}
           setOrderType={setOrderType}

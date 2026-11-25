@@ -242,7 +242,7 @@ function App () {
       />
 
       <div className="flex min-h-0 flex-1 flex-row overflow-hidden">
-        <div className="w-full shrink-0 overflow-y-auto border-t border-purple-200 bg-white lg:w-95 lg:border-t-0">
+        <div className="w-full shrink-0 overflow-y-auto border-t border-purple-200 bg-white sm:max-w-87.5 lg:border-t-0">
           <CartSummary
             cart={cart}
             cartTotal={cartTotal}
