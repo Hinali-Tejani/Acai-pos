@@ -62,7 +62,7 @@ export default function EmployeePunchIn () {
                 <button
                     type="button"
                     onClick={handlePunchAction}
-                    className="flex-1 rounded-xl bg-purple-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
+                    className="flex-1 rounded-lg bg-purple-900 px-3 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
                 >
                     Punch In/Out
                 </button>

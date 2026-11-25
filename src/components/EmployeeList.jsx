@@ -29,7 +29,7 @@ export default function EmployeeList ({records = [], onPunchIn, onPunchOut}) {
         refetchEmployees();
     }, []);
     return (
-        <div className="overflow-hidden rounded-xl border border-purple-200 bg-white">
+        <div className="overflow-hidden rounded-lg border border-purple-200 bg-white">
             <table className="min-w-full text-left text-sm">
                 <thead className="bg-gray-50 text-purple-900">
                     <tr>

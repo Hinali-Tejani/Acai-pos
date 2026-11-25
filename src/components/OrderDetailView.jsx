@@ -120,7 +120,7 @@ export default function OrderDetailView ({order, details, isLoading, onClose, on
     };
 
     return (
-        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-lg border border-purple-200 bg-white shadow-sm">
             <div className="flex shrink-0 items-start justify-between gap-4 border-b border-purple-100 px-5 py-4">
                 <div>
                     <h2 className="text-lg font-semibold text-purple-900">Order #{order.orderID}</h2>

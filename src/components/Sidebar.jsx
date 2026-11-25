@@ -45,7 +45,7 @@ export default function Sidebar ({
         <button
           type="button"
           onClick={handleHomeClick}
-          className={`shrink-0 rounded-xl border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === 'home'
+          className={`shrink-0 rounded-lg border px-3 py-2 text-left text-sm! font-semibold transition ${activeCategory === 'home'
             ? 'border-purple-900 bg-purple-900 text-white'
             : 'border-purple-200 bg-white text-purple-800 hover:border-purple-900 hover:bg-gray-50'
             }`}
@@ -74,15 +74,15 @@ export default function Sidebar ({
         ))}
       </div>
 
-      <div className="flex shrink-0 items-center gap-3 bg-white px-4 py-3 sm:justify-end">
+      <div className="flex shrink-0 items-center gap-3 bg-white px-4 py-3 sm:justify-end text-xs">
         <button
-          className="rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-500"
+          className="rounded-lg bg-amber-600 px-4 py-2 font-semibold text-white transition hover:bg-amber-500"
           onClick={() => setIsPendingOrdersOpen(true)}
         >
           Pending Payments
         </button>
         <button
-          className="rounded-xl bg-purple-100 px-4 py-2 text-sm font-semibold text-purple-700 transition hover:bg-purple-200"
+          className="rounded-lg bg-purple-100 px-4 py-2 font-semibold text-purple-700 transition hover:bg-purple-200"
           onClick={() => setIsCustomerModalOpen(true)}
         >
           Customer Portal

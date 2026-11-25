@@ -9,7 +9,7 @@ export default function ProductGrid ({items, activeCategory, onSelectItem}) {
           <button
             key={item.id || idx}
             onClick={() => onSelectItem(item)}
-            className="flex min-h-25 flex-col justify-between rounded-xl border border-purple-200 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+            className="flex min-h-25 flex-col justify-between rounded-lg border border-purple-200 bg-white p-3 text-left shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
           >
             <div className="text-sm uppercase tracking-[0.08em] wrap-anywhere">
               {item.name}

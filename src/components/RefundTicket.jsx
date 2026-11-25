@@ -34,7 +34,7 @@ export default function RefundTicket({
             const lineTotal = Math.abs((cartItem.finalPrice || 0) * (cartItem.quantity || 1));
 
             return (
-              <div key={cartItem.uniqueKey || cartItem.uid} className="space-y-2 rounded-xl border border-purple-200 bg-white p-2 text-[10px] shadow-sm">
+              <div key={cartItem.uniqueKey || cartItem.uid} className="space-y-2 rounded-lg border border-purple-200 bg-white p-2 text-[10px] shadow-sm">
                 <div className="flex items-center justify-between gap-2 text-xs">
                   <div className="font-semibold text-purple-900">
                     {cartItem.name}
@@ -73,14 +73,14 @@ export default function RefundTicket({
 
         <div className="grid grid-cols-2 gap-2">
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-gray-500 hover:bg-gray-400'}`}
+            className={`rounded-lg px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-gray-500 hover:bg-gray-400'}`}
             disabled={isCartEmpty}
             onClick={onClearCart}
           >
             Clear
           </button>
           <button
-            className={`rounded-xl px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-emerald-600 hover:bg-emerald-500'}`}
+            className={`rounded-lg px-4 py-3 text-sm font-semibold text-white transition ${isCartEmpty ? 'cursor-not-allowed bg-purple-200' : 'bg-emerald-600 hover:bg-emerald-500'}`}
             disabled={isCartEmpty}
             onClick={onProceedToRefund}
           >

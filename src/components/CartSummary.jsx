@@ -357,7 +357,7 @@ export default function CartSummary ({
 
   return (
     <div className="flex h-full flex-col justify-between gap-3">
-      <div className="space-y-3 border-r border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
+      <div className="space-y-3 border-t border-r border-purple-200 bg-gray-50 p-4 shadow-sm flex-1">
         <div className="flex items-center justify-between">
           <h3 className="text-md font-semibold text-purple-900">Active Order</h3>
           <button

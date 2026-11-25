@@ -62,7 +62,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
             <button
               type="button"
               onClick={() => setActiveView('menu')}
-              className="rounded-xl bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+              className="rounded-lg bg-gray-200 px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
             >
               Back
             </button>
@@ -73,7 +73,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
           </div>
 
           {isLoading ? (
-            <div className="rounded-xl border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
+            <div className="rounded-lg border border-purple-200 bg-white p-10 text-center text-sm text-purple-600 shadow-sm">Loading reports...</div>
           ) : (
             activeReport === 'sales'
               ? <SalesReport onAddToRefundCart={onAddToRefundCart} refundVersion={refundVersion} onClearRefundCart={onClearRefundCart} refundCart={refundCart} />
@@ -96,7 +96,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
               key={item.id}
               type="button"
               onClick={item.action}
-              className="rounded-xl border border-purple-200 bg-white p-6 text-left text-lg font-semibold text-purple-900 shadow-sm transition hover:border-purple-400 hover:bg-purple-50"
+              className="rounded-lg border border-purple-200 bg-white p-6 text-left text-lg font-semibold text-purple-900 shadow-sm transition hover:border-purple-400 hover:bg-purple-50"
             >
               {item.label}
             </button>
@@ -107,7 +107,7 @@ export default function ManagerMenu ({connectPrinter, printerDevice, onAddToRefu
           <button
             type="button"
             onClick={handleConnectPrinter}
-            className="mt-4 rounded-xl bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
+            className="mt-4 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-700"
           >
             Connect Printer
           </button>

@@ -88,7 +88,7 @@ export default function SalesReport ({onAddToRefundCart, refundVersion, onClearR
     };
 
     return (
-        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-xl border border-purple-200 bg-white shadow-sm">
+        <section className="flex h-[calc(100vh-16rem)] min-h-0 flex-col overflow-hidden rounded-lg border border-purple-200 bg-white shadow-sm">
             <div className="shrink-0 border-b border-purple-100 px-5 py-4">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <h2 className="font-semibold text-purple-900">Sales Report</h2>

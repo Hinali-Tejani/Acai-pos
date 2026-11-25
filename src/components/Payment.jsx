@@ -124,11 +124,11 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                             </div>
 
                             <div className="mt-4 grid grid-cols-5 gap-2">
-                                <button type="button" onClick={handleExactChange} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-xs font-semibold text-purple-700 hover:bg-purple-100">Exact</button>
-                                <button type="button" onClick={() => handleQuickCash(10)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$10</button>
-                                <button type="button" onClick={() => handleQuickCash(20)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$20</button>
-                                <button type="button" onClick={() => handleQuickCash(50)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$50</button>
-                                <button type="button" onClick={() => handleQuickCash(100)} className="rounded-xl border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$100</button>
+                                <button type="button" onClick={handleExactChange} className="rounded-lg border border-purple-200 bg-white px-2 py-3 text-xs font-semibold text-purple-700 hover:bg-purple-100">Exact</button>
+                                <button type="button" onClick={() => handleQuickCash(10)} className="rounded-lg border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$10</button>
+                                <button type="button" onClick={() => handleQuickCash(20)} className="rounded-lg border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$20</button>
+                                <button type="button" onClick={() => handleQuickCash(50)} className="rounded-lg border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$50</button>
+                                <button type="button" onClick={() => handleQuickCash(100)} className="rounded-lg border border-purple-200 bg-white px-2 py-3 text-sm font-semibold text-purple-700 hover:bg-purple-100">$100</button>
                             </div>
 
                             <div className="mt-4 grid grid-cols-3 gap-3">
@@ -180,7 +180,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                                 </p>
 
                                 {splitCashPaid > 0 && (
-                                    <div className="mt-4 rounded-xl bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-700 border border-emerald-100">
+                                    <div className="mt-4 rounded-lg bg-emerald-50 px-4 py-2 text-xs font-medium text-emerald-700 border border-emerald-100">
                                         Successfully recorded <strong>${splitCashPaid.toFixed(2)}</strong> in Cash.
                                     </div>
                                 )}
@@ -246,17 +246,17 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                                     <span className="font-semibold text-white">${receivedCash.toFixed(2)}</span>
                                 </div>
                                 {remainingBalance > 0 ? (
-                                    <div className="mt-3 rounded-xl border border-amber-400/30 bg-amber-500/10 p-3 text-sm font-semibold text-amber-200">
+                                    <div className="mt-3 rounded-lg border border-amber-400/30 bg-amber-500/10 p-3 text-sm font-semibold text-amber-200">
                                         Remaining: ${remainingBalance.toFixed(2)}
                                     </div>
                                 ) : (
-                                    <div className="mt-3 rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm font-semibold text-emerald-200">
+                                    <div className="mt-3 rounded-lg border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm font-semibold text-emerald-200">
                                         Change due: ${Math.abs(changeDue).toFixed(2)}
                                     </div>
                                 )}
                             </>
                         ) : (
-                            <div className="rounded-xl border border-sky-400/30 bg-sky-500/10 p-3 text-sm text-sky-100">
+                            <div className="rounded-lg border border-sky-400/30 bg-sky-500/10 p-3 text-sm text-sky-100">
                                 Connect the card reader and authorize the payment for ${currentTotalDue.toFixed(2)}.
                             </div>
                         )}
@@ -281,7 +281,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                             onClick={handleSubmitPayment}
                             // Disable only if it's pure cash mode and they haven't handed over enough money yet
                             disabled={!isRefund && paymentMethod === 'cash' && receivedCash < currentTotalDue}
-                            className="w-full rounded-xl bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-purple-700 disabled:opacity-50"
+                            className="w-full rounded-lg bg-emerald-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-purple-700 disabled:opacity-50"
                         >
                             {paymentMethod === 'card'
                                 ? (splitCashPaid > 0 ? `Complete Split Order (Charge $${currentTotalDue.toFixed(2)} to Card)` : 'Process Card Payment')
@@ -293,7 +293,7 @@ export default function CheckoutPanel ({totalDue = 0, onProcessPayment, onPaymen
                         <button
                             type="button"
                             onClick={onClose}
-                            className="w-full rounded-xl bg-red-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-red-400 active:scale-[0.98]"
+                            className="w-full rounded-lg bg-red-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-red-400 active:scale-[0.98]"
                             aria-label="Close panel"
                         >
                             Cancel Payment

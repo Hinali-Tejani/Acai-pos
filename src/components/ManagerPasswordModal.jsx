@@ -33,7 +33,7 @@ export default function ManagerPasswordModal ({isOpen, onClose, onSubmit}) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-xl border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
+            className="w-full rounded-lg border border-purple-200 bg-white px-4 py-3 text-sm text-purple-900 outline-none transition placeholder:text-purple-300 focus:border-purple-400"
             placeholder="Enter password"
             autoFocus
           />
@@ -43,13 +43,13 @@ export default function ManagerPasswordModal ({isOpen, onClose, onSubmit}) {
           <button
             type="button"
             onClick={handleClose}
-            className="flex-1 rounded-xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
+            className="flex-1 rounded-lg bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-300"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="flex-1 rounded-xl bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-700"
+            className="flex-1 rounded-lg bg-purple-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-700"
           >
             Verify
           </button>
